@@ -1,0 +1,429 @@
+.reservation-form h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: goldenrod ;
+}
+
+.seat a {
+  text-decoration: none;
+}
+.Restaurant-form{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color:rgb(233, 232, 232);
+  margin : 100px ;
+  border-radius: 20px 20px 20px 20px;
+  max-height: 700px;
+  box-shadow: 10px 10px 20px 10px rgba(41, 41, 41, 0.5);
+}
+
+.booking-form {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
+
+.booking-form h2 {
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.form-group select,
+.form-group input[type="date"],
+.form-group input[type="time"] {
+  width: calc(100% - 20px);
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.update-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: red;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.secondary-button,
+.primary-button {
+  width: calc(50% - 10px);
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.secondary-button {
+  background-color: #fff;
+  color: red;
+  border: 1px solid red;
+}
+
+.primary-button {
+  background-color: red;
+  color: #fff;
+  border: none;
+}
+
+
+.reservation-form {
+  display: block;
+  background-color:rgb(233, 232, 232);
+  margin : 100px ;
+  border-radius: 20px 20px 20px 20px;
+  min-height: 700px;
+  box-shadow: 10px 10px 20px 10px rgba(41, 41, 41, 0.5);
+}
+
+.form-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+} 
+
+.input-container {
+  background-color: #ffffff;
+  width: 600px;
+  height: 585px;
+  
+  overflow: scroll;
+}
+
+.image-container {
+  margin: 20px;
+  width: 800px;
+  height: 585px;
+  background-color: #ffffff;
+  border-radius: 20px 20px 20px 20px;
+  overflow: hidden;
+}
+
+.image-container img {
+  width: 100%; 
+  height: auto;
+  display: block;
+}
+
+
+
+
+
+
+
+.table-button.occupied {
+  background-color: yellow  ;
+}
+
+.table-button.reserved {
+  background-color: yellow  ;
+}
+.form-row input {
+  margin-left: 20px;
+  flex-grow: 1;
+  /* Adjust the height value as needed */
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px;
+  margin-right: 10px;
+}
+
+.form-row select {
+  flex: 1;
+  padding: 8px;
+
+  border: 1px solid #8f8d8d;
+  border-radius: 4px;
+  margin-top: 4px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.table-buttons button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 16px;
+  outline: #690606;
+  border: 1px solid gray;
+  color: #ffc107;
+
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 8px;
+ 
+  margin: 0 auto;
+
+}
+.table-buttons button svg {
+  font-size: 10px;
+}
+
+
+.label-bold {
+  font-weight: bold;
+  color:  goldenrod ;
+}
+
+.form-row {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.form-group {
+  font-weight: bold;
+  color: #fff;
+  flex: 1;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #8f8d8d;
+  border-radius: 4px;
+
+  margin-right: 20px;
+}
+
+.form-group>label {
+  margin-bottom: 0.5rem;
+  color: #ffc107;
+  display: inline-block;
+  font-size: small;
+}
+
+.form-group>input {
+  margin-right: 10px;
+  width: 90%;
+  border-radius: 0.25rem;
+  border: 1px solid #ced4da;
+  font-size: 0.8125rem;
+  padding: 0.47rem 0.75rem;
+}
+
+.table-button {
+  /* Common styles for buttons */
+  border-block-end-color: #ffc107;
+  padding: 8px 16px;
+  margin: 4px;
+  cursor: pointer;
+  border-radius: 4px;
+  box-shadow: 10px 10px 10px 10px rgba(75, 75, 75, 0.5)
+
+}
+
+/* Overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Popup */
+.popup {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  position: relative; /* Để định vị cho nút đóng */
+}
+
+.close-popup {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+
+/* Your CSS file */
+.table-button.active {
+  background-color: gray;
+  color: #fff;
+}
+
+.table-button.occupied {
+  background-color: red;
+}
+
+.table-button.available {
+  background-color: white;
+}
+
+.table-button.placing {
+  background-color: yellow;
+}
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+  }
+  to {
+      opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 2s ease-in-out;
+}
+
+h1 {
+  color: #fff;
+  text-align: center;
+}
+
+/* Media Queries */
+@media screen and (max-width: 768px) {
+  
+
+  .table-buttons {
+    grid-template-columns: repeat(3, 50px);
+    /* For smaller screens, show 3 columns */
+  }
+
+  label {
+    font-size: 14px;
+  }
+
+  input[type='date'],
+  input[type='number'],
+  select {
+    padding: 8px;
+  }
+
+  button {
+    padding: 6px 12px;
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .form-container {
+ display: flex;
+ flex-direction: column;
+ overflow:scroll;
+}
+.image-container {
+  display: none;
+
+}
+
+  label {
+    font-size: 12px;
+    font-style: italic;
+    color: #690606;
+  }
+
+  input[type='date'],
+  input[type='number'],
+  select {
+    padding: 6px;
+  }
+
+  button {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+}
+
+/* Custom styles for name input and label */
+
+
+.name-input label {
+  margin-right: 10px;
+  white-space: nowrap;
+}
+
+.name-input input {
+  flex-grow: 1;
+}
+
+/* Styles for table buttons */
+.table-buttons {
+  display: grid;
+  grid-template-columns: repeat(5, 50px);
+  /* Create a 5x5 grid of 50px columns */
+  gap: 10px;
+}
+
+.button-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: #000000;
+
+}
+
+.table-button {
+  margin-bottom: 20px;
+
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  /* Add this line to center the buttons horizontally */
+  grid-template-columns: repeat(5, 50px);
+  gap: 10px;
+  color: #000000;
+  font-weight: bold;
+  transition: transform 0.5s ease;
+}
+
+.table-button:hover {
+  transform: scale(1.2);
+}
+.slide {
+  display: block;
+  height: 700px;
+  overflow: hidden;
+
+  box-sizing: border-box;
+  margin-bottom: 20px;
+
+}
+
+.carousel-inner {
+  max-height: 700px
+}
+
+.carousel-item {
+  max-height: 700px
+}

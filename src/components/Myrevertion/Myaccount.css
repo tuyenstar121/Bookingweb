@@ -1,0 +1,75 @@
+
+
+.container {
+  padding: 45px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.border-end {
+  border-right: 1px solid #dee2e6;
+}
+
+.py-3 {
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+}
+
+.list-group-item {
+  cursor: pointer;
+}
+
+.list-group-item:hover {
+  background-color: #f1f1f1;
+}
+
+.image-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #ddd;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.tab-content .row {
+  margin-bottom: 15px;
+}
+
+.tab-content .row .col-md-2 img {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.tab-content .row .col-md-8 h5 {
+  margin: 0;
+}
+
+.tab-content .row .col-md-8 p {
+  margin: 5px 0;
+}
+
+.tab-content .row .col-md-2 p {
+  text-align: right;
+}
+
+.tab-content .text-muted {
+  font-size: 0.875rem;
+  color: #d72f15;
+}
+
+.form-control {
+  margin-right: 10px;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+}

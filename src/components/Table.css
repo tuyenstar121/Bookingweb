@@ -1,0 +1,70 @@
+
+
+/* Container styling */
+
+
+
+/* Status styles */
+.status {
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.badge.bg-confirmed {
+  background: rgba(145, 254, 159, 0.47); 
+  color: green;
+}
+.badge.bg-cancelled {
+  background: rgba(255, 173, 173, 0.56); 
+  color: red;
+}
+.badge.bg-booked {
+  background: rgba(255, 173, 173, 0.56); 
+  color: red;
+}
+
+.badge.bg-completed  {
+  background: rgb(89, 191, 255);
+  color: white;
+}
+
+/* Button group styling */
+.ButtonGroup {
+  display: flex;
+  align-items: center;
+}
+
+.ButtonGroup button {
+  margin-right: 5px;
+  padding: 10px;
+  border-radius: 50%; /* Circular buttons */
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 11px;
+  transition-duration: 0.4s;
+}
+
+/* Approve button styles */
+.approve-button {
+  background-color: #207b23; /* Green */
+  color: white;
+  border: none;
+}
+
+.approve-button:hover {
+  background-color: #15971c; /* Brighter green on hover */
+}
+
+/* Cancel button styles */
+.cancel-button {
+  background-color: #ffffff;
+  border: 2px solid #f44336; /* Red border */
+  color: #f44336; /* Red text */
+  border-radius: 50%;
+}
+
+.cancel-button:hover {
+  background-color: #f50e0e; /* Bright red on hover */
+  color: #ffffff; /* White text on hover */
+}
