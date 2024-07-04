@@ -1,9 +1,44 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Card2.css'; // Import the CSS file for styling
 
 const Card = ({ imageUrl, title, address, description }) => {
+  const [isInView, setIsInView] = useState(false);
+  const cardRef = useRef(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Function to handle mouse enter event
+    const handleMouseEnter = () => {
+      setIsInView(true);
+    };
+
+    // Function to handle mouse leave event
+    const handleMouseLeave = () => {
+      setIsInView(false);
+    };
+
+    // Add event listeners when component mounts
+    if (cardRef.current) {
+      cardRef.current.addEventListener('mouseenter', handleMouseEnter);
+      cardRef.current.addEventListener('mouseleave', handleMouseLeave);
+    }
+
+    // Clean up: Remove event listeners when component unmounts
+    return () => {
+      if (cardRef.current) {
+        cardRef.current.removeEventListener('mouseenter', handleMouseEnter);
+        cardRef.current.removeEventListener('mouseleave', handleMouseLeave);
+      }
+    };
+  }, []);
+
+  const handleReserveClick = () => {
+    navigate('/booking');
+  };
+
   return (
-    <div className="card">
+    <div ref={cardRef} className={`card ${isInView ? 'animate' : ''}`}>
       <img src={imageUrl} alt={title} />
       <div className="content1">
         <button className="recommended">Được đề xuất</button>
@@ -15,14 +50,13 @@ const Card = ({ imageUrl, title, address, description }) => {
           </svg>
           {address}
         </p>
-        <button className="reserve-button">Đặt bàn giữ chỗ</button>
+        <button className="reserve-button" onClick={handleReserveClick}>Đặt bàn giữ chỗ</button>
         <p className="description">
           <svg className="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16">
             <path fill="none" stroke="currentColor" strokeWidth="2" d="M8 6h13M8 12h13M8 18h13M5 6h.01M5 12h.01M5 18h.01"></path>
           </svg>
           {description}
         </p>
-        
       </div>
     </div>
   );

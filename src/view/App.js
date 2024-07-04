@@ -20,6 +20,7 @@ import AdminFood from './aminFood';
 import ForgotPasswordForm from'./Forgetpass' ;
 import ResetPasswordForm from './resetpass'
 
+import { CartProvider } from '../components/ProductCard/CartProvider';
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
 
@@ -41,6 +42,7 @@ function App() {
   return (
     <BrowserRouter>
       <UserProvider>
+        <CartProvider>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/menu" element={<Menu />} />
@@ -57,6 +59,7 @@ function App() {
           <Route path="/forgetpass" element={<ForgotPasswordForm />} />
           <Route path="/resetpass" element={<ResetPasswordForm />} />
         </Routes>
+        </CartProvider>
       </UserProvider>
     </BrowserRouter>
   );

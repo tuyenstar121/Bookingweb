@@ -65,6 +65,7 @@ function ExpandedCard({ param }) {
         <Chart options={data.options} series={param.series} type="area" />
       </div>
       <span>Last 24 hours</span>
+      
     </motion.div>
   );
 }

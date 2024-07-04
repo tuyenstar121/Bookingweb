@@ -7,30 +7,30 @@ function Slideshow  () {
       <Carousel.Item>
         <img
                 className="d-block w-100 "
-          src="https://th.bing.com/th/id/OIG1.RuLcpBx6P0QR23J8HgNl?pid=ImgGn"
+          src="https://images.pexels.com/photos/769289/pexels-photo-769289.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
           alt="First slide"
         />
         <Carousel.Caption>
-          <h3>First slide label</h3>
-          <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+          <h3 className='text-white '>Nhà hàng A - Đẳng cấp ẩm thực</h3>
+          <p className='text-white'>Mang đến cho bạn trải nghiệm ẩm thực tuyệt vời với các món ăn đa dạng từ các nền văn hóa khác nhau, kết hợp cùng không gian sang trọng và dịch vụ chuyên nghiệp.</p>
         </Carousel.Caption>
       </Carousel.Item>
       <Carousel.Item>
         <img
           className="d-block w-100"
-          src="https://th.bing.com/th/id/OIG1.9rkNcxmeSGsXvy5vyuok?w=1024&h=1024&rs=1&pid=ImgDetMain"
+          src="https://nhahangdimai.com/wp-content/uploads/2020/03/Banner__.jpg"
           alt="Second slide"
         />
 
         <Carousel.Caption>
-          <h3>Second slide label</h3>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+          <h3 className='text-white '>Nhà hàng B - Hương vị truyền thống</h3>
+          <p className='text-white '>"Với các món ăn đậm chất truyền thống và không gian ấm cúng, chúng tôi cam kết mang đến cho bạn những bữa ăn ngon miệng và những trải nghiệm đáng nhớ.</p>
         </Carousel.Caption>
       </Carousel.Item>
       <Carousel.Item>
         <img
          className="d-block w-100"
-          src="https://th.bing.com/th/id/OIG1.oOh9_x95wC9RQDOSIz_q?pid=ImgGn"
+          src="https://images.pexels.com/photos/260922/pexels-photo-260922.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
           alt="Third slide"
         />
 

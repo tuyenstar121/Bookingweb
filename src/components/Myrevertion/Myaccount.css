@@ -3,7 +3,11 @@
 .container {
   padding: 45px;
 }
-
+/* .list-group-item {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+} */
 .text-center {
   text-align: center;
 }

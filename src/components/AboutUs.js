@@ -1,5 +1,5 @@
 import React from 'react';
-import '../style/Aboutus.css';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
@@ -11,15 +11,15 @@ const AboutUs = () => {
       <div class="row">
         <div class="col-md-6">
           <div class="image">
-            <img src="https://codingcirculate-restaurant-design.on.fleek.co/static/media/about-img.b50db0fa2bfd668b3a06" alt="" />
+            <img src="http://giadinh.mediacdn.vn/2019/8/27/photo-1-15668719453831804208086.jpg" alt="" />
           </div>
         </div>
         <div class="col-md-6">
           <div class="content">
-            <h1 class="heading">
-              <span>about</span> us
-            </h1>
-            <h3>what makes our food special?</h3>
+          <h1 className="text-4xl font-bold mb-4">
+                <span className="text-green-500">about</span> us
+              </h1>
+            <h4 className="text-green-500">what makes our food special?</h4>
             <p>
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus qui ea ullam, enim tempora ipsum
               fuga alias quae ratione a officiis id temporibus autem? Quod nemo facilis cupiditate. Ex, vel?

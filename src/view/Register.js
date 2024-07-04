@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Axios from "axios";
-import "../style/register.css";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -21,14 +20,12 @@ const Register = () => {
       [e.target.name]: e.target.value,
     });
 
-    // Check if passwords match when typing
     if (e.target.name === "confirmpwd") {
       setPasswordMismatch(e.target.value !== formData.password);
     }
   };
 
   const handleRegister = async (e) => {
-  
     e.preventDefault();
 
     if (passwordMismatch) {
@@ -42,109 +39,119 @@ const Register = () => {
         password: formData.password,
         mobile: formData.mobile,
         address: formData.address,
-        d: formData.dob,
+        dob: formData.dob,
         email: formData.email,
-        role: 'user',
+        role: "user",
       });
 
       console.log("Registration successful:", response.data);
-      // You can redirect the user to a success page or show a success message
+      // Redirect or show success message
     } catch (error) {
       console.error("Registration failed:", error.response.data);
-      // You can display an error message to the user
+      // Display error message to user
     }
   };
 
   return (
-
-    <div className="background">
-      <div className="home">
-      <h2>Register</h2>
-      
-      <form onSubmit={handleRegister} className="form-grid">
-        <div className="form-group">
-          <label>Username:</label>
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            placeholder="Username"
-          />
-        </div>
-        <div className="form-group">
-          <label>Password:</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            placeholder="Password"
-          />
-        </div>
-        <div className="form-group">
-          <label>Confirm Password:</label>
-          <input
-            type="password"
-            name="confirmpwd"
-            value={formData.confirmpwd}
-            onChange={handleChange}
-            placeholder="Confirm Password"
-          />
-          {passwordMismatch && <p className="error-message">Passwords do not match</p>}
-        </div>
-      <div className="form-group">
-        <label>Mobile Number:</label>
-        <input
-          type="text"
-          name="mobile"
-          value={formData.mobile}
-          onChange={handleChange}
-          placeholder="Mobile Number"
-        />
-      </div>
-      <div className="form-group">
-        <label>Address:</label>
-        <input
-          type="text"
-          name="address"
-          value={formData.address}
-          onChange={handleChange}
-          placeholder="Address"
-        />
-      </div>
-      <div className="form-group">
-        <label>Date of Birth:</label>
-        <input
-          type="date"
-          name="dob"
-          value={formData.dob}
-          onChange={handleChange}
-        />
-      </div>
-      <div className="form-group">
-        <label>Email:</label>
-        <input
-          type="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          placeholder="Email"
-        />
-      </div>
-
+    <div className="flex justify-center items-center h-screen">
+      <div className="w-full max-w-md p-8 bg-gray-100 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-semibold text-center mb-6">Đăng ký</h2>
+        <form onSubmit={handleRegister}>
+          <div className="mb-4">
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+              Tên đăng nhập:
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              placeholder="Tên đăng nhập"
+              className="mt-1 block w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              Mật khẩu:
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Mật khẩu"
+              className="mt-1 block w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label htmlFor="confirmpwd" className="block text-sm font-medium text-gray-700">
+              Xác nhận mật khẩu:
+            </label>
+            <input
+              type="password"
+              id="confirmpwd"
+              name="confirmpwd"
+              value={formData.confirmpwd}
+              onChange={handleChange}
+              placeholder="Xác nhận mật khẩu"
+              className={`mt-1 block w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 ${
+                passwordMismatch ? "border-red-500" : ""
+              }`}
+              required
+            />
+            {passwordMismatch && (
+              <p className="text-red-500 text-xs mt-1">Mật khẩu không khớp</p>
+            )}
+          </div>
+          <div className="mb-4">
+            <label htmlFor="mobile" className="block text-sm font-medium text-gray-700">
+              Số điện thoại:
+            </label>
+            <input
+              type="text"
+              id="mobile"
+              name="mobile"
+              value={formData.mobile}
+              onChange={handleChange}
+              placeholder="Số điện thoại"
+              className="mt-1 block w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500"
+            />
+          </div>
    
-   
-    
-    </form>
-    <div className="buton">
-    <button type="submit" onClick={handleRegister}>Register</button>
-
-      <a href="/login">Sign in</a>
-</div>
-</div>
-  </div>
-);
-  }
+          <div className="mb-6">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              Email:
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Email"
+              className="mt-1 block w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500"
+              required
+            />
+          </div>
+          <div className="flex justify-between items-center">
+            <button
+              type="submit"
+              className="bg-yellow-500 text-white px-4 py-2 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
+            >
+              Đăng ký
+            </button>
+            <a href="/login" className="text-sm text-gray-600 hover:underline">
+              Đã có tài khoản? Đăng nhập
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
 
 export default Register;

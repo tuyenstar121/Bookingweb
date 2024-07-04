@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import './form.css';
+import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const ReservationForm = () => {
+const ReservationForm = ({ loggedInUser }) => {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -11,7 +13,7 @@ const ReservationForm = () => {
     notes: '',
   });
 
-  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedUserId = Cookies.get('userId');
@@ -20,13 +22,12 @@ const ReservationForm = () => {
       axios.get(`http://localhost:8080/api/users/id/${storedUserId}`)
         .then(response => {
           const user = response.data;
-          setUser(user);
-          setFormData((prevData) => ({
-            ...prevData,
+          setFormData({
             name: user.username,
             phone: user.phone,
             email: user.email,
-          }));
+            notes: '',
+          });
         })
         .catch(error => {
           console.error('Error fetching user:', error);
@@ -36,72 +37,84 @@ const ReservationForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormData(prevData => ({
+      ...prevData,
       [name]: value,
-    });
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!formData.name || !formData.phone || !formData.email) {
+      toast.error('Vui lòng điền đầy đủ các trường bắt buộc');
+      return;
+    }
+
     console.log('Form submitted:', formData);
+    toast.success('Đã gửi biểu mẫu thành công!');
+    // Add your form submission logic here (e.g., send data to server)
   };
 
   return (
-    <form onSubmit={handleSubmit} className="form">
-      <h3>Thông tin người đặt</h3>
-      <div className="form-group">
-        <label htmlFor="name">Tên liên lạc <span className="required">*</span></label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          placeholder="Nhập tên liên hệ"
-          className="input"
-          required
-        />
-      </div>
-      <div className="form-group">
-        <label htmlFor="phone">Số điện thoại <span className="required">*</span></label>
-        <input
-          type="text"
-          id="phone"
-          name="phone"
-          value={formData.phone}
-          onChange={handleChange}
-          placeholder="Nhập số điện thoại"
-          className="input"
-          required
-        />
-      </div>
-      <div className="form-group">
-        <label htmlFor="email">Email <span className="required">*</span></label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          placeholder="Nhập Email"
-          className="input"
-          required
-        />
-      </div>
-      <div className="form-group">
-        <label htmlFor="notes">Ghi chú</label>
-        <textarea
-          id="notes"
-          name="notes"
-          value={formData.notes}
-          onChange={handleChange}
-          placeholder="Nhập ghi chú"
-          className="textarea"
-        />
-      </div>
-
-    </form>
+    <div className="bg-gray-50 p-4 rounded-lg">
+      <h2 className="text-lg font-semibold mb-4">Thông Tin Người Đặt</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="mb-4">
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700">Tên liên lạc <span className="text-red-500">*</span></label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm p-2"
+            placeholder="Nhập tên liên hệ"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Số điện thoại <span className="text-red-500">*</span></label>
+          <input
+            type="text"
+            id="phone"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm p-2"
+            placeholder="Nhập số điện thoại"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email <span className="text-red-500">*</span></label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm p-2"
+            placeholder="Nhập Email"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="notes" className="block text-sm font-medium text-gray-700">Ghi chú</label>
+          <textarea
+            id="notes"
+            name="notes"
+            value={formData.notes}
+            onChange={handleChange}
+            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm p-2"
+            placeholder="Nhập ghi chú"
+          />
+        </div>
+        <button type="submit" className="bg-yellow-500 text-white py-2 px-4 rounded-md hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+          Cập nhật
+        </button>
+      </form>
+      <ToastContainer />
+    </div>
   );
 };
 
