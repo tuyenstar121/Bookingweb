@@ -1,0 +1,31 @@
+/* Reset default margin and padding */
+body, h1, h2, h3, h4, h5, h6, p, ul, ol {
+  margin: 0;
+  padding: 0;
+}
+
+/* Set body height to fill the viewport */
+
+
+
+/* Define header style */
+header {
+  height: 60px; /* Set header height */
+  background-color: #ffffff; /* Set background color */
+  color: rgb(65, 20, 20); /* Set text color */
+}
+
+/* Define footer style */
+footer {
+  height: 40px; /* Set footer height */
+  background-color: #333; /* Set background color */
+  color: white; /* Set text color */
+}
+a{
+  color: #ffffff;
+  text-decoration: initial;
+}
+/* Define main content style */
+
+/* Example of styling individual elements within main content */
+

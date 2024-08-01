@@ -1,0 +1,109 @@
+.MainDash {
+    width: calc(100% - 100px);
+    padding: 20px;
+    padding-top: 30px;
+    display: grid;
+}
+.MainDash.a{
+    text-decoration: inherit;
+}
+.admin-container {
+    width: 100%;
+    height: calc(100% - 45px);
+    display: flex;
+}
+
+.admin-top {
+    display: block;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    backdrop-filter: blur(20px);
+    border-radius: 20px; /* /* Keeps it displayed as block */
+}
+#restaurant{
+    max-width: 11.5rem;
+}
+.control-buttons {
+    margin-top: 10px;
+    border-radius: 10px;
+    display: flex;
+    background-color: rgba(177, 172, 172, 0.019);
+    justify-content: space-between;
+    position: sticky;
+    right: 0;
+    padding: 10px;
+    z-index: 100;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    align-content: flex-end;
+  }
+  
+.control-buttons button{
+    margin-top  : 20px;
+}
+.container {
+    overflow-y: auto;
+    width: 1200px;
+    height: calc(100% - 30px); /* Adjust height to account for admin-top */
+    margin-top: -30px; /* Compensate for the height of admin-top */
+    padding-top: 30px; 
+}
+
+/* Hide scrollbar for WebKit browsers (Chrome, Safari) */
+.container::-webkit-scrollbar {
+    display: none;
+}
+
+.admin {
+    color: var(--black);
+    background: linear-gradient(
+        106.37deg,
+        #ffe1bc 29.63%,
+        #ffcfd1 51.55%,
+        #f3c6f1 90.85%
+    );
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+}
+
+.admin-main {
+    display: flex;
+    float: right;
+    min-height: 100vh;
+    height: 100%;
+    overflow: auto;
+    position: relative;
+    max-height: 100%;
+    width: 100%;
+    max-width: 100%;
+    -webkit-transition: all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1);
+    transition: all 0.33s cubic-bezier(0.685, 0.0473, 0.346, 1);
+    transition-duration: .2s, .2s, .35s;
+    transition-property: top, bottom, width;
+    transition-timing-function: linear, linear, ease;
+    flex-direction: column;
+}
+
+.Cards {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+}
+
+@media screen and (max-width: 1200px) {
+    .MainDash {
+        justify-content: flex-start;
+        margin-top: 2rem;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .MainDash {
+        align-items: center;
+    }
+}

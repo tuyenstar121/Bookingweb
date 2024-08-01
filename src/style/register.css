@@ -1,0 +1,66 @@
+/* register.css */
+.register-container {
+  display:  flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+   margin: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+      width: 1000px;
+
+  }
+  
+  .register-container h2 {
+    margin-bottom: 10px;
+  }
+  
+  .register-container label {
+    margin-bottom: 0.5rem;
+    color: #fff;
+    display: inline-block;
+  }
+  
+  .register-container input {
+    width: 80%;
+    padding: 8px;
+
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  .register-container .form-grid{
+    width: 80%;
+  }
+  .register-container button {
+    padding: 8px 16px;
+    background-color: #ffc107;;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    width: 100%;
+    margin: 0 auto;
+    
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Create a two-column grid */
+    gap: 10px; /* Add spacing between form rows */
+    backdrop-filter: blur(20px);
+  }
+  
+  
+  .buton{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px; 
+  }
+  .register-container button:hover {
+    background-color: #eafb00;
+  }
+  
