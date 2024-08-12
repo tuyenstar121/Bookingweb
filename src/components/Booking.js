@@ -32,8 +32,11 @@ const ReservationForm = ({ loggedInUser }) => {
 
   useEffect(() => {
     const storedUserId = Cookies.get('userId');
-    if (storedUserId) {
-      axios.get(`http://localhost:8080/api/users/id/${storedUserId}`)
+    const token = Cookies.get('token');
+    if (storedUserId && token) {
+      axios.get(`http://localhost:8080/api/users/id/${storedUserId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
         .then(response => {
           const user = response.data;
           setUser(user);
@@ -56,8 +59,11 @@ const ReservationForm = ({ loggedInUser }) => {
   }, []);
 
   const fetchTablesByRestaurant = async (restaurantId) => {
+    const token = Cookies.get('token');
     try {
-      const response = await axios.get(`http://localhost:8080/tables/by-restaurant/${restaurantId}`);
+      const response = await axios.get(`http://localhost:8080/tables/by-restaurant/${restaurantId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       const tablesWithStatus = response.data.map((table) => ({
         ...table,
         status: table.status.toLowerCase(),
@@ -71,8 +77,11 @@ const ReservationForm = ({ loggedInUser }) => {
   };
 
   const fetchRestaurants = async () => {
+    const token = Cookies.get('token');
     try {
-      const response = await axios.get('http://localhost:8080/restaurants');
+      const response = await axios.get('http://localhost:8080/restaurants', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setRestaurants(response.data);
     } catch (error) {
       console.error('Error fetching restaurants:', error);
@@ -123,8 +132,11 @@ const ReservationForm = ({ loggedInUser }) => {
       numberOfGuests: adults + children
     };
 
+    const token = Cookies.get('token');
     try {
-      const response = await axios.post('http://localhost:8080/api/reservations/book', requestData);
+      const response = await axios.post('http://localhost:8080/api/reservations/book', requestData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       const reservationId = response.data;
       toast.success('Reservation booked successfully');
       console.log('Reservation ID:', reservationId);
@@ -150,9 +162,12 @@ const ReservationForm = ({ loggedInUser }) => {
       quantity: item.quantity
     }));
 
+    const token = Cookies.get('token');
     try {
       await Promise.all(itemsToAdd.map(async (item) => {
-        await axios.post('http://localhost:8080/api/order-food-mapping/select-food-item', item);
+        await axios.post('http://localhost:8080/api/order-food-mapping/select-food-item', item, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
       }));
 
       toast.success('Additional items added successfully');

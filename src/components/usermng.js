@@ -1,23 +1,37 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./Table.css";
 import {
- 
   TextField,
-
 } from "@mui/material";
+import Cookies from 'js-cookie';
+
 export default function UserManagementTable() {
   const [users, setUsers] = useState([]);
   const [editUser, setEditUser] = useState(null);
   const [deleteUser, setDeleteUser] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
+  const [error, setError] = useState(null);
 
   const fetchUsers = useCallback(async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/users");
+      const token = Cookies.get('token');
+      if (!token) {
+        throw new Error('No JWT token found');
+      }
+
+      const response = await fetch("http://localhost:8080/api/users", {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
       const data = await response.json();
       setUsers(data);
     } catch (error) {
       console.error("Error fetching user data:", error);
+      setError("Failed to fetch user data.");
     }
   }, []);
 
@@ -42,45 +56,62 @@ export default function UserManagementTable() {
 
   const handleEditSubmit = async () => {
     try {
+      const token = Cookies.get('token');
+      if (!token) {
+        throw new Error('No JWT token found');
+      }
+
       const response = await fetch(`http://localhost:8080/api/users/${editUser.userId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(editUser),
       });
 
       if (response.ok) {
-        fetchUsers(); // Fetch updated user data
+        fetchUsers();
         handleDialogClose();
       } else {
-        console.error("Error updating user:", response.statusText);
+        throw new Error('Error updating user');
       }
     } catch (error) {
       console.error("Error updating user:", error);
+      setError("Failed to update user.");
     }
   };
 
   const handleDeleteConfirm = async () => {
     try {
+      const token = Cookies.get('token');
+      if (!token) {
+        throw new Error('No JWT token found');
+      }
+
       const response = await fetch(`http://localhost:8080/api/users/${deleteUser.userId}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
 
       if (response.ok) {
-        fetchUsers(); // Fetch updated user data
+        fetchUsers();
         handleDialogClose();
       } else {
-        console.error("Error deleting user:", response.statusText);
+        throw new Error('Error deleting user');
       }
     } catch (error) {
       console.error("Error deleting user:", error);
+      setError("Failed to delete user.");
     }
   };
 
   return (
     <div className="container mx-auto mt-4">
       <h3 className="text-2xl font-bold">User Management</h3>
+      {error && <p className="text-red-500">{error}</p>}
       <div className="overflow-x-auto mt-4">
         <table className="min-w-full bg-white">
           <thead>
@@ -89,8 +120,8 @@ export default function UserManagementTable() {
               <th className="py-2 px-4 border-b">Phone Number</th>
               <th className="py-2 px-4 border-b">Email</th>
               <th className="py-2 px-4 border-b">Role</th>
-              <th className="py-2 px-4 border-b">Address</th>
-              <th className="py-2 px-4 border-b">Birth Date</th>
+              <th className="py-2 px-4 border-b">Image</th>
+              <th className="py-2 px-4 border-b">Date of Birth</th>
               <th className="py-2 px-4 border-b">Gender</th>
               <th className="py-2 px-4 border-b">Actions</th>
             </tr>
@@ -102,7 +133,17 @@ export default function UserManagementTable() {
                 <td className="py-2 px-4 border-b">{user.phone}</td>
                 <td className="py-2 px-4 border-b">{user.email}</td>
                 <td className="py-2 px-4 border-b">{user.role}</td>
-                <td className="py-2 px-4 border-b">{user.address}</td>
+                <td className="py-2 px-4 border-b">
+                  <img
+                    src={user.img}
+                    alt={user.username}
+                    style={{
+                      width: "100px",
+                      height: "100px",
+                      objectFit: "cover"
+                    }}
+                  />
+                </td>
                 <td className="py-2 px-4 border-b">{user.dateOfBirth}</td>
                 <td className="py-2 px-4 border-b">{user.gender}</td>
                 <td className="py-2 px-4 border-b">
@@ -124,7 +165,6 @@ export default function UserManagementTable() {
           </tbody>
         </table>
       </div>
-      {/* Edit/Delete User Dialog */}
       {openDialog && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
           <div className="bg-white p-4 rounded-lg max-w-md w-full">
@@ -169,18 +209,20 @@ export default function UserManagementTable() {
                     </select>
                   </div>
                   <TextField
-                    label="Address"
-                    value={editUser.address}
-                    onChange={(e) => setEditUser({ ...editUser, address: e.target.value })}
+                    label="Image URL"
+                    value={editUser.img}
+                    onChange={(e) => setEditUser({ ...editUser, img: e.target.value })}
                     fullWidth
                     className="mb-3"
                   />
                   <TextField
-                    label="Birth Date"
+                    label="Date of Birth"
+                    type="date"
                     value={editUser.dateOfBirth}
                     onChange={(e) => setEditUser({ ...editUser, dateOfBirth: e.target.value })}
                     fullWidth
                     className="mb-3"
+                    InputLabelProps={{ shrink: true }}
                   />
                   <div className="mb-3">
                     <label className="block mb-2">Gender</label>

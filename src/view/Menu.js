@@ -20,16 +20,9 @@ const Menu = () => {
   useEffect(() => {
     const fetchMenuItems = async () => {
       try {
-        const token = Cookies.get('token'); // Lấy mã thông báo JWT từ cookie
-        if (!token) {
-          throw new Error('No JWT token found');
-        }
+       
 
-        const response = await axios.get('http://localhost:8080/api/food/all', {
-          headers: {
-            Authorization: `Bearer ${token}` // Thêm tiêu đề Authorization với mã thông báo JWT
-          }
-        });
+        const response = await axios.get('http://localhost:8080/api/food/all');
 
         const items = response.data;
 
@@ -155,7 +148,7 @@ const Menu = () => {
                             <img src={item.img} alt={item.name} className="w-16 h-16 mr-4"/>
                           <p className="font-semibold">{item.name}</p>
                         </div>
-                        <p>{item.price} $</p>
+                        <p>{item.price} VND</p>
                       </div>
                       <div className="flex items-center justify-between mt-2">
                         <div className="flex items-center">
@@ -173,7 +166,7 @@ const Menu = () => {
                             +
                           </button>
                         </div>
-                        <div>{item.price * item.quantity} $</div>
+                        <div>{item.price * item.quantity} VND</div>
                       </div>
                       <div className="mt-2">
                         <textarea
@@ -188,7 +181,7 @@ const Menu = () => {
                 </ul>
                 <div className="flex justify-between items-center mt-4">
                   <span className="font-semibold">Tổng số tiền ({cart.length} sản phẩm):</span>
-                  <span className="text-red-500 font-bold">{totalAmount} $</span>
+                  <span className="text-red-500 font-bold">{totalAmount} VND</span>
                 </div>
                 <button
                   className="mt-4 bg-red-500 text-white px-3 py-1 rounded"

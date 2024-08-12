@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Cookies from "js-cookie";
 import {
   Table,
   TableBody,
@@ -40,25 +41,27 @@ function ReservationManagementTable() {
   useEffect(() => {
     fetchReservations();
   }, [selectedRestaurant, sortBy, filterStatus]);
-
   const fetchReservations = async () => {
     let url = "http://localhost:8080/api/reservations/list";
     if (selectedRestaurant) {
       url = `http://localhost:8080/api/reservations/by-restaurant?restaurantId=${selectedRestaurant}`;
     }
-
+  
+    const token = Cookies.get('token');
     try {
-      const response = await axios.get(url);
+      const response = await axios.get(url, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       let updatedReservations = response.data;
-
+  
       if (sortBy === "date") {
-        updatedReservations.sort((a, b) => new Date(a.reservationDate) - new Date(b.reservationDate));
+        updatedReservations.sort((a, b) => new Date(b.reservationDate) - new Date(a.reservationDate));
       }
-
+  
       if (filterStatus) {
         updatedReservations = updatedReservations.filter(reservation => reservation.status === filterStatus);
       }
-
+  
       setReservations(updatedReservations);
     } catch (error) {
       console.error("There was an error fetching the reservations!", error);
@@ -67,8 +70,11 @@ function ReservationManagementTable() {
   };
 
   const fetchFoodItems = async (reservationId) => {
+    const token = Cookies.get('token');
     try {
-      const response = await axios.get(`http://localhost:8080/api/order-food-mapping/reservation/${reservationId}`);
+      const response = await axios.get(`http://localhost:8080/api/order-food-mapping/reservation/${reservationId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setFoodItems(response.data);
       setOpenDialog(true);
     } catch (error) {
@@ -86,8 +92,11 @@ function ReservationManagementTable() {
   };
 
   const handleApproveBooked = async (reservationId) => {
+    const token = Cookies.get('token');
     try {
-      const response = await axios.post(`http://localhost:8080/api/reservations/approve/${reservationId}`);
+      const response = await axios.post(`http://localhost:8080/api/reservations/approve/${reservationId}`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       const updatedReservations = reservations.map((res) =>
         res.reservationId === reservationId ? { ...res, status: "Confirmed" } : res
       );
@@ -100,8 +109,11 @@ function ReservationManagementTable() {
   };
 
   const handleCancelBooked = async (reservationId) => {
+    const token = Cookies.get('token');
     try {
-      const response = await axios.post(`http://localhost:8080/api/reservations/cancel/${reservationId}`);
+      const response = await axios.post(`http://localhost:8080/api/reservations/cancel/${reservationId}`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       const updatedReservations = reservations.map((res) =>
         res.reservationId === reservationId ? { ...res, status: "Cancelled" } : res
       );
@@ -114,8 +126,11 @@ function ReservationManagementTable() {
   };
 
   const handleApproveConfirmed = async (reservationId) => {
+    const token = Cookies.get('token');
     try {
-      const response = await axios.post(`http://localhost:8080/api/reservations/complete/${reservationId}`);
+      const response = await axios.post(`http://localhost:8080/api/reservations/complete/${reservationId}`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       const updatedReservations = reservations.map((res) =>
         res.reservationId === reservationId ? { ...res, status: "Completed" } : res
       );
@@ -130,7 +145,6 @@ function ReservationManagementTable() {
   const sortByDate = () => {
     setSortBy("date");
   };
-
   const resetTable = () => {
     setSelectedRestaurant("");
     setSortBy(null);
@@ -147,13 +161,12 @@ function ReservationManagementTable() {
     setOpenDialog(false);
     setFoodItems([]);
   };
-
   return (
     <div className="container">
       <Navbar
         onOpen={onOpen}
         logoText={'Horizon UI Dashboard PRO'}
-        brandText={'Main Dashboard'}
+        brandText={'Order'}
         secondary={'/admin'}
         fixed={fixed}
         {...rest}
@@ -242,7 +255,7 @@ function ReservationManagementTable() {
                         active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                         'block px-4 py-2 text-sm'
                       )}
-                      onClick={() => filterByStatus("Conpleted")}
+                      onClick={() => filterByStatus("Completed")}
                     >
                       Filter by Completed
                     </a>
@@ -323,7 +336,7 @@ function ReservationManagementTable() {
                 </TableCell>
                 <TableCell align="left">
                   <Button onClick={() => fetchFoodItems(reservation.reservationId)}>
-                    View Food Items
+                    View Order
                   </Button>
                 </TableCell>
               </TableRow>
@@ -343,6 +356,7 @@ function ReservationManagementTable() {
                     <th className="px-4 py-2 border-b">Description</th>
                     <th className="px-4 py-2 border-b">Price</th>
                     <th className="px-4 py-2 border-b">Quantity</th>
+                    <th className="px-4 py-2 border-b">Description</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -356,15 +370,16 @@ function ReservationManagementTable() {
                           className="w-24 h-24 object-cover rounded-md" 
                         />
                       </td>
-                      <td className="px-4 py-2 border-b">${food.foodItem.price}</td>
+                      <td className="px-4 py-2 border-b">{food.foodItem.price}VND</td>
                       <td className="px-4 py-2 border-b">{food.quantity}</td>
+                      <td className="px-4 py-2 border-b">{food.description}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
               <div className="flex justify-between p-4">
                 <span className="font-semibold">Total Price:</span>
-                <span className="font-semibold">${calculateTotalPrice()}</span>
+                <span className="font-semibold">{calculateTotalPrice()} VND</span>
               </div>
             </div>
           ) : (

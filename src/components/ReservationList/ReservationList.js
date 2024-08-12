@@ -6,7 +6,7 @@ import ReviewForm from '../ProductCard/ReviewForm';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import Cookies from 'js-cookie';
 const ReservationList = ({ reservations }) => {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [selectedReservation, setSelectedReservation] = useState(null);
@@ -39,26 +39,35 @@ const ReservationList = ({ reservations }) => {
 
   const handleReviewSubmit = (review) => {
     const { rating, comment } = review;
-
+  
     const reviewData = {
       reservationId: selectedReservation.reservationId,
       rating: rating,
-      comment: comment
+      comment: comment,
+      createdAt: new Date().toISOString(), // Add createdAt timestamp
+      updatedAt: new Date().toISOString(), // Add updatedAt timestamp
     };
-
-    axios.post('http://localhost:8080/api/reviews', reviewData)
-      .then(response => {
-        console.log('Review submitted successfully:', response.data);
-        setShowReviewForm(false);
-        setRating(0);
-        setComment('');
-        toast.success('Đã gửi đánh giá thành công!');
-      })
-      .catch(error => {
-        console.error('Error submitting review:', error);
-        toast.error('Đã xảy ra lỗi khi gửi đánh giá.');
-      });
+  
+    const token = Cookies.get('token'); // Assuming you're storing the token in cookies
+  
+    axios.post('http://localhost:8080/api/reviews', reviewData, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Include the token in the request headers
+      },
+    })
+    .then(response => {
+      console.log('Review submitted successfully:', response.data);
+      setShowReviewForm(false);
+      setRating(0);
+      setComment('');
+      toast.success('Đã gửi đánh giá thành công!');
+    })
+    .catch(error => {
+      console.error('Error submitting review:', error);
+      toast.error('Bạn đã gửi đánh giá trước đó.');
+    });
   };
+  
 
   return (
     <>
