@@ -76,6 +76,7 @@ function ReservationManagementTable() {
         headers: { Authorization: `Bearer ${token}` }
       });
       setFoodItems(response.data);
+      console.log(response.data);
       setOpenDialog(true);
     } catch (error) {
       console.error("There was an error fetching the food items!", error);

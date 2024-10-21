@@ -252,7 +252,7 @@ export default function UserManagementTable() {
                 <button className="bg-red-500 text-white px-4 py-2 rounded" onClick={handleDeleteConfirm}>
                   Delete
                 </button>
-              )}
+              )}  
             </div>
           </div>
         </div>

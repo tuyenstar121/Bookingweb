@@ -2,7 +2,7 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import { jwtDecode } from 'jwt-decode';
-import { toast } from 'react-toastify';
+import { toast } from 'react-toastify'; 
 const ProtectedRoute = ({ component: Component, requiredRole, ...rest }) => {
   const token = Cookies.get('token');
 

@@ -22,7 +22,7 @@ import ForgotPasswordForm from './Forgetpass';
 import ResetPasswordForm from './resetpass';
 import { CartProvider } from '../components/ProductCard/CartProvider';
 import ProtectedRoute from '../components/ProtectedRoute/ProtectedRoute';
-
+import ChatBox from '../components/chatbox';
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
 
@@ -62,6 +62,7 @@ function App() {
             <Route path="/forgetpass" element={<ForgotPasswordForm />} />
             <Route path="/resetpass" element={<ResetPasswordForm />} />
           </Routes>
+          <ChatBox />
         </CartProvider>
       </UserProvider>
     </BrowserRouter>
