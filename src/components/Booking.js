@@ -239,7 +239,7 @@ const ReservationForm = ({ loggedInUser }) => {
                 <label className="block text-sm font-medium text-gray-700">Choose Restaurant:</label>
                 <DropdownButton
                   id="dropdown-basic-button"
-                  title="Select Restaurant"
+                  title="Chọn nhà hàng"
                   className="mt-1 block w-full"
                   onSelect={handleRestaurantSelect}
                 >

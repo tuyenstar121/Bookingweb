@@ -46,26 +46,26 @@ function ReservationManagementTable() {
     if (selectedRestaurant) {
       url = `http://localhost:8080/api/reservations/by-restaurant?restaurantId=${selectedRestaurant}`;
     }
-  
+
     const token = Cookies.get('token');
     try {
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` }
       });
       let updatedReservations = response.data;
-  
+
       if (sortBy === "date") {
         updatedReservations.sort((a, b) => new Date(b.reservationDate) - new Date(a.reservationDate));
       }
-  
+
       if (filterStatus) {
         updatedReservations = updatedReservations.filter(reservation => reservation.status === filterStatus);
       }
-  
+
       setReservations(updatedReservations);
     } catch (error) {
-      console.error("There was an error fetching the reservations!", error);
-      setError("There was an error fetching the reservations.");
+      console.error("Đã xảy ra lỗi khi tìm nạp thông tin đặt chỗ!", error);
+      setError("Đã xảy ra lỗi khi tìm nạp thông tin đặt chỗ.");
     }
   };
 
@@ -79,8 +79,8 @@ function ReservationManagementTable() {
       console.log(response.data);
       setOpenDialog(true);
     } catch (error) {
-      console.error("There was an error fetching the food items!", error);
-      setError("There was an error fetching the food items.");
+      console.error("Đã xảy ra lỗi khi tìm nạp các mặt hàng thực phẩm!", error);
+      setError("Đã xảy ra lỗi khi tìm nạp các mặt hàng thực phẩm!");
     }
   };
 
@@ -104,8 +104,8 @@ function ReservationManagementTable() {
       setReservations(updatedReservations);
       alert(response.data);
     } catch (error) {
-      console.error("There was an error approving the reservation!", error);
-      setError("There was an error approving the reservation.");
+      console.error("Đã xảy ra lỗi khi phê duyệt yêu cầu đặt chỗ!", error);
+      setError("Đã xảy ra lỗi khi phê duyệt yêu cầu đặt chỗ.");
     }
   };
 
@@ -121,8 +121,8 @@ function ReservationManagementTable() {
       setReservations(updatedReservations);
       alert(response.data);
     } catch (error) {
-      console.error("There was an error cancelling the reservation!", error);
-      setError("There was an error cancelling the reservation.");
+      console.error("Đã xảy ra lỗi khi hủy đặt chỗ!", error);
+      setError("Đã xảy ra lỗi khi hủy đặt chỗ.");
     }
   };
 
@@ -138,8 +138,8 @@ function ReservationManagementTable() {
       setReservations(updatedReservations);
       alert(response.data);
     } catch (error) {
-      console.error("There was an error completing the reservation!", error);
-      setError("There was an error completing the reservation.");
+      console.error("Đã xảy ra lỗi khi hoàn tất đặt chỗ!", error);
+      setError("Đã xảy ra lỗi khi hoàn tất đặt chỗ.");
     }
   };
 
@@ -180,7 +180,7 @@ function ReservationManagementTable() {
           />
           <Menu as="div" className="relative inline-block text-left">
             <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-              Options
+              Sắp xếp
               <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
             </MenuButton>
             <Transition
@@ -202,7 +202,7 @@ function ReservationManagementTable() {
                       )}
                       onClick={() => sortByDate()}
                     >
-                      Sort by Date
+                      Sắp xếp theo ngày
                     </a>
                   )}
                 </MenuItem>
@@ -216,7 +216,8 @@ function ReservationManagementTable() {
                       )}
                       onClick={() => filterByStatus("Confirmed")}
                     >
-                      Filter by Confirmed
+
+                      Lọc theo Đã xác nhận
                     </a>
                   )}
                 </MenuItem>
@@ -230,7 +231,7 @@ function ReservationManagementTable() {
                       )}
                       onClick={() => filterByStatus("Cancelled")}
                     >
-                      Filter by Cancelled
+                      Sắp xếp theo đã hủy
                     </a>
                   )}
                 </MenuItem>
@@ -244,7 +245,7 @@ function ReservationManagementTable() {
                       )}
                       onClick={() => filterByStatus("Booked")}
                     >
-                      Filter by Booked
+                      Sắp xếp theo đã đặt
                     </a>
                   )}
                 </MenuItem>
@@ -258,7 +259,7 @@ function ReservationManagementTable() {
                       )}
                       onClick={() => filterByStatus("Completed")}
                     >
-                      Filter by Completed
+                      Sắp xếp theo đã hoàn thành
                     </a>
                   )}
                 </MenuItem>
@@ -272,7 +273,7 @@ function ReservationManagementTable() {
                         'block w-full px-4 py-2 text-left text-sm'
                       )}
                     >
-                      See all
+                      Xem tất cả
                     </button>
                   )}
                 </MenuItem>
@@ -288,17 +289,17 @@ function ReservationManagementTable() {
           <TableHead>
             <TableRow>
               <TableCell>STT</TableCell>
-              <TableCell>Code</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell align="left">Date</TableCell>
-              <TableCell align="left">Time</TableCell>
-              <TableCell align="left">Guests</TableCell>
-              <TableCell align="left">Phone Number</TableCell>
-              <TableCell align="left">Restaurant Name</TableCell>
-              <TableCell align="left">Table Number</TableCell>
-              <TableCell align="left">Status</TableCell>
-              <TableCell align="left">Actions</TableCell>
-              <TableCell align="left">Food Items</TableCell>
+              <TableCell>Mã</TableCell>
+              <TableCell>Tên</TableCell>
+              <TableCell align="left">Ngày</TableCell>
+              <TableCell align="left">Giờ</TableCell>
+              <TableCell align="left">Số Khách</TableCell>
+              <TableCell align="left">Số Điện Thoại</TableCell>
+              <TableCell align="left">Tên Nhà Hàng</TableCell>
+              <TableCell align="left">Số Bàn</TableCell>
+              <TableCell align="left">Trạng Thái</TableCell>
+              <TableCell align="left">Hành Động</TableCell>
+              <TableCell align="left">Món Ăn</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -337,7 +338,7 @@ function ReservationManagementTable() {
                 </TableCell>
                 <TableCell align="left">
                   <Button onClick={() => fetchFoodItems(reservation.reservationId)}>
-                    View Order
+                    Xem chi tiết
                   </Button>
                 </TableCell>
               </TableRow>
@@ -346,18 +347,18 @@ function ReservationManagementTable() {
         </Table>
       </TableContainer>
       <Dialog open={openDialog} onClose={handleDialogClose}>
-        <DialogTitle className="text-xl font-semibold">Food Items</DialogTitle>
+        <DialogTitle className="text-xl font-semibold">Chi tiết</DialogTitle>
         <DialogContent>
           {foodItems.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="min-w-full bg-white border border-gray-200">
                 <thead>
                   <tr>
-                    <th className="px-4 py-2 border-b">Name</th>
-                    <th className="px-4 py-2 border-b">Description</th>
-                    <th className="px-4 py-2 border-b">Price</th>
-                    <th className="px-4 py-2 border-b">Quantity</th>
-                    <th className="px-4 py-2 border-b">Description</th>
+                    <th className="px-4 py-2 border-b">Tên </th>
+                    <th className="px-4 py-2 border-b">Mô tả</th>
+                    <th className="px-4 py-2 border-b">Giá</th>
+                    <th className="px-4 py-2 border-b">Số lượng</th>
+                    <th className="px-4 py-2 border-b">Mô tả</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -365,10 +366,10 @@ function ReservationManagementTable() {
                     <tr key={index} className="hover:bg-gray-100">
                       <td className="px-4 py-2 border-b">{food.foodItem.name}</td>
                       <td className="px-4 py-2 border-b">
-                        <img 
-                          src={food.foodItem.img} 
-                          alt={food.foodItem.name} 
-                          className="w-24 h-24 object-cover rounded-md" 
+                        <img
+                          src={food.foodItem.img}
+                          alt={food.foodItem.name}
+                          className="w-24 h-24 object-cover rounded-md"
                         />
                       </td>
                       <td className="px-4 py-2 border-b">{food.foodItem.price}VND</td>
@@ -379,12 +380,12 @@ function ReservationManagementTable() {
                 </tbody>
               </table>
               <div className="flex justify-between p-4">
-                <span className="font-semibold">Total Price:</span>
+                <span className="font-semibold">Tổng giá:</span>
                 <span className="font-semibold">{calculateTotalPrice()} VND</span>
               </div>
             </div>
           ) : (
-            <p className="text-gray-500">No food items found for this reservation.</p>
+            <p className="text-gray-500">Không tìm thấy món ăn nào cho đặt chỗ này.</p>
           )}
         </DialogContent>
         <DialogActions>

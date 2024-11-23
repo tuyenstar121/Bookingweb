@@ -48,7 +48,7 @@ const RestaurantSelector = ({ selectedRestaurant, setSelectedRestaurant }) => {
   return (
     <div className="flex items-center space-x-4 mb-5">
       <label htmlFor="restaurant" className="block text-sm font-medium text-gray-700">
-        Select Restaurant: 
+        Chọn nhà hàng:
       </label>
       <div className="relative inline-block w-64">
         <button
@@ -56,22 +56,20 @@ const RestaurantSelector = ({ selectedRestaurant, setSelectedRestaurant }) => {
           className="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           onClick={() => setIsOpen(!isOpen)}
         >
-          {restaurants.find(r => r.restaurantId === selectedRestaurant)?.name || "Select Restaurant"}
+          {restaurants.find(r => r.restaurantId === selectedRestaurant)?.name || "Chọn nhà hàng"}
         </button>
         {isOpen && (
           <ul className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
             {restaurants.map((restaurant) => (
               <li
                 key={restaurant.restaurantId}
-                className={`cursor-pointer select-none relative py-2 pl-10 pr-4 ${
-                  selectedRestaurant === restaurant.restaurantId ? "text-white bg-indigo-600" : "text-gray-900"
-                }`}
+                className={`cursor-pointer select-none relative py-2 pl-10 pr-4 ${selectedRestaurant === restaurant.restaurantId ? "text-white bg-indigo-600" : "text-gray-900"
+                  }`}
                 onClick={() => handleSelect(restaurant.restaurantId)}
               >
                 <span
-                  className={`block truncate ${
-                    selectedRestaurant === restaurant.restaurantId ? "font-semibold" : "font-normal"
-                  }`}
+                  className={`block truncate ${selectedRestaurant === restaurant.restaurantId ? "font-semibold" : "font-normal"
+                    }`}
                 >
                   {restaurant.name}
                 </span>

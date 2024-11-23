@@ -110,20 +110,20 @@ export default function UserManagementTable() {
 
   return (
     <div className="container mx-auto mt-4">
-      <h3 className="text-2xl font-bold">User Management</h3>
+      <h3 className="text-2xl font-bold">Quản lý người dùng</h3>
       {error && <p className="text-red-500">{error}</p>}
       <div className="overflow-x-auto mt-4">
         <table className="min-w-full bg-white">
           <thead>
             <tr>
-              <th className="py-2 px-4 border-b">Name</th>
-              <th className="py-2 px-4 border-b">Phone Number</th>
+              <th className="py-2 px-4 border-b">Tên</th>
+              <th className="py-2 px-4 border-b">SĐT</th>
               <th className="py-2 px-4 border-b">Email</th>
-              <th className="py-2 px-4 border-b">Role</th>
-              <th className="py-2 px-4 border-b">Image</th>
-              <th className="py-2 px-4 border-b">Date of Birth</th>
-              <th className="py-2 px-4 border-b">Gender</th>
-              <th className="py-2 px-4 border-b">Actions</th>
+              <th className="py-2 px-4 border-b">Quyền</th>
+              <th className="py-2 px-4 border-b">Ảnh</th>
+              <th className="py-2 px-4 border-b">Ngày sinh</th>
+              <th className="py-2 px-4 border-b">Giới tính</th>
+              <th className="py-2 px-4 border-b">Hành động</th>
             </tr>
           </thead>
           <tbody>
@@ -151,13 +151,13 @@ export default function UserManagementTable() {
                     className="bg-blue-500 text-white px-3 py-1 rounded mr-2"
                     onClick={() => handleDialogOpen(user, "edit")}
                   >
-                    Edit
+                    Sửa
                   </button>
                   <button
                     className="bg-red-500 text-white px-3 py-1 rounded"
                     onClick={() => handleDialogOpen(user, "delete")}
                   >
-                    Delete
+                    Xóa
                   </button>
                 </td>
               </tr>
@@ -252,7 +252,7 @@ export default function UserManagementTable() {
                 <button className="bg-red-500 text-white px-4 py-2 rounded" onClick={handleDeleteConfirm}>
                   Delete
                 </button>
-              )}  
+              )}
             </div>
           </div>
         </div>

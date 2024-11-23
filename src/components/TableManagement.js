@@ -12,7 +12,7 @@ export default function TableManagement() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editTable, setEditTable] = useState(null);
   const [newTable, setNewTable] = useState({
-    id:"",
+    id: "",
     tableNumber: "",
     capacity: "",
     status: "available",
@@ -30,7 +30,7 @@ export default function TableManagement() {
       if (!token) {
         throw new Error('No JWT token found');
       }
-  
+
       const response = await axios.get(`http://localhost:8080/tables/by-restaurant/${restaurantId}`, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -38,8 +38,8 @@ export default function TableManagement() {
       });
       setTables(response.data);
     } catch (error) {
-      console.error("Error fetching tables:", error);
-      toast.error("Error fetching tables");
+      console.error("Đã có lỗi khi lấy thông tin bàn:", error);
+      toast.error("Đã có lỗi khi lấy thông tin bàn");
     }
   };
 
@@ -59,33 +59,33 @@ export default function TableManagement() {
       if (!token) {
         throw new Error('No JWT token found');
       }
-  
+
       const response = await axios.put(`http://localhost:8080/tables/${editTable.tableId}`, editTable, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-  
+
       // Update only the edited table in the state
       setTables(tables.map((table) => (table.id === editTable.id ? response.data : table)));
-      toast.success("Table updated successfully");
+      toast.success("Cập nhật thành công !");
     } catch (error) {
-      console.error("Error editing table:", error);
-      const errorMessage = error.response?.data?.message || "Error editing table";
+      console.error("Đã có lỗi xảy ra:", error);
+      const errorMessage = error.response?.data?.message || "Đã có lỗi xảy ra";
       toast.error(errorMessage);
     }
-  
+
     handleEditModalClose();
   };
- 
-  
+
+
   const handleAddTable = async () => {
     try {
       const token = Cookies.get('token');
       if (!token) {
         throw new Error('No JWT token found');
       }
-  
+
       const response = await axios.post("http://localhost:8080/tables/add", {
         ...newTable,
         restaurantId: selectedRestaurant,
@@ -100,29 +100,29 @@ export default function TableManagement() {
         capacity: "",
         status: "available",
       });
-      toast.success("Table added successfully");
+      toast.success("Thêm bàn thành công!");
     } catch (error) {
-      console.error("Error adding table:", error);
-      toast.error("Error adding table");
+      console.error("Đã có lỗi xảy ra:", error);
+      toast.error("Đã có lỗi xảy ra");
     }
   };
   const handleDeleteTable = async (tableId) => {
-    
+
     try {
       const token = Cookies.get('token');
       if (!token) {
         throw new Error('No JWT token found');
       }
-      await axios.delete(`http://localhost:8080/tables/${tableId}`,{
+      await axios.delete(`http://localhost:8080/tables/${tableId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
       setTables(tables.filter((table) => table.id !== tableId));
-      toast.success("Table deleted successfully");
+      toast.success("Xóa bàn thành công");
     } catch (error) {
-      console.error("Error deleting table:", error);
-      toast.error("Error deleting table");
+      console.error("Đã có lỗi xảy ra:", error);
+      toast.error("Đã có lỗi xảy ra");
     }
   };
 
@@ -130,23 +130,22 @@ export default function TableManagement() {
     <div className="container mt-4">
       <ToastContainer />
       <div className="admin-top">
-        <h3>Table Management</h3>
+        <h3>Quản lý bàn</h3>
         <RestaurantSelector
           selectedRestaurant={selectedRestaurant}
           setSelectedRestaurant={setSelectedRestaurant}
         />
         <div className="mt-4">
-          <h4>Add New Table</h4>
           <OverlayTrigger
             trigger="click"
             placement="bottom"
             overlay={
               <Popover id="popover-add-table">
-                <Popover.Header as="h3">Add New Table</Popover.Header>
+                <Popover.Header as="h3">Thêm bàn mới</Popover.Header>
                 <Popover.Body>
                   <Form>
                     <Form.Group controlId="formTableNumber">
-                      <Form.Label>Number</Form.Label>
+                      <Form.Label>Số</Form.Label>
                       <Form.Control
                         type="text"
                         value={newTable.tableNumber}
@@ -154,7 +153,7 @@ export default function TableManagement() {
                       />
                     </Form.Group>
                     <Form.Group controlId="formTableCapacity">
-                      <Form.Label>Capacity</Form.Label>
+                      <Form.Label>Số chỗ</Form.Label>
                       <Form.Control
                         type="text"
                         value={newTable.capacity}
@@ -162,7 +161,7 @@ export default function TableManagement() {
                       />
                     </Form.Group>
                     <Form.Group controlId="formTableStatus">
-                      <Form.Label>Status</Form.Label>
+                      <Form.Label>Trạng thái</Form.Label>
                       <Form.Control
                         as="select"
                         value={newTable.status}
@@ -172,15 +171,15 @@ export default function TableManagement() {
                         <option value="occupied">Occupied</option>
                       </Form.Control>
                     </Form.Group>
-                    <Button variant="primary" onClick={handleAddTable}>
-                      Add Table
+                    <Button className="mt-2" variant="primary" onClick={handleAddTable}>
+                      Thêm bàn
                     </Button>
                   </Form>
                 </Popover.Body>
               </Popover>
             }
           >
-            <Button variant="primary">Add New Table</Button>
+            <Button variant="primary">Thêm bàn mới</Button>
           </OverlayTrigger>
         </div>
       </div>
@@ -188,10 +187,10 @@ export default function TableManagement() {
         <thead>
           <tr>
             <th>STT</th>
-            <th>Number</th>
-            <th>Capacity</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>Số</th>
+            <th>Số chỗ</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
           </tr>
         </thead>
         <tbody>
@@ -203,10 +202,10 @@ export default function TableManagement() {
               <td>{table.status}</td>
               <td>
                 <Button variant="warning" onClick={() => handleEdit(table)} className="me-2">
-                  Edit
+                  Sửa
                 </Button>
                 <Button variant="danger" onClick={() => handleDeleteTable(table.tableId)}>
-                  Delete
+                  Xóa
                 </Button>
               </td>
             </tr>

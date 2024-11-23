@@ -44,9 +44,7 @@ export default function AdminNavbar(props) {
 	return (
 		<nav className="flex items-center justify-between backdrop-blur-sm shadow-lg p-4 rounded-lg mt-4 mx-8">
 			<div className="flex items-center space-x-4">
-				<a href="#" className="text-xl font-semibold text-gray-800">Pages</a>
-				<span className="text-gray-500">/</span>
-				<a href="#" className="text-xl font-semibold text-gray-800">Main Dashboard</a>
+				<a href="#" className="text-xl font-semibold text-gray-800">Trang quản lí</a>
 			</div>
 			<div className="flex items-center space-x-4">
 				<div className="relative">

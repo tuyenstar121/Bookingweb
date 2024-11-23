@@ -28,7 +28,7 @@ const RestaurantManagement = () => {
       if (!token) {
         throw new Error('No JWT token found');
       }
-  
+
       const response = await axios.get('http://localhost:8080/restaurants', {
         headers: {
           Authorization: `Bearer ${token}` // Add the Authorization header with the JWT token
@@ -58,14 +58,14 @@ const RestaurantManagement = () => {
   };
 
 
-  
+
   const handleSubmit = async () => {
     try {
       const token = Cookies.get('token'); // Get the JWT token from the cookie
       if (!token) {
         throw new Error('No JWT token found');
       }
-  
+
       if (isEditing) {
         await axios.put(`http://localhost:8080/restaurants/${currentRestaurant.restaurantId}`, currentRestaurant, {
           headers: {
@@ -85,14 +85,14 @@ const RestaurantManagement = () => {
       console.error('Error saving restaurant:', error);
     }
   };
-  
+
   const handleDelete = async (restaurantId) => {
     try {
       const token = Cookies.get('token'); // Get the JWT token from the cookie
       if (!token) {
         throw new Error('No JWT token found');
       }
-  
+
       await axios.delete(`http://localhost:8080/restaurants/${restaurantId}`, {
         headers: {
           Authorization: `Bearer ${token}` // Add the Authorization header with the JWT token
@@ -106,32 +106,32 @@ const RestaurantManagement = () => {
 
   return (
     <div className="container mt-4">
-      <h3>Restaurant Management</h3>
-      <Button variant="primary" onClick={() => handleShowModal()}>Add New Restaurant</Button>
+      <h3>Quản lý nhà hàng</h3>
+      <Button variant="primary" onClick={() => handleShowModal()}>Thêm nhà hàng</Button>
       <Table striped bordered hover className="mt-4">
         <thead>
-            <tr>
-          <th>STT</th>
-            <th>Name</th>
-            <th>Address</th>
-            <th>Phone</th>
-            <th>Description</th>
-            <th>Image</th>
-            <th>Actions</th>
+          <tr>
+            <th>STT</th>
+            <th>Tên</th>
+            <th>Địa chỉ</th>
+            <th>SĐT</th>
+            <th>Mô tả</th>
+            <th>Ảnh</th>
+            <th>Hành động</th>
           </tr>
         </thead>
         <tbody>
-          {restaurants.map((restaurant,index) => (
+          {restaurants.map((restaurant, index) => (
             <tr key={restaurant.restaurantId}>
-              <td> {index+1}</td>
+              <td> {index + 1}</td>
               <td>{restaurant.name}</td>
               <td>{restaurant.address}</td>
               <td>{restaurant.phone}</td>
               <td>{restaurant.description}</td>
               <td><img src={restaurant.image} alt={restaurant.name} style={{ width: '100px', height: 'auto', objectFit: 'cover' }} /></td>
               <td>
-                <Button variant="warning" onClick={() => handleShowModal(restaurant)}>Edit</Button>{' '}
-                <Button variant="danger" onClick={() => handleDelete(restaurant.restaurantId)}>Delete</Button>
+                <Button variant="warning" onClick={() => handleShowModal(restaurant)}>Sửa</Button>{' '}
+                <Button variant="danger" onClick={() => handleDelete(restaurant.restaurantId)}>Xóa</Button>
               </td>
             </tr>
           ))}
@@ -140,56 +140,56 @@ const RestaurantManagement = () => {
 
       <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
-          <Modal.Title>{isEditing ? 'Edit Restaurant' : 'Add New Restaurant'}</Modal.Title>
+          <Modal.Title>{isEditing ? 'Sửa nhà hàng' : 'Thêm mới nhà hàng'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Form.Group controlId="formRestaurantName">
-              <Form.Label>Name</Form.Label>
+              <Form.Label>Tên</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter name"
+                placeholder="Nhập tên"
                 name="name"
                 value={currentRestaurant.name}
                 onChange={handleChange}
               />
             </Form.Group>
             <Form.Group controlId="formRestaurantAddress" className="mt-3">
-              <Form.Label>Address</Form.Label>
+              <Form.Label>Địa chỉ</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter address"
+                placeholder="Nhập địa chỉ"
                 name="address"
                 value={currentRestaurant.address}
                 onChange={handleChange}
               />
             </Form.Group>
             <Form.Group controlId="formRestaurantPhone" className="mt-3">
-              <Form.Label>Phone</Form.Label>
+              <Form.Label>SĐT</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter phone number"
+                placeholder="Nhập số điện thoại"
                 name="phone"
                 value={currentRestaurant.phone}
                 onChange={handleChange}
               />
             </Form.Group>
             <Form.Group controlId="formRestaurantDescription" className="mt-3">
-              <Form.Label>Description</Form.Label>
+              <Form.Label>Mô tả</Form.Label>
               <Form.Control
                 as="textarea"
                 rows={3}
-                placeholder="Enter description"
+                placeholder="Nhập mô tả"
                 name="description"
                 value={currentRestaurant.description}
                 onChange={handleChange}
               />
             </Form.Group>
             <Form.Group controlId="formRestaurantImage" className="mt-3">
-              <Form.Label>Image URL</Form.Label>
+              <Form.Label>URL hình ảnh</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter image URL"
+                placeholder="Nhập URL"
                 name="image"
                 value={currentRestaurant.image}
                 onChange={handleChange}
@@ -198,8 +198,8 @@ const RestaurantManagement = () => {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>Cancel</Button>
-          <Button variant="primary" onClick={handleSubmit}>{isEditing ? 'Save Changes' : 'Add Restaurant'}</Button>
+          <Button variant="secondary" onClick={handleCloseModal}>Hủy bỏ</Button>
+          <Button variant="primary" onClick={handleSubmit}>{isEditing ? 'Lưu thay đổi' : 'Thêm nhà hàng'}</Button>
         </Modal.Footer>
       </Modal>
     </div>
