@@ -52,6 +52,11 @@ export const SidebarData = [
     heading: 'Món ăn',
     path: "/admin/Food",
   },
+  {
+    icon: UilChart,
+    heading: 'Khuyến mãi',
+    path: "/admin/promotion",
+  },
 ];
 
 // Analytics Cards Data

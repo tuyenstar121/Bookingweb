@@ -23,6 +23,7 @@ import ResetPasswordForm from './resetpass';
 import { CartProvider } from '../components/ProductCard/CartProvider';
 import ProtectedRoute from '../components/ProtectedRoute/ProtectedRoute';
 import ChatBox from '../components/chatbox';
+import AdminPromotion from './AdminPromotion';
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
 
@@ -53,12 +54,13 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/Booking" element={<Booking />} />
             <Route path="/login/admin/Dashboard" element={<ProtectedRoute component={Admin} requiredRole="Admin" />} />
-            
+
             <Route path="/admin/customers" element={<ProtectedRoute component={Adminu} requiredRole="Admin" />} />
             <Route path="/admin/Products" element={<ProtectedRoute component={Adminre} requiredRole="Admin" />} />
             <Route path="/admin/order" element={<ProtectedRoute component={Adminorder} requiredRole="Admin" />} />
             <Route path="/admin/analytics" element={<ProtectedRoute component={Admintable} requiredRole="Admin" />} />
             <Route path="/admin/food" element={<ProtectedRoute component={AdminFood} requiredRole="Admin" />} />
+            <Route path="/admin/promotion" element={<ProtectedRoute component={AdminPromotion} requiredRole="Admin" />} />
             <Route path="/forgetpass" element={<ForgotPasswordForm />} />
             <Route path="/resetpass" element={<ResetPasswordForm />} />
           </Routes>
