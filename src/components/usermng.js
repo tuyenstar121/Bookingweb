@@ -11,7 +11,7 @@ export default function UserManagementTable() {
   const [deleteUser, setDeleteUser] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [error, setError] = useState(null);
-
+  const [search, setSearch] = useState('')
   const fetchUsers = useCallback(async () => {
     try {
       const token = Cookies.get('token');
@@ -111,6 +111,14 @@ export default function UserManagementTable() {
   return (
     <div className="container mx-auto mt-4">
       <h3 className="text-2xl font-bold">Quản lý người dùng</h3>
+      <div className="flex justify-end">
+        <input
+          type="text"
+          placeholder="Tìm kiếm..."
+          onChange={(e) => { setSearch(e.target.value) }}
+          className="px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:border-gray-500"
+        />
+      </div>
       {error && <p className="text-red-500">{error}</p>}
       <div className="overflow-x-auto mt-4">
         <table className="min-w-full bg-white">
@@ -127,7 +135,11 @@ export default function UserManagementTable() {
             </tr>
           </thead>
           <tbody>
-            {users.map((user) => (
+            {users.filter((user) => {
+              return user.email.toLowerCase().includes(search.toLowerCase())
+                || user.phone.toLowerCase().includes(search.toLowerCase())
+                || user.username.toLowerCase().includes(search.toLowerCase())
+            }).map((user) => (
               <tr key={user.userId}>
                 <td className="py-2 px-4 border-b">{user.username}</td>
                 <td className="py-2 px-4 border-b">{user.phone}</td>

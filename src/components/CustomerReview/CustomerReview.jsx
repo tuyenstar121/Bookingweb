@@ -62,18 +62,18 @@ const CustomerReview = () => {
       if (!token) {
         throw new Error('No JWT token found');
       }
-  
+
       const response = await axios.get(`http://localhost:8080/api/reservations/monthly-stats-by-restaurant?restaurant_id=${encodeURIComponent(selectedRestaurant)}`, {
         headers: {
           Authorization: `Bearer ${token}` // Add the Authorization header with the JWT token
         }
       });
       const data = response.data;
-  
+
       const filledData = fillMissingMonths(data);
       const months = filledData.map(item => item.month);
       const reservations = filledData.map(item => item.count);
-  
+
       setChartData(prevState => ({
         ...prevState,
         series: [{ ...prevState.series[0], data: reservations }],
@@ -83,14 +83,14 @@ const CustomerReview = () => {
       console.error("Error fetching reservation stats:", error);
     }
   };
-  
+
 
   const fillMissingMonths = (data) => {
     const allMonths = [
       "2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08",
       "2024-09", "2024-10", "2024-11", "2024-12"
     ];
-    
+
     const dataMap = data.reduce((map, item) => {
       map[item.month] = item.count;
       return map;

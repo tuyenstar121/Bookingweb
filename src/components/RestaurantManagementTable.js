@@ -17,6 +17,7 @@ const RestaurantManagement = () => {
   const [showModal, setShowModal] = useState(false);
   const [currentRestaurant, setCurrentRestaurant] = useState(initialRestaurant);
   const [isEditing, setIsEditing] = useState(false);
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     fetchRestaurants();
@@ -107,6 +108,14 @@ const RestaurantManagement = () => {
   return (
     <div className="container mt-4">
       <h3>Quản lý nhà hàng</h3>
+      <div className="flex justify-end">
+        <input
+          type="text"
+          placeholder="Tìm kiếm..."
+          onChange={(e) => { setSearch(e.target.value) }}
+          className="px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:border-gray-500"
+        />
+      </div>
       <Button variant="primary" onClick={() => handleShowModal()}>Thêm nhà hàng</Button>
       <Table striped bordered hover className="mt-4">
         <thead>
@@ -121,7 +130,11 @@ const RestaurantManagement = () => {
           </tr>
         </thead>
         <tbody>
-          {restaurants.map((restaurant, index) => (
+          {restaurants.filter((restaurant) => {
+            return restaurant.name.toLowerCase().includes(search.toLowerCase())
+              || restaurant.address.toLowerCase().includes(search.toLowerCase())
+              || restaurant.phone.toLowerCase().includes(search.toLowerCase())
+          }).map((restaurant, index) => (
             <tr key={restaurant.restaurantId}>
               <td> {index + 1}</td>
               <td>{restaurant.name}</td>

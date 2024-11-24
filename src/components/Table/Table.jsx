@@ -17,10 +17,6 @@ const rows = [
   createData("Big Baza Bang", "987654321", "Table 2", "Pending", "Restaurant B"),
   createData("Mouth Freshner", "555666777", "Table 1", "Approved", "Restaurant A"),
   createData("Cupcake", "111222333", "Table 3", "Delivered", "Restaurant C"),
-
-
-
-
 ];
 
 const makeStyle = (status) => {

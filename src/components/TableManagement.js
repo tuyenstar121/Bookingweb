@@ -17,7 +17,7 @@ export default function TableManagement() {
     capacity: "",
     status: "available",
   });
-
+  const [search, setSearch] = useState('')
   useEffect(() => {
     if (selectedRestaurant) {
       fetchTablesByRestaurant(selectedRestaurant);
@@ -135,6 +135,14 @@ export default function TableManagement() {
           selectedRestaurant={selectedRestaurant}
           setSelectedRestaurant={setSelectedRestaurant}
         />
+        <div className="flex justify-end">
+          <input
+            type="text"
+            placeholder="Tìm kiếm..."
+            onChange={(e) => { setSearch(e.target.value) }}
+            className="px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:border-gray-500"
+          />
+        </div>
         <div className="mt-4">
           <OverlayTrigger
             trigger="click"
@@ -194,7 +202,10 @@ export default function TableManagement() {
           </tr>
         </thead>
         <tbody>
-          {tables.map((table, index) => (
+          {tables.filter((table) => {
+            return table?.capacity?.toString()?.toLowerCase().includes(search.toLowerCase())
+              || table?.tableNumber?.toString()?.toLowerCase().includes(search.toLowerCase())
+          }).map((table, index) => (
             <tr key={table.id}>
               <td>{index + 1}</td>
               <td>{table.tableNumber}</td>

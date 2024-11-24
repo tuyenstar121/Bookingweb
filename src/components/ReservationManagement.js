@@ -25,6 +25,7 @@ import classNames from "classnames";
 import { ChevronDownIcon } from '@heroicons/react/16/solid';
 import Navbar from './navbar/NavbarAdmin';
 import { useDisclosure } from '@chakra-ui/react';
+import { FaSearch } from "react-icons/fa";
 
 function ReservationManagementTable() {
   const [reservations, setReservations] = useState([]);
@@ -37,6 +38,7 @@ function ReservationManagementTable() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const fixed = false; // Example value, update as necessary
   const rest = {}; // Example value, update as necessary
+  const [search, setSearch] = useState('')
 
   useEffect(() => {
     fetchReservations();
@@ -180,7 +182,7 @@ function ReservationManagementTable() {
           />
           <Menu as="div" className="relative inline-block text-left">
             <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-              Sắp xếp
+              Lọc
               <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
             </MenuButton>
             <Transition
@@ -202,7 +204,7 @@ function ReservationManagementTable() {
                       )}
                       onClick={() => sortByDate()}
                     >
-                      Sắp xếp theo ngày
+                      Lọc theo ngày
                     </a>
                   )}
                 </MenuItem>
@@ -231,7 +233,7 @@ function ReservationManagementTable() {
                       )}
                       onClick={() => filterByStatus("Cancelled")}
                     >
-                      Sắp xếp theo đã hủy
+                      Lọc theo đã hủy
                     </a>
                   )}
                 </MenuItem>
@@ -245,7 +247,7 @@ function ReservationManagementTable() {
                       )}
                       onClick={() => filterByStatus("Booked")}
                     >
-                      Sắp xếp theo đã đặt
+                      Lọc theo đã đặt
                     </a>
                   )}
                 </MenuItem>
@@ -259,7 +261,7 @@ function ReservationManagementTable() {
                       )}
                       onClick={() => filterByStatus("Completed")}
                     >
-                      Sắp xếp theo đã hoàn thành
+                      Lọc theo đã hoàn thành
                     </a>
                   )}
                 </MenuItem>
@@ -283,6 +285,15 @@ function ReservationManagementTable() {
         </div>
       </div>
 
+      <div className="flex justify-end">
+        <input
+          type="text"
+          placeholder="Tìm kiếm..."
+          onChange={(e) => { setSearch(e.target.value) }}
+          className="px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:border-gray-500"
+        />
+      </div>
+
       {error && <p className="alert alert-danger">{error}</p>}
       <TableContainer component={Paper} className="table-container mt-4">
         <Table aria-label="simple table">
@@ -303,7 +314,13 @@ function ReservationManagementTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {reservations.map((reservation, index) => (
+            {reservations.filter((reservation) => {
+              return reservation.table.restaurants.name.toLowerCase().includes(search.toLowerCase())
+                || reservation.table.restaurants.address.toLowerCase().includes(search.toLowerCase())
+                || reservation.table.restaurants.phone.toLowerCase().includes(search.toLowerCase())
+                || reservation.user.username.toLowerCase().includes(search.toLowerCase())
+                || reservation.user.phone.toLowerCase().includes(search.toLowerCase())
+            }).map((reservation, index) => (
               <TableRow key={reservation.reservationId}>
                 <TableCell align="left">{index + 1}</TableCell>
                 <TableCell align="left">{reservation.reservationId}</TableCell>

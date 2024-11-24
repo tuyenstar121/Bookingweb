@@ -11,9 +11,6 @@ const MainDash = () => {
 
   return (
     <div className="MainDash">
-
-     
-      
       <Table />
     </div>
   );

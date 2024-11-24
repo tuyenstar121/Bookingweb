@@ -22,6 +22,8 @@ export default function FoodManagement() {
   const [deleteFoodItem, setDeleteFoodItem] = useState(null);
   const [newFoodItem, setNewFoodItem] = useState({ name: "", price: "", description: "", categoryId: "", img: "" });
   const [openDialog, setOpenDialog] = useState(false);
+  const [search, setSearch] = useState('')
+  console.log(foodItems)
 
   const fetchFoodItems = useCallback(async () => {
     const token = Cookies.get('token');
@@ -169,6 +171,14 @@ export default function FoodManagement() {
   return (
     <div className="container mt-4">
       <h3 className="text-xl font-bold mb-4">Quản lý món ăn</h3>
+      <div className="flex justify-end">
+        <input
+          type="text"
+          placeholder="Tìm kiếm..."
+          onChange={(e) => { setSearch(e.target.value) }}
+          className="px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:border-gray-500"
+        />
+      </div>
       <button
         className="bg-green-500 text-white py-2 px-4 rounded mb-4"
         onClick={() => handleDialogOpen(null, "add")}
@@ -190,6 +200,11 @@ export default function FoodManagement() {
           <TableBody>
             {foodItems
               .filter(foodItem => foodItem && foodItem.category) // Filter out items with null category
+              .filter((foodItem) => {
+                return foodItem.name.toLowerCase().includes(search.toLowerCase())
+                  || foodItem.price.toString().toLowerCase().includes(search.toLowerCase())
+                  || foodItem.category.name.toLowerCase().includes(search.toLowerCase())
+              })
               .map((foodItem) => (
                 <TableRow key={foodItem.foodItemId}>
                   <TableCell>{foodItem.name}</TableCell>
