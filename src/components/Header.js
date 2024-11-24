@@ -6,6 +6,9 @@ import {
   Divider,
   Drawer,
   IconButton,
+  Link,
+  Popover,
+  Popper,
   Toolbar,
   Typography,
 } from "@mui/material";
@@ -19,11 +22,24 @@ import "../style/HeaderStyles.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Cookies from 'js-cookie';
 import axios from 'axios';
+import { Stack } from "react-bootstrap";
 
 const Header = () => {
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [loggedIn, setLoggedIn] = useState(!!Cookies.get('token')); // Check if token exists to set initial loggedIn state
+
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -38,7 +54,7 @@ const Header = () => {
             'Authorization': `Bearer ${Cookies.get('token')}`
           }
         });
-        
+
         if (response.status !== 200) {
           throw new Error('Logout failed');
         }
@@ -125,24 +141,29 @@ const Header = () => {
                 <li>
                   <NavLink to="/booking">Booking</NavLink>
                 </li>
-                <li>
-                  <NavLink to={"/mybooking"}>Mybooking</NavLink>
-                </li>
               </ul>
             </Box>
-            <IconButton
-              color="inherit"
-              edge="end"
-              sx={{ ml: 2 }}
-              onClick={handleLogin}
-            >
-              {loggedIn ? <LogoutIcon /> : <LoginIcon />}
-            </IconButton>
             <Avatar
               alt="User Avatar"
               src="path_to_user_avatar_image"
               sx={{ ml: 2 }}
+              onClick={handleClick}
             />
+            <Popover
+              open={open}
+              anchorEl={anchorEl}
+              onClose={handleClose}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+            >
+              <Typography sx={{ p: 2 }} >
+                <Link sx={{ textDecoration: 'none', color: 'black' }} href={'/mybooking'}>My Booking</Link>
+              </Typography>
+              <Divider />
+              <Typography sx={{ p: 2, cursor: 'pointer' }} onClick={handleLogin}>{loggedIn ? 'Đăng xuất' : 'Đăng nhập'}</Typography>
+            </Popover>
           </Toolbar>
         </AppBar>
         <Box component="nav">
