@@ -24,10 +24,11 @@ const ReservationForm = ({ loggedInUser }) => {
   const [user, setUser] = useState(null);
   const [showTables, setShowTables] = useState(false);
   const [adults, setAdults] = useState(2);
-  const [children, setChildren] = useState(0);
   const [selectedRestaurantInfo, setSelectedRestaurantInfo] = useState(null);
   const [selectedTableInfo, setSelectedTableInfo] = useState(null);
-  const [selectedItems, setSelectedItems] = useState([]);
+
+
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -105,22 +106,22 @@ const ReservationForm = ({ loggedInUser }) => {
         id: tableId
       });
       setSelectedTable(tableId);
-      toast.success(`You have selected table ${tableNumber} at ${selectedRestaurantInfo.name}.`);
+      toast.success(`Bạn đã chọn bàn số ${tableNumber} tại ${selectedRestaurantInfo.name}.`);
       setShowTables(false);
     } else {
-      toast.error(`Table ${tableNumber} is already reserved.`);
+      toast.error(`Bàn ${tableNumber} đã được đặt chỗ`);
     }
   };
 
   const handleUpdate = async () => {
     if (!user) {
-      toast.error('You need to log in to book a reservation.');
+      toast.error('Bạn cần đăng nhập để đặt bàn');
       navigate('/login');
       return;
     }
 
     if (!selectedTable || !date1 || !time) {
-      toast.error('Please fill all required fields');
+      toast.error('Vui lòng điền đầy đủ các thông tin');
       return;
     }
 
@@ -129,7 +130,7 @@ const ReservationForm = ({ loggedInUser }) => {
       tableId: selectedTable,
       reservationDate: date1,
       reservationTime: time,
-      numberOfGuests: adults + children
+      numberOfGuests: adults
     };
 
     const token = Cookies.get('token');
@@ -138,12 +139,12 @@ const ReservationForm = ({ loggedInUser }) => {
         headers: { Authorization: `Bearer ${token}` }
       });
       const reservationId = response.data;
-      toast.success('Reservation booked successfully');
+      toast.success('Đặt bàn thành công');
       console.log('Reservation ID:', reservationId);
       setShowTables(false);
       await createAdditionalItems(reservationId);
     } catch (error) {
-      toast.error('Error booking reservation');
+      toast.error('Lỗi đặt bàn');
       console.error(error);
     }
   };
@@ -170,42 +171,38 @@ const ReservationForm = ({ loggedInUser }) => {
         });
       }));
 
-      toast.success('Additional items added successfully');
+      toast.success('Thêm món ăn thành công');
       localStorage.removeItem('cart'); // Clear cart items after adding
     } catch (error) {
-      toast.error('Error adding additional items');
+      toast.error('Lỗi thêm món ăn');
       console.error(error);
     }
   };
 
-  const handleClearItems = () => {
-    localStorage.removeItem('cart');
-    setSelectedItems([]);
-  };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="bg-white rounded-lg shadow-lg p-6 max-w-4xl w-full">
-        <h1 className="text-center text-2xl font-bold mb-6 text-yellow-600">Reservation Form</h1>
+        <h1 className="text-center text-2xl font-bold mb-6 text-yellow-600">Đặt bàn</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <ReservationForm1 />
           <div className="bg-gray-50 p-4 rounded-lg">
-            <h2 className="text-lg font-semibold mb-4">Reservation Details</h2>
+            <h2 className="text-lg font-semibold mb-4">Chi tiết đặt bàn</h2>
             <form>
               <div className="form-group flex items-center space-x-4">
                 <label className="block text-sm font-medium text-gray-700 flex items-center">
-                  <span role="img" aria-label="adults" className="mr-1">👤</span> Adults:
+                  <span role="img" aria-label="adults" className="mr-1">👤</span> Số người:
                   <select
                     value={adults}
                     onChange={(e) => setAdults(parseInt(e.target.value, 10))}
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm p-2 ml-2"
                   >
-                    {[...Array(10).keys()].map((num) => (
+                    {[...Array(20).keys()].map((num) => (
                       <option key={num} value={num}>{num}</option>
                     ))}
                   </select>
                 </label>
-                <label className="block text-sm font-medium text-gray-700 flex items-center">
+                {/* <label className="block text-sm font-medium text-gray-700 flex items-center">
                   <span role="img" aria-label="children" className="mr-1">👶</span> Children:
                   <select
                     value={children}
@@ -216,11 +213,11 @@ const ReservationForm = ({ loggedInUser }) => {
                       <option key={num} value={num}>{num}</option>
                     ))}
                   </select>
-                </label>
+                </label> */}
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
-                  <span role="img" aria-label="arrival-time">🕒</span> Arrival Time
+                  <span role="img" aria-label="arrival-time">🕒</span> Thời gian đến
                 </label>
                 <input
                   type="date"
@@ -236,10 +233,10 @@ const ReservationForm = ({ loggedInUser }) => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Choose Restaurant:</label>
+                <label className="block text-sm font-medium text-gray-700">Chọn nhà hàng</label>
                 <DropdownButton
                   id="dropdown-basic-button"
-                  title="Select Restaurant"
+                  title="Chọn nhà hàng"
                   className="mt-1 block w-full"
                   onSelect={handleRestaurantSelect}
                 >
@@ -253,14 +250,14 @@ const ReservationForm = ({ loggedInUser }) => {
               {selectedRestaurantInfo && (
                 <div className="mb-4">
                   <p className="text-sm text-gray-700">
-                    Selected Restaurant: {selectedRestaurantInfo.name} (ID: {selectedRestaurantInfo.id})
+                    Nhà hàng đã chọn: {selectedRestaurantInfo.name} (ID: {selectedRestaurantInfo.id})
                   </p>
                 </div>
               )}
               {selectedTableInfo && (
                 <div className="mb-4">
                   <p className="text-sm text-gray-700">
-                    Selected Table: {selectedTableInfo.number} (ID: {selectedTableInfo.id})
+                    Bàn đã chọn: {selectedTableInfo.number} (ID: {selectedTableInfo.id})
                   </p>
                 </div>
               )}
@@ -269,21 +266,21 @@ const ReservationForm = ({ loggedInUser }) => {
                 className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                 onClick={handleUpdate}
               >
-                Update
+                Đặt bàn
               </button>
             </form>
           </div>
         </div>
         <div className="mt-6">
-          <h2 className="text-lg font-semibold mb-4">Selected Additional Items</h2>
-          <ProductCard selectedItems={selectedItems} onClearItem={handleClearItems} />
+          <h2 className="text-lg font-semibold mb-4">Các món ăn đã chọn</h2>
+          <ProductCard/>
         </div>
         {showTables && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
             <div className="bg-white rounded-lg shadow-lg p-6 max-w-3xl w-full relative">
               <button className="absolute top-4 right-4 text-gray-600 hover:text-gray-800" onClick={() => setShowTables(false)}>×</button>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Choose Table:</label>
+                <label className="block text-sm font-medium text-gray-700">Chọn bàn:</label>
                 <div className="flex flex-wrap gap-2">
                   {availableTables.map((table) => (
                     <button

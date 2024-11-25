@@ -78,7 +78,8 @@ const ReservationList = ({ reservations }) => {
           className="form-control w-3/4 p-2 border border-gray-300 rounded-lg"
         />
         <Button variant="danger">
-          <AiOutlineSearch /> Tìm kiếm
+          <AiOutlineSearch /> 
+          {/* Tìm kiếm */}
         </Button>
       </div>
       <ListGroup>

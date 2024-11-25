@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import '../style/Boking.css'; 
 import Slideshow from '../components/Slideshow';
 import Booking from '../components/Booking';
