@@ -64,7 +64,7 @@ function App() {
             <Route path="/forgetpass" element={<ForgotPasswordForm />} />
             <Route path="/resetpass" element={<ResetPasswordForm />} />
           </Routes>
-          <ChatBox />
+          {/* <ChatBox /> */}
         </CartProvider>
       </UserProvider>
     </BrowserRouter>

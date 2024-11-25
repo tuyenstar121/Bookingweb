@@ -1,21 +1,30 @@
 import React, { useState, useEffect } from 'react';
+import Cart from '../../view/cart';
+import { useNavigate } from 'react-router-dom';
 
-const ProductCard = ({ onClearItem }) => {
-  const [selectedItem, setSelectedItem] = useState([]);
-
-  // Load cart data from localStorage on component mount
+const ProductCard = () => {
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [cart, setCart] = useState([]);
+  const navigate = useNavigate()
+  const totalAmount = cart.reduce((total, item) => total + item.price * item.quantity, 0);
   useEffect(() => {
-    const storedCart = localStorage.getItem('cart');
+    const storedCart = localStorage.getItem("cart");
     if (storedCart) {
-      setSelectedItem(JSON.parse(storedCart));
+      setCart(JSON.parse(storedCart));
     }
   }, []);
 
   // Check if selectedItem exists and has the necessary properties
-  if (!selectedItem || selectedItem.length === 0) {
+  if (!cart || cart.length === 0) {
     return (
-      <div className="p-4 bg-white rounded shadow-md max-w-sm">
-        <p>Giỏ hàng trống</p>
+      <div className="flex items-center justify-between p-4 bg-white rounded shadow-md max-w-sm">
+        <div>Giỏ hàng trống</div>
+        <button
+          className="text-white border bg-orange-500 border-red-600 rounded px-2 py-1 hover:bg-red-600 hover:text-white transition"
+          onClick={()=>navigate("/menu")}
+        >
+          Thêm vào giỏ hàng
+        </button>
       </div>
     );
   }
@@ -26,17 +35,24 @@ const ProductCard = ({ onClearItem }) => {
         <h2 className="text-lg font-semibold">Sản phẩm trong giỏ hàng</h2>
         <button
           className="text-red-600 border border-red-600 rounded px-2 py-1 hover:bg-red-600 hover:text-white transition"
-          onClick={onClearItem}
+          onClick={()=>setIsCartOpen(!isCartOpen)}
         >
           Thay đổi
         </button>
       </div>
-      {selectedItem.map((item, index) => (
+      {cart.map((item, index) => (
         <div key={index} className="flex justify-between items-center mb-2">
-          <p>{item.name}({item.quantity})</p>
-          <span className="font-semibold">{item.price}$</span>
+          <div>{item.name}({item.quantity})</div>
+          <span className="font-semibold">{item.price} VND</span>
         </div>
       ))}
+      <div className="flex justify-between items-center mb-2">
+        <div className='font-bold'>Tổng cộng:</div>
+        <span className="font-semibold">{totalAmount} VND</span>
+      </div>
+      {
+        isCartOpen && <Cart cart={cart} setCart={setCart} isCartOpen={isCartOpen} setIsCartOpen={setIsCartOpen}/>
+      }
     </div>
   );
 };
