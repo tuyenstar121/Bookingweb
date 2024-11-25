@@ -140,7 +140,7 @@ const Header = () => {
                 </li>
                 <li>
                   <NavLink to="/booking">Đặt bàn</NavLink>
-                </li>s
+                </li>
               </ul>
             </Box>
             <Avatar
@@ -159,7 +159,7 @@ const Header = () => {
               }}
             >
               <Typography sx={{ p: 2 }} >
-                <Link sx={{ textDecoration: 'none', color: 'black' }} href={'/mybooking'}>My Booking</Link>
+                <Link sx={{ textDecoration: 'none', color: 'black' }} href={'/mybooking'}>Trang cá nhân</Link>
               </Typography>
               <Divider />
               <Typography sx={{ p: 2, cursor: 'pointer' }} onClick={handleLogin}>{loggedIn ? 'Đăng xuất' : 'Đăng nhập'}</Typography>
