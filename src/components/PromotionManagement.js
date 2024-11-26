@@ -17,56 +17,57 @@ import {
 } from "@mui/material";
 
 export default function PromotionManager() {
-  const [foodItems, setFoodItems] = useState([]);
-  const [editFoodItem, setEditFoodItem] = useState(null);
-  const [deleteFoodItem, setDeleteFoodItem] = useState(null);
-  const [newFoodItem, setNewFoodItem] = useState({ name: "", price: "", description: "", categoryId: "", img: "" });
+  const [promotions, setPromotions] = useState([]);
+  const [editPromotion, setEditPromotion] = useState(null);
+  const [deletePromotion, setDeletePromotion] = useState(null);
+  const [newPromotion, setNewPromotion] = useState({ name: "", discountPercentage: "", description: "", startDate: "", endDate: "" });
   const [openDialog, setOpenDialog] = useState(false);
-  const [search, setSearch] = useState('')
+  const [search, setSearch] = useState('');
 
-  const fetchFoodItems = useCallback(async () => {
+  const fetchPromotions = useCallback(async () => {
     const token = Cookies.get('token');
     try {
-      const response = await fetch("http://localhost:8080/api/food/all", {
+      const response = await fetch("http://localhost:8080/api/promotions", {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
       const data = await response.json();
-      setFoodItems(data);
+      console.log(data)
+      setPromotions(data);
     } catch (error) {
-      console.error("Error fetching food items:", error);
+      console.error("Error fetching promotions:", error);
     }
   }, []);
 
   useEffect(() => {
-    fetchFoodItems();
-  }, [fetchFoodItems]);
+    fetchPromotions();
+  }, [fetchPromotions]);
 
-  const handleDialogOpen = (foodItem, action) => {
+  const handleDialogOpen = (promotion, action) => {
     if (action === "edit") {
-      setEditFoodItem(foodItem);
-      setNewFoodItem(null);
+      setEditPromotion(promotion);
+      setNewPromotion(null);
     } else if (action === "delete") {
-      setDeleteFoodItem(foodItem);
-      setNewFoodItem(null);
+      setDeletePromotion(promotion);
+      setNewPromotion(null);
     } else if (action === "add") {
-      setNewFoodItem({ name: "", price: "", description: "", categoryId: "", img: "" });
-      setEditFoodItem(null);
-      setDeleteFoodItem(null);
+      setNewPromotion({ name: "", discountPercentage: "", description: "", startDate: "", endDate: "" });
+      setEditPromotion(null);
+      setDeletePromotion(null);
     }
     setOpenDialog(true);
   };
 
   const handleDialogClose = () => {
-    setEditFoodItem(null);
-    setDeleteFoodItem(null);
-    setNewFoodItem({ name: "", price: "", description: "", categoryId: "", img: "" }); // Reset to initial state
-    setOpenDialog(false); // Close the dialog
+    setEditPromotion(null);
+    setDeletePromotion(null);
+    setNewPromotion({ name: "", discountPercentage: "", description: "", startDate: "", endDate: "" });
+    setOpenDialog(false);
   };
 
   const handleEditSubmit = async () => {
-    if (!editFoodItem?.name || !editFoodItem?.price || !editFoodItem?.description || !editFoodItem?.category?.categoryId) {
+    if (!editPromotion?.name || !editPromotion?.discountPercentage || !editPromotion?.description || !editPromotion?.startDate || !editPromotion?.endDate) {
       alert("Please fill in all fields.");
       return;
     }
@@ -77,30 +78,25 @@ export default function PromotionManager() {
         throw new Error('No JWT token found');
       }
 
-      const updatedFoodItem = {
-        ...editFoodItem,
-        categoryId: editFoodItem.category.categoryId,  // Flattening the category object
-      };
-      console.log(JSON.stringify(updatedFoodItem));
-      const response = await fetch(`http://localhost:8080/api/food/edit/${editFoodItem.foodItemId}`, {
+      const response = await fetch(`http://localhost:8080/api/promotions/${editPromotion.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(updatedFoodItem),
+        body: JSON.stringify(editPromotion),
       });
 
       if (response.ok) {
-        fetchFoodItems();
+        fetchPromotions();
         handleDialogClose();
       } else {
         const errorData = await response.json();
-        console.error("Error updating food item:", errorData.message || response.statusText);
-        alert(`Failed to update food item: ${errorData.message || response.statusText}`);
+        console.error("Error updating promotion:", errorData.message || response.statusText);
+        alert(`Failed to update promotion: ${errorData.message || response.statusText}`);
       }
     } catch (error) {
-      console.error("Error updating food item:", error);
+      console.error("Error updating promotion:", error);
       alert(`An error occurred: ${error.message}`);
     }
   };
@@ -108,7 +104,7 @@ export default function PromotionManager() {
   const handleDeleteConfirm = async () => {
     try {
       const token = Cookies.get('token');
-      const response = await fetch(`http://localhost:8080/api/food/delete/${deleteFoodItem.foodItemId}`, {
+      const response = await fetch(`http://localhost:8080/api/promotions/delete/${deletePromotion.id}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -116,24 +112,23 @@ export default function PromotionManager() {
       });
 
       if (response.ok) {
-        fetchFoodItems();
+        fetchPromotions();
         handleDialogClose();
       } else {
         const errorData = await response.json();
-        console.error("Error deleting food item:", errorData.message || response.statusText);
-        alert(`Failed to delete food item: ${errorData.message || response.statusText}`);
+        console.error("Error deleting promotion:", errorData.message || response.statusText);
+        alert(`Failed to delete promotion: ${errorData.message || response.statusText}`);
       }
     } catch (error) {
-      console.error("Error deleting food item:", error);
+      console.error("Error deleting promotion:", error);
       alert(`An error occurred: ${error.message}`);
     }
   };
 
   const handleAddSubmit = async () => {
-    const { name, img, price, description, categoryId } = newFoodItem;
+    const { name, discountPercentage, description, startDate, endDate } = newPromotion;
 
-    // Validation: Ensure all fields are filled
-    if (!name || !img || !price || !description || !categoryId) {
+    if (!name || !discountPercentage || !description || !startDate || !endDate) {
       alert("Please fill in all fields.");
       return;
     }
@@ -141,35 +136,32 @@ export default function PromotionManager() {
     try {
       const token = Cookies.get('token');
 
-      // Send the POST request to add a new food item
-      const response = await fetch("http://localhost:8080/api/food/add", {
+      const response = await fetch("http://localhost:8080/api/promotions/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(newFoodItem),
+        body: JSON.stringify(newPromotion),
       });
 
-      // Handle the response
       if (response.ok) {
-        console.log("Food item added successfully");
-        fetchFoodItems();  // Refresh the food items list
-        handleDialogClose();  // Close the dialog
+        fetchPromotions();
+        handleDialogClose();
       } else {
         const errorData = await response.json();
-        console.error("Error adding food item:", errorData.message || response.statusText);
-        alert(`Failed to add food item: ${errorData.message || response.statusText}`);
+        console.error("Error adding promotion:", errorData.message || response.statusText);
+        alert(`Failed to add promotion: ${errorData.message || response.statusText}`);
       }
     } catch (error) {
-      console.error("Error adding food item:", error);
+      console.error("Error adding promotion:", error);
       alert(`An error occurred: ${error.message}`);
     }
   };
 
   return (
     <div className="container mt-4">
-      <h3 className="text-xl font-bold mb-4">Quản lý món ăn</h3>
+      <h3 className="text-xl font-bold mb-4">Quản lý chương trình khuyến mãi</h3>
       <div className="flex justify-end">
         <input
           type="text"
@@ -182,59 +174,44 @@ export default function PromotionManager() {
         className="bg-green-500 text-white py-2 px-4 rounded mb-4"
         onClick={() => handleDialogOpen(null, "add")}
       >
-        Thêm món mới
+        Thêm chương trình mới
       </button>
       <TableContainer component={Paper} className="shadow-lg rounded-lg">
         <Table sx={{ minWidth: 850 }} aria-label="simple table">
           <TableHead className="bg-gray-100">
             <TableRow>
               <TableCell className="font-semibold">Tên</TableCell>
-              <TableCell className="font-semibold">Hình ảnh</TableCell>
-              <TableCell className="font-semibold" align="left">Giá</TableCell>
+              <TableCell className="font-semibold" align="left">Giảm giá (%)</TableCell>
               <TableCell className="font-semibold" align="left">Mô tả</TableCell>
-              <TableCell className="font-semibold" align="left">Danh mục</TableCell>
+              <TableCell className="font-semibold" align="left">Ngày bắt đầu</TableCell>
+              <TableCell className="font-semibold" align="left">Ngày kết thúc</TableCell>
               <TableCell className="font-semibold" align="left">Hành động</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {foodItems
-              .filter(foodItem => foodItem && foodItem.category) // Filter out items with null category
-              .filter((foodItem) => {
-                return foodItem.name.toLowerCase().includes(search.toLowerCase())
-                  || foodItem.price.toString().toLowerCase().includes(search.toLowerCase())
-                  || foodItem.category.name.toLowerCase().includes(search.toLowerCase())
+            {promotions
+              .filter((promotion) => {
+                return promotion.name.toLowerCase().includes(search.toLowerCase())
+                  || promotion.discountPercentage.toString().toLowerCase().includes(search.toLowerCase())
+                  || promotion.description.toLowerCase().includes(search.toLowerCase());
               })
-              .map((foodItem) => (
-                <TableRow key={foodItem.foodItemId}>
-                  <TableCell>{foodItem.name}</TableCell>
-                  <TableCell>
-                    {foodItem.img ? (
-                      <img
-                        src={foodItem.img}
-                        alt={foodItem.name}
-                        style={{
-                          width: "100px",
-                          height: "auto",
-                          objectFit: "contain",
-                        }}
-                      />
-                    ) : (
-                      <span>Chưa có hình</span>
-                    )}
-                  </TableCell>
-                  <TableCell align="left">{foodItem.price}</TableCell>
-                  <TableCell align="left">{foodItem.description}</TableCell>
-                  <TableCell align="left">{foodItem.category.name}</TableCell>
+              .map((promotion) => (
+                <TableRow key={promotion.id}>
+                  <TableCell>{promotion.name}</TableCell>
+                  <TableCell align="left">{promotion.discountPercentage}</TableCell>
+                  <TableCell align="left">{promotion.description}</TableCell>
+                  <TableCell align="left">{promotion.startDate}</TableCell>
+                  <TableCell align="left">{promotion.endDate}</TableCell>
                   <TableCell align="left">
                     <button
                       className="bg-blue-500 text-white py-1 px-3 rounded mr-2"
-                      onClick={() => handleDialogOpen(foodItem, "edit")}
+                      onClick={() => handleDialogOpen(promotion, "edit")}
                     >
                       Sửa
                     </button>
                     <button
                       className="bg-red-500 text-white py-1 px-3 rounded"
-                      onClick={() => handleDialogOpen(foodItem, "delete")}
+                      onClick={() => handleDialogOpen(promotion, "delete")}
                     >
                       Xóa
                     </button>
@@ -246,85 +223,85 @@ export default function PromotionManager() {
       </TableContainer>
       <Dialog open={openDialog} onClose={handleDialogClose}>
         <DialogTitle>
-          {editFoodItem ? "Edit Food Item" : deleteFoodItem ? "Delete Food Item" : "Add Food Item"}
+          {editPromotion ? "Sửa chương trình khuyến mãi" : deletePromotion ? "Xóa chương trình khuyến mãi" : "Thêm chương trình khuyến mãi"}
         </DialogTitle>
         <DialogContent>
-          {editFoodItem && (
+          {editPromotion && (
             <>
               <TextField
                 label="Tên"
-                value={editFoodItem.name || ""}
-                onChange={(e) => setEditFoodItem({ ...editFoodItem, name: e.target.value })}
+                value={editPromotion.name || ""}
+                onChange={(e) => setEditPromotion({ ...editPromotion, name: e.target.value })}
                 fullWidth
                 className="mb-3"
               />
               <TextField
-                label="Giá"
-                value={editFoodItem.price || ""}
-                onChange={(e) => setEditFoodItem({ ...editFoodItem, price: e.target.value })}
+                label="Giảm giá (%)"
+                value={editPromotion.discountPercentage || ""}
+                onChange={(e) => setEditPromotion({ ...editPromotion, discountPercentage: e.target.value })}
                 fullWidth
                 className="mb-3"
               />
               <TextField
                 label="Mô tả"
-                value={editFoodItem.description || ""}
-                onChange={(e) => setEditFoodItem({ ...editFoodItem, description: e.target.value })}
+                value={editPromotion.description || ""}
+                onChange={(e) => setEditPromotion({ ...editPromotion, description: e.target.value })}
                 fullWidth
                 className="mb-3"
               />
               <TextField
-                label="ID Danh mục"
-                value={editFoodItem.category?.categoryId || ""}
-                onChange={(e) => setEditFoodItem({ ...editFoodItem, category: { ...editFoodItem.category, categoryId: e.target.value } })}
+                label="Ngày bắt đầu"
+                value={editPromotion.startDate || ""}
+                onChange={(e) => setEditPromotion({ ...editPromotion, startDate: e.target.value })}
                 fullWidth
                 className="mb-3"
               />
               <TextField
-                label="URL hình ảnh"
-                value={editFoodItem.img || ""}
-                onChange={(e) => setEditFoodItem({ ...editFoodItem, img: e.target.value })}
+                label="Ngày kết thúc"
+                value={editPromotion.endDate || ""}
+                onChange={(e) => setEditPromotion({ ...editPromotion, endDate: e.target.value })}
                 fullWidth
                 className="mb-3"
               />
             </>
           )}
-          {deleteFoodItem && (
-            <p>Bạn có chắc chắn xóa {deleteFoodItem?.name}?</p>
+          {deletePromotion && (
+            <p>Bạn có chắc chắn xóa chương trình khuyến mãi {deletePromotion?.name}?</p>
           )}
-          {!editFoodItem && !deleteFoodItem && (
+          {!editPromotion && !deletePromotion && (
             <>
               <TextField
-                label="Tên"
-                value={newFoodItem.name || ""}
-                onChange={(e) => setNewFoodItem({ ...newFoodItem, name: e.target.value })}
+                label="Tiêu đề"
+                value={newPromotion.name || ""}
+                onChange={(e) => setNewPromotion({ ...newPromotion, name: e.target.value })}
                 fullWidth
                 className="mb-3"
               />
               <TextField
-                label="Giá"
-                value={newFoodItem.price || ""}
-                onChange={(e) => setNewFoodItem({ ...newFoodItem, price: e.target.value })}
+                label="Giảm giá (%)"
+                value={newPromotion.discountPercentage || ""}
+                onChange={(e) => setNewPromotion({ ...newPromotion, discountPercentage: e.target.value })}
                 fullWidth
                 className="mb-3"
               />
               <TextField
                 label="Mô tả"
-                value={newFoodItem.description || ""}
-                onChange={(e) => setNewFoodItem({ ...newFoodItem, description: e.target.value })}
+                value={newPromotion.description || ""}
+                onChange={(e) => setNewPromotion({ ...newPromotion, description: e.target.value })}
                 fullWidth
                 className="mb-3"
               />
               <TextField
-                label="ID danh mục"
-                value={newFoodItem.categoryId || ""}
-                onChange={(e) => setNewFoodItem({ ...newFoodItem, categoryId: e.target.value })}
+                label="Ngày bắt đầu"
+                value={newPromotion.startDate || ""}
+                onChange={(e) => setNewPromotion({ ...newPromotion, startDate: e.target.value })}
                 fullWidth
                 className="mb-3"
               />
               <TextField
-                label="URL hình ảnh"
-                value={newFoodItem.img || ""}
-                onChange={(e) => setNewFoodItem({ ...newFoodItem, img: e.target.value })}
+                label="Ngày kết thúc"
+                value={newPromotion.endDate || ""}
+                onChange={(e) => setNewPromotion({ ...newPromotion, endDate: e.target.value })}
                 fullWidth
                 className="mb-3"
               />
@@ -335,17 +312,17 @@ export default function PromotionManager() {
           <Button onClick={handleDialogClose} color="primary">
             Hủy
           </Button>
-          {editFoodItem && (
+          {editPromotion && (
             <Button onClick={handleEditSubmit} color="primary">
               Lưu
             </Button>
           )}
-          {deleteFoodItem && (
+          {deletePromotion && (
             <Button onClick={handleDeleteConfirm} color="secondary">
               Xóa
             </Button>
           )}
-          {!editFoodItem && !deleteFoodItem && (
+          {!editPromotion && !deletePromotion && (
             <Button onClick={handleAddSubmit} color="primary">
               Thêm
             </Button>
