@@ -69,18 +69,18 @@ export default function FoodManagement() {
       alert("Please fill in all fields.");
       return;
     }
-  
+
     try {
       const token = Cookies.get('token');
       if (!token) {
         throw new Error('No JWT token found');
       }
-  
+
       const updatedFoodItem = {
         ...editFoodItem,
         categoryId: editFoodItem.category.categoryId,  // Flattening the category object
       };
-   console.log(JSON.stringify(updatedFoodItem));
+      console.log(JSON.stringify(updatedFoodItem));
       const response = await fetch(`http://localhost:8080/api/food/edit/${editFoodItem.foodItemId}`, {
         method: "PUT",
         headers: {
@@ -89,7 +89,7 @@ export default function FoodManagement() {
         },
         body: JSON.stringify(updatedFoodItem),
       });
-  
+
       if (response.ok) {
         fetchFoodItems();
         handleDialogClose();
@@ -130,16 +130,16 @@ export default function FoodManagement() {
 
   const handleAddSubmit = async () => {
     const { name, img, price, description, categoryId } = newFoodItem;
-  
+
     // Validation: Ensure all fields are filled
     if (!name || !img || !price || !description || !categoryId) {
       alert("Please fill in all fields.");
       return;
     }
-  
+
     try {
       const token = Cookies.get('token');
-      
+
       // Send the POST request to add a new food item
       const response = await fetch("http://localhost:8080/api/food/add", {
         method: "POST",
@@ -149,7 +149,7 @@ export default function FoodManagement() {
         },
         body: JSON.stringify(newFoodItem),
       });
-  
+
       // Handle the response
       if (response.ok) {
         console.log("Food item added successfully");
@@ -165,7 +165,7 @@ export default function FoodManagement() {
       alert(`An error occurred: ${error.message}`);
     }
   };
-  
+
   return (
     <div className="container mt-4">
       <h3 className="text-xl font-bold mb-4">Food Management</h3>

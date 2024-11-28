@@ -34,19 +34,17 @@ export default function AdminNavbar(props) {
 	return (
 		<nav className="flex items-center justify-between backdrop-blur-sm shadow-lg p-4 rounded-lg mt-4 mx-8">
 			<div className="flex items-center space-x-4">
-				<a href="#" className="text-xl font-semibold text-gray-800">Pages</a>
-				<span className="text-gray-500">/</span>
-				<a href="#" className="text-xl font-semibold text-gray-800">Main Dashboard</a>
+				<a href="#" className="text-xl font-semibold text-gray-800">Trang quản lí</a>
 			</div>
 			<div className="flex items-center space-x-4">
-				<div className="relative">
+				{/* <div className="relative">
 					<input
 						type="text"
 						placeholder="Search..."
 						className="px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:border-gray-500"
 					/>
 					<FaSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-				</div>
+				</div> */}
 				<FaBell className="text-gray-500 text-xl cursor-pointer" />
 				<div className="flex items-center bg-gray-200 p-2 rounded-full">
 					<FaEthereum className="text-gray-700" />

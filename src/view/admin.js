@@ -14,26 +14,24 @@ const Admin = () => {
 
   return (
     <div className='admin'>
-      
+
       <div className='admin-container'>
         <Sidebar />
- 
+
         <div className='admin-main'>
-       
+
           <Navbar
-        onOpen={onOpen}
-        logoText={'Horizon UI Dashboard PRO'}
-        brandText={'Main Dashboard'}
-        secondary={'/admin'}
-        fixed={fixed}
-        {...rest}
-      />
-       <div className="mt-20">
-          <MainDash />
-          
-          <RigtSide />
-              
-        </div>
+            onOpen={onOpen}
+            logoText={'Horizon UI Dashboard PRO'}
+            brandText={'Main Dashboard'}
+            secondary={'/admin'}
+            fixed={fixed}
+            {...rest}
+          />
+          <div className="mt-20">
+            {/* <MainDash /> */}
+            <RigtSide />
+          </div>
         </div>
       </div>
     </div>

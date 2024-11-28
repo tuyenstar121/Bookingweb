@@ -2,26 +2,30 @@ import React ,{useEffect,useState}from 'react';
 
 const UserInfoForm = ({ userData, onUpdate }) => {
   const [name, setName] = useState(userData?.name || '');
+  const [phone, setPhone] = useState(userData?.phone || '');
   const [email, setEmail] = useState(userData?.email || '');
-  const [dayOfBirth, setDayOfBirth] = useState(userData?.dayOfBirth || '');
-  const [monthOfBirth, setMonthOfBirth] = useState(userData?.monthOfBirth || '');
-  const [yearOfBirth, setYearOfBirth] = useState(userData?.yearOfBirth || '');
+  // const [dayOfBirth, setDayOfBirth] = useState(userData?.dayOfBirth || '');
+  // const [monthOfBirth, setMonthOfBirth] = useState(userData?.monthOfBirth || '');
+  // const [yearOfBirth, setYearOfBirth] = useState(userData?.yearOfBirth || '');
   const [gender, setGender] = useState(userData?.gender || 'Nam');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const updatedData = { name, email, dayOfBirth, monthOfBirth, yearOfBirth, gender };
+    const updatedData = { name, phone ,email,
+      //  dayOfBirth, monthOfBirth, yearOfBirth, 
+                      gender };
     onUpdate(updatedData);
   };
 
   useEffect(() => {
     if (userData) {
-      setName(userData.username);
-      setEmail(userData.email);
-      setDayOfBirth(userData.dayOfBirth);
-      setMonthOfBirth(userData.monthOfBirth);
-      setYearOfBirth(userData.yearOfBirth);
-      setGender(userData.gender);
+      setName(userData?.username);
+      setPhone(userData?.phone);
+      setEmail(userData?.email);
+      // setDayOfBirth(userData.dayOfBirth);
+      // setMonthOfBirth(userData.monthOfBirth);
+      // setYearOfBirth(userData.yearOfBirth);
+      setGender(userData?.gender);
     }
   }, [userData]);
 
@@ -38,6 +42,15 @@ const UserInfoForm = ({ userData, onUpdate }) => {
         />
       </div>
       <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700">Số điện thoại:</label>
+        <input
+          type="text"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm p-2"
+        />
+      </div>
+      <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700">Email:</label>
         <input
           type="email"
@@ -46,7 +59,7 @@ const UserInfoForm = ({ userData, onUpdate }) => {
           className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm p-2"
         />
       </div>
-      <div className="mb-4 flex space-x-2">
+      {/* <div className="mb-4 flex space-x-2">
         <div>
           <label className="block text-sm font-medium text-gray-700">Ngày sinh:</label>
           <input
@@ -74,7 +87,7 @@ const UserInfoForm = ({ userData, onUpdate }) => {
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm p-2"
           />
         </div>
-      </div>
+      </div> */}
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700">Giới tính:</label>
         <div className="mt-1 flex items-center">
@@ -82,7 +95,7 @@ const UserInfoForm = ({ userData, onUpdate }) => {
             <input
               type="radio"
               value="Nam"
-              checked={gender === 'male'}
+              checked={gender === 'Nam'}
               onChange={(e) => setGender(e.target.value)}
               className="form-radio h-4 w-4 text-yellow-600"
             />
@@ -92,7 +105,7 @@ const UserInfoForm = ({ userData, onUpdate }) => {
             <input
               type="radio"
               value="Nữ"
-              checked={gender === 'female'}
+              checked={gender === 'Nữ'}
               onChange={(e) => setGender(e.target.value)}
               className="form-radio h-4 w-4 text-yellow-600"
             />

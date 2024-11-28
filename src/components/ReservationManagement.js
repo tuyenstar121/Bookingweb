@@ -36,7 +36,7 @@ function ReservationManagementTable() {
   const [filterStatus, setFilterStatus] = useState(null);
   const [foodItems, setFoodItems] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
-  const {onOpen } = useDisclosure();
+  const { onOpen } = useDisclosure();
   const fixed = false; // Example value, update as necessary
   const rest = {}; // Example value, update as necessary
   const navigate = useNavigate();
@@ -48,22 +48,22 @@ function ReservationManagementTable() {
     if (selectedRestaurant) {
       url = `http://localhost:8080/api/reservations/by-restaurant?restaurantId=${selectedRestaurant}`;
     }
-  
+
     const token = Cookies.get('token');
     try {
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` }
       });
       let updatedReservations = response.data;
-  
+
       if (sortBy === "date") {
         updatedReservations.sort((a, b) => new Date(b.reservationDate) - new Date(a.reservationDate));
       }
-  
+
       if (filterStatus) {
         updatedReservations = updatedReservations.filter(reservation => reservation.status === filterStatus);
       }
-  
+
       setReservations(updatedReservations);
     } catch (error) {
       console.error("There was an error fetching the reservations!", error);
@@ -163,12 +163,12 @@ function ReservationManagementTable() {
     console.log(reservationId)
     // Lưu ID đơn đặt vào localStorage
     localStorage.setItem("reservationId", reservationId);
-navigate("/nv");
+    navigate("/nv");
     // Chuyển hướng sang trang /nv
-   
+
   };
 
-  
+
   const handleDialogClose = () => {
     setOpenDialog(false);
     setFoodItems([]);
@@ -325,49 +325,48 @@ navigate("/nv");
                 <TableCell align="left">{reservation.table.restaurants.name}</TableCell>
                 <TableCell align="left">{reservation.table.tableNumber}</TableCell>
                 <TableCell align="left">
-  <span
-    className={`badge px-2 py-1 rounded-full text-white ${
-      reservation.status === "Booked"
-        ? "bg-blue-500"
-        : reservation.status === "Confirmed"
-        ? "bg-green-500"
-        : reservation.status === "Cancelled"
-        ? "bg-red-500"
-        : reservation.status === "Completed"
-        ? "bg-gray-500"
-        : "bg-yellow-500"
-    }`}
-  >
-    {reservation.status}
-  </span>
-</TableCell>
+                  <span
+                    className={`badge px-2 py-1 rounded-full text-white ${reservation.status === "Booked"
+                      ? "bg-blue-500"
+                      : reservation.status === "Confirmed"
+                        ? "bg-green-500"
+                        : reservation.status === "Cancelled"
+                          ? "bg-red-500"
+                          : reservation.status === "Completed"
+                            ? "bg-gray-500"
+                            : "bg-yellow-500"
+                      }`}
+                  >
+                    {reservation.status}
+                  </span>
+                </TableCell>
 
-<TableCell align="left">
-  {reservation.status === "Booked" && (
-    <div className="flex space-x-2">
-      <IconButton
-        className="bg-green-500 text-green hover:bg-green-600"
-        onClick={() => handleApproveBooked(reservation.reservationId)}
-      >
-        <CheckIcon />
-      </IconButton>
-      <IconButton
-        className="bg-red-500 text-red hover:bg-red-600"
-        onClick={() => handleCancelBooked(reservation.reservationId)}
-      >
-        <CloseIcon />
-      </IconButton>
-    </div>
-  )}
-  {reservation.status === "Confirmed" && (
-    <IconButton
-      className="bg-green-500 text-black hover:bg-green-600"
-      onClick={() => handleApproveConfirmed(reservation.reservationId)}
-    >
-      <CheckIcon />
-    </IconButton>
-  )}
-</TableCell>
+                <TableCell align="left">
+                  {reservation.status === "Booked" && (
+                    <div className="flex space-x-2">
+                      <IconButton
+                        className="bg-green-500 text-green hover:bg-green-600"
+                        onClick={() => handleApproveBooked(reservation.reservationId)}
+                      >
+                        <CheckIcon />
+                      </IconButton>
+                      <IconButton
+                        className="bg-red-500 text-red hover:bg-red-600"
+                        onClick={() => handleCancelBooked(reservation.reservationId)}
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </div>
+                  )}
+                  {reservation.status === "Confirmed" && (
+                    <IconButton
+                      className="bg-green-500 text-black hover:bg-green-600"
+                      onClick={() => handleApproveConfirmed(reservation.reservationId)}
+                    >
+                      <CheckIcon />
+                    </IconButton>
+                  )}
+                </TableCell>
                 <TableCell align="left">
                   <Button onClick={() => fetchFoodItems(reservation.reservationId)}>
                     View Order
@@ -379,43 +378,43 @@ navigate("/nv");
         </Table>
       </TableContainer>
       <Dialog open={openDialog} onClose={handleDialogClose}>
-  <DialogTitle className="text-xl font-semibold">Food Items</DialogTitle>
-  <DialogContent>
-  {foodItems.length > 0 ? (
-    <div className="max-w-full overflow-x-auto">
-      <MenuTable foodItems={foodItems} />
-    
-    </div>
-  ) : (
-    <p className="text-gray-500">No food items found for this reservation.</p>
-  )}
-</DialogContent>
+        <DialogTitle className="text-xl font-semibold">Food Items</DialogTitle>
+        <DialogContent>
+          {foodItems.length > 0 ? (
+            <div className="max-w-full overflow-x-auto">
+              <MenuTable foodItems={foodItems} />
 
-  
-<DialogActions className="flex justify-end gap-4">
-  {/* Close Button */}
-  <Button
-    variant="contained"
-    color="primary"
-    onClick={handleDialogClose}
-    startIcon={<FiX className="text-lg" />} // Biểu tượng Close
-  >
-    Close
-  </Button>
-
-  {/* Edit Button */}
-  <Button
-  variant="contained"
-  color="secondary"
-  onClick={() => handleEditFood(foodItems[0]?.reservations.reservationId)}  // Wrapped in function
-  startIcon={<FiEdit className="text-lg" />} // Edit icon
->
-  Edit
-</Button>
-</DialogActions>
+            </div>
+          ) : (
+            <p className="text-gray-500">No food items found for this reservation.</p>
+          )}
+        </DialogContent>
 
 
-</Dialog>
+        <DialogActions className="flex justify-end gap-4">
+          {/* Close Button */}
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleDialogClose}
+            startIcon={<FiX className="text-lg" />} // Biểu tượng Close
+          >
+            Close
+          </Button>
+
+          {/* Edit Button */}
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => handleEditFood(foodItems[0]?.reservations.reservationId)}  // Wrapped in function
+            startIcon={<FiEdit className="text-lg" />} // Edit icon
+          >
+            Edit
+          </Button>
+        </DialogActions>
+
+
+      </Dialog>
 
     </div>
   );

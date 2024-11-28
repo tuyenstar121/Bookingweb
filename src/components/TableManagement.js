@@ -12,7 +12,7 @@ export default function TableManagement() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editTable, setEditTable] = useState(null);
   const [newTable, setNewTable] = useState({
-    id:"",
+    id: "",
     tableNumber: "",
     capacity: "",
     status: "available",
@@ -30,7 +30,7 @@ export default function TableManagement() {
       if (!token) {
         throw new Error('No JWT token found');
       }
-  
+
       const response = await axios.get(`http://localhost:8080/tables/by-restaurant/${restaurantId}`, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -59,13 +59,13 @@ export default function TableManagement() {
       if (!token) {
         throw new Error('No JWT token found');
       }
-  
+
       const response = await axios.put(`http://localhost:8080/tables/${editTable.tableId}`, editTable, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-  
+
       // Update only the edited table in the state
       setTables(tables.map((table) => (table.id === editTable.id ? response.data : table)));
       toast.success("Table updated successfully");
@@ -74,18 +74,18 @@ export default function TableManagement() {
       const errorMessage = error.response?.data?.message || "Error editing table";
       toast.error(errorMessage);
     }
-  
+
     handleEditModalClose();
   };
- 
-  
+
+
   const handleAddTable = async () => {
     try {
       const token = Cookies.get('token');
       if (!token) {
         throw new Error('No JWT token found');
       }
-  
+
       const response = await axios.post("http://localhost:8080/tables/add", {
         ...newTable,
         restaurantId: selectedRestaurant,
@@ -107,13 +107,13 @@ export default function TableManagement() {
     }
   };
   const handleDeleteTable = async (tableId) => {
-    
+
     try {
       const token = Cookies.get('token');
       if (!token) {
         throw new Error('No JWT token found');
       }
-      await axios.delete(`http://localhost:8080/tables/${tableId}`,{
+      await axios.delete(`http://localhost:8080/tables/${tableId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
