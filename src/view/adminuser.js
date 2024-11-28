@@ -1,5 +1,5 @@
 import React from 'react';
-import UserManagementTable from '../components/usermng';
+import UserManagementTable from '../components/Admin/UserManagementTable';
   
 import Sidebar from '../components/Sidebar/Sidebar';
 

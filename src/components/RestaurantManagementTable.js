@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, Form } from 'react-bootstrap';
 import axios from 'axios';
+import Cookies from 'js-cookie'; // Add this import at the top
 
 const initialRestaurant = {
   restaurantId: '',
@@ -23,7 +24,16 @@ const RestaurantManagement = () => {
 
   const fetchRestaurants = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/restaurants'); // Update with your API endpoint
+      const token = Cookies.get('token'); // Get the JWT token from the cookie
+      if (!token) {
+        throw new Error('No JWT token found');
+      }
+  
+      const response = await axios.get('http://localhost:8080/restaurants', {
+        headers: {
+          Authorization: `Bearer ${token}` // Add the Authorization header with the JWT token
+        }
+      });
       setRestaurants(response.data);
     } catch (error) {
       console.error('Error fetching restaurants:', error);
@@ -47,12 +57,27 @@ const RestaurantManagement = () => {
     setCurrentRestaurant({ ...currentRestaurant, [name]: value });
   };
 
+
+  
   const handleSubmit = async () => {
     try {
+      const token = Cookies.get('token'); // Get the JWT token from the cookie
+      if (!token) {
+        throw new Error('No JWT token found');
+      }
+  
       if (isEditing) {
-        await axios.put(`http://localhost:8080/restaurants/${currentRestaurant.restaurantId}`, currentRestaurant);
+        await axios.put(`http://localhost:8080/restaurants/${currentRestaurant.restaurantId}`, currentRestaurant, {
+          headers: {
+            Authorization: `Bearer ${token}` // Add the Authorization header with the JWT token
+          }
+        });
       } else {
-        await axios.post('http://localhost:8080/restaurants', currentRestaurant);
+        await axios.post('http://localhost:8080/restaurants', currentRestaurant, {
+          headers: {
+            Authorization: `Bearer ${token}` // Add the Authorization header with the JWT token
+          }
+        });
       }
       fetchRestaurants();
       handleCloseModal();
@@ -60,10 +85,19 @@ const RestaurantManagement = () => {
       console.error('Error saving restaurant:', error);
     }
   };
-
+  
   const handleDelete = async (restaurantId) => {
     try {
-      await axios.delete(`http://localhost:8080/restaurants/${restaurantId}`);
+      const token = Cookies.get('token'); // Get the JWT token from the cookie
+      if (!token) {
+        throw new Error('No JWT token found');
+      }
+  
+      await axios.delete(`http://localhost:8080/restaurants/${restaurantId}`, {
+        headers: {
+          Authorization: `Bearer ${token}` // Add the Authorization header with the JWT token
+        }
+      });
       fetchRestaurants();
     } catch (error) {
       console.error('Error deleting restaurant:', error);
@@ -94,7 +128,7 @@ const RestaurantManagement = () => {
               <td>{restaurant.address}</td>
               <td>{restaurant.phone}</td>
               <td>{restaurant.description}</td>
-              <td><img src={restaurant.image} alt={restaurant.name} style={{ width: '100px' }} /></td>
+              <td><img src={restaurant.image} alt={restaurant.name} style={{ width: '100px', height: 'auto', objectFit: 'cover' }} /></td>
               <td>
                 <Button variant="warning" onClick={() => handleShowModal(restaurant)}>Edit</Button>{' '}
                 <Button variant="danger" onClick={() => handleDelete(restaurant.restaurantId)}>Delete</Button>

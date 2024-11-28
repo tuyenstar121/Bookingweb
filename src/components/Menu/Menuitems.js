@@ -18,7 +18,7 @@ const MenuItems = ({ items, onAddToCart }) => {
             <div className="flex flex-col flex-grow p-4">
               <header className="flex justify-between mb-2">
                 <h4 className="text-lg font-semibold">{name}</h4>
-                <h4 className="text-lg font-semibold">${price}</h4>
+                <h4 className="text-lg font-semibold">{price}VND</h4>
               </header>
               <p className="text-sm text-gray-700 mb-2 flex-grow">{description}</p>
               <div className="mt-auto">

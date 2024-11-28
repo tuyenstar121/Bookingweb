@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Cookies from "js-cookie";
+import MenuTable from "../components/Menu/MenuTable";
 import {
   Table,
   TableBody,
@@ -24,7 +26,8 @@ import classNames from "classnames";
 import { ChevronDownIcon } from '@heroicons/react/16/solid';
 import Navbar from './navbar/NavbarAdmin';
 import { useDisclosure } from '@chakra-ui/react';
-
+import { FiX, FiEdit } from "react-icons/fi"; // Biểu tượng từ React-Icons
+import { useNavigate } from "react-router-dom";
 function ReservationManagementTable() {
   const [reservations, setReservations] = useState([]);
   const [error, setError] = useState("");
@@ -33,32 +36,34 @@ function ReservationManagementTable() {
   const [filterStatus, setFilterStatus] = useState(null);
   const [foodItems, setFoodItems] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const {onOpen } = useDisclosure();
   const fixed = false; // Example value, update as necessary
   const rest = {}; // Example value, update as necessary
-
+  const navigate = useNavigate();
   useEffect(() => {
     fetchReservations();
   }, [selectedRestaurant, sortBy, filterStatus]);
-
   const fetchReservations = async () => {
     let url = "http://localhost:8080/api/reservations/list";
     if (selectedRestaurant) {
       url = `http://localhost:8080/api/reservations/by-restaurant?restaurantId=${selectedRestaurant}`;
     }
-
+  
+    const token = Cookies.get('token');
     try {
-      const response = await axios.get(url);
+      const response = await axios.get(url, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       let updatedReservations = response.data;
-
+  
       if (sortBy === "date") {
-        updatedReservations.sort((a, b) => new Date(a.reservationDate) - new Date(b.reservationDate));
+        updatedReservations.sort((a, b) => new Date(b.reservationDate) - new Date(a.reservationDate));
       }
-
+  
       if (filterStatus) {
         updatedReservations = updatedReservations.filter(reservation => reservation.status === filterStatus);
       }
-
+  
       setReservations(updatedReservations);
     } catch (error) {
       console.error("There was an error fetching the reservations!", error);
@@ -67,9 +72,13 @@ function ReservationManagementTable() {
   };
 
   const fetchFoodItems = async (reservationId) => {
+    const token = Cookies.get('token');
     try {
-      const response = await axios.get(`http://localhost:8080/api/order-food-mapping/reservation/${reservationId}`);
+      const response = await axios.get(`http://localhost:8080/api/order-food-mapping/reservation/${reservationId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setFoodItems(response.data);
+      console.log(response.data);
       setOpenDialog(true);
     } catch (error) {
       console.error("There was an error fetching the food items!", error);
@@ -86,8 +95,11 @@ function ReservationManagementTable() {
   };
 
   const handleApproveBooked = async (reservationId) => {
+    const token = Cookies.get('token');
     try {
-      const response = await axios.post(`http://localhost:8080/api/reservations/approve/${reservationId}`);
+      const response = await axios.post(`http://localhost:8080/api/reservations/approve/${reservationId}`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       const updatedReservations = reservations.map((res) =>
         res.reservationId === reservationId ? { ...res, status: "Confirmed" } : res
       );
@@ -100,8 +112,11 @@ function ReservationManagementTable() {
   };
 
   const handleCancelBooked = async (reservationId) => {
+    const token = Cookies.get('token');
     try {
-      const response = await axios.post(`http://localhost:8080/api/reservations/cancel/${reservationId}`);
+      const response = await axios.post(`http://localhost:8080/api/reservations/cancel/${reservationId}`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       const updatedReservations = reservations.map((res) =>
         res.reservationId === reservationId ? { ...res, status: "Cancelled" } : res
       );
@@ -114,8 +129,11 @@ function ReservationManagementTable() {
   };
 
   const handleApproveConfirmed = async (reservationId) => {
+    const token = Cookies.get('token');
     try {
-      const response = await axios.post(`http://localhost:8080/api/reservations/complete/${reservationId}`);
+      const response = await axios.post(`http://localhost:8080/api/reservations/complete/${reservationId}`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       const updatedReservations = reservations.map((res) =>
         res.reservationId === reservationId ? { ...res, status: "Completed" } : res
       );
@@ -130,7 +148,6 @@ function ReservationManagementTable() {
   const sortByDate = () => {
     setSortBy("date");
   };
-
   const resetTable = () => {
     setSelectedRestaurant("");
     setSortBy(null);
@@ -142,18 +159,26 @@ function ReservationManagementTable() {
   const filterByStatus = (status) => {
     setFilterStatus(status);
   };
+  const handleEditFood = (reservationId) => {
+    console.log(reservationId)
+    // Lưu ID đơn đặt vào localStorage
+    localStorage.setItem("reservationId", reservationId);
+navigate("/nv");
+    // Chuyển hướng sang trang /nv
+   
+  };
 
+  
   const handleDialogClose = () => {
     setOpenDialog(false);
     setFoodItems([]);
   };
-
   return (
     <div className="container">
       <Navbar
         onOpen={onOpen}
         logoText={'Horizon UI Dashboard PRO'}
-        brandText={'Main Dashboard'}
+        brandText={'Order'}
         secondary={'/admin'}
         fixed={fixed}
         {...rest}
@@ -242,7 +267,7 @@ function ReservationManagementTable() {
                         active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                         'block px-4 py-2 text-sm'
                       )}
-                      onClick={() => filterByStatus("Conpleted")}
+                      onClick={() => filterByStatus("Completed")}
                     >
                       Filter by Completed
                     </a>
@@ -300,30 +325,52 @@ function ReservationManagementTable() {
                 <TableCell align="left">{reservation.table.restaurants.name}</TableCell>
                 <TableCell align="left">{reservation.table.tableNumber}</TableCell>
                 <TableCell align="left">
-                  <span className={`badge bg-${reservation.status.toLowerCase()}`}>
-                    {reservation.status}
-                  </span>
-                </TableCell>
-                <TableCell align="left">
-                  {reservation.status === "Booked" && (
-                    <div className="btn-group">
-                      <IconButton className="btn btn-success" onClick={() => handleApproveBooked(reservation.reservationId)}>
-                        <CheckIcon />
-                      </IconButton>
-                      <IconButton className="btn btn-danger" onClick={() => handleCancelBooked(reservation.reservationId)}>
-                        <CloseIcon />
-                      </IconButton>
-                    </div>
-                  )}
-                  {reservation.status === "Confirmed" && (
-                    <IconButton className="btn btn-success" onClick={() => handleApproveConfirmed(reservation.reservationId)}>
-                      <CheckIcon />
-                    </IconButton>
-                  )}
-                </TableCell>
+  <span
+    className={`badge px-2 py-1 rounded-full text-white ${
+      reservation.status === "Booked"
+        ? "bg-blue-500"
+        : reservation.status === "Confirmed"
+        ? "bg-green-500"
+        : reservation.status === "Cancelled"
+        ? "bg-red-500"
+        : reservation.status === "Completed"
+        ? "bg-gray-500"
+        : "bg-yellow-500"
+    }`}
+  >
+    {reservation.status}
+  </span>
+</TableCell>
+
+<TableCell align="left">
+  {reservation.status === "Booked" && (
+    <div className="flex space-x-2">
+      <IconButton
+        className="bg-green-500 text-green hover:bg-green-600"
+        onClick={() => handleApproveBooked(reservation.reservationId)}
+      >
+        <CheckIcon />
+      </IconButton>
+      <IconButton
+        className="bg-red-500 text-red hover:bg-red-600"
+        onClick={() => handleCancelBooked(reservation.reservationId)}
+      >
+        <CloseIcon />
+      </IconButton>
+    </div>
+  )}
+  {reservation.status === "Confirmed" && (
+    <IconButton
+      className="bg-green-500 text-black hover:bg-green-600"
+      onClick={() => handleApproveConfirmed(reservation.reservationId)}
+    >
+      <CheckIcon />
+    </IconButton>
+  )}
+</TableCell>
                 <TableCell align="left">
                   <Button onClick={() => fetchFoodItems(reservation.reservationId)}>
-                    View Food Items
+                    View Order
                   </Button>
                 </TableCell>
               </TableRow>
@@ -332,49 +379,44 @@ function ReservationManagementTable() {
         </Table>
       </TableContainer>
       <Dialog open={openDialog} onClose={handleDialogClose}>
-        <DialogTitle className="text-xl font-semibold">Food Items</DialogTitle>
-        <DialogContent>
-          {foodItems.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white border border-gray-200">
-                <thead>
-                  <tr>
-                    <th className="px-4 py-2 border-b">Name</th>
-                    <th className="px-4 py-2 border-b">Description</th>
-                    <th className="px-4 py-2 border-b">Price</th>
-                    <th className="px-4 py-2 border-b">Quantity</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {foodItems.map((food, index) => (
-                    <tr key={index} className="hover:bg-gray-100">
-                      <td className="px-4 py-2 border-b">{food.foodItem.name}</td>
-                      <td className="px-4 py-2 border-b">
-                        <img 
-                          src={food.foodItem.img} 
-                          alt={food.foodItem.name} 
-                          className="w-24 h-24 object-cover rounded-md" 
-                        />
-                      </td>
-                      <td className="px-4 py-2 border-b">${food.foodItem.price}</td>
-                      <td className="px-4 py-2 border-b">{food.quantity}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <div className="flex justify-between p-4">
-                <span className="font-semibold">Total Price:</span>
-                <span className="font-semibold">${calculateTotalPrice()}</span>
-              </div>
-            </div>
-          ) : (
-            <p className="text-gray-500">No food items found for this reservation.</p>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDialogClose}>Close</Button>
-        </DialogActions>
-      </Dialog>
+  <DialogTitle className="text-xl font-semibold">Food Items</DialogTitle>
+  <DialogContent>
+  {foodItems.length > 0 ? (
+    <div className="max-w-full overflow-x-auto">
+      <MenuTable foodItems={foodItems} />
+    
+    </div>
+  ) : (
+    <p className="text-gray-500">No food items found for this reservation.</p>
+  )}
+</DialogContent>
+
+  
+<DialogActions className="flex justify-end gap-4">
+  {/* Close Button */}
+  <Button
+    variant="contained"
+    color="primary"
+    onClick={handleDialogClose}
+    startIcon={<FiX className="text-lg" />} // Biểu tượng Close
+  >
+    Close
+  </Button>
+
+  {/* Edit Button */}
+  <Button
+  variant="contained"
+  color="secondary"
+  onClick={() => handleEditFood(foodItems[0]?.reservations.reservationId)}  // Wrapped in function
+  startIcon={<FiEdit className="text-lg" />} // Edit icon
+>
+  Edit
+</Button>
+</DialogActions>
+
+
+</Dialog>
+
     </div>
   );
 }

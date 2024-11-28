@@ -39,8 +39,8 @@ const Register = () => {
       const response = await Axios.post("http://localhost:8080/auth/register", {
         username: formData.username,
         password: formData.password,
-        mobile: formData.mobile,
-        address: formData.address,
+        Phone: formData.mobile,
+     
         dob: formData.dob,
         email: formData.email,
         role: "user",
@@ -60,8 +60,12 @@ const Register = () => {
   };
 
   return (
+    <div className="background">
+      
     <div className="flex justify-center items-center h-screen">
       <ToastContainer />
+      <div>
+      </div>
       <div className="w-full max-w-md p-8 bg-gray-100 rounded-lg shadow-lg">
         <h2 className="text-2xl font-semibold text-center mb-6">Đăng ký</h2>
         <form onSubmit={handleRegister}>
@@ -129,33 +133,7 @@ const Register = () => {
               className="mt-1 block w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500"
             />
           </div>
-          <div className="mb-4">
-            <label htmlFor="address" className="block text-sm font-medium text-gray-700">
-              Địa chỉ:
-            </label>
-            <input
-              type="text"
-              id="address"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              placeholder="Địa chỉ"
-              className="mt-1 block w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500"
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="dob" className="block text-sm font-medium text-gray-700">
-              Ngày sinh:
-            </label>
-            <input
-              type="date"
-              id="dob"
-              name="dob"
-              value={formData.dob}
-              onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-yellow-500 focus:border-yellow-500"
-            />
-          </div>
+     
           <div className="mb-6">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email:
@@ -184,6 +162,7 @@ const Register = () => {
           </div>
         </form>
       </div>
+    </div>
     </div>
   );
 };

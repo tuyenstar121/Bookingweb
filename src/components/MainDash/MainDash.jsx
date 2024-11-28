@@ -1,7 +1,7 @@
 import React from "react";
-import Cards from "../Cards/Cards";
-import Table from "../Table/Table";
-import Sidebar from '../Sidebar/Sidebar';
+// import Cards from "../Cards/Cards";
+// import Table from "../Table/Table";
+import Payment from "../Admin/Payment";
 
 
 
@@ -11,10 +11,10 @@ const MainDash = () => {
 
   return (
     <div className="MainDash">
-
+     <Payment></Payment>    
      
       
-      <Table />
+
     </div>
   );
 };

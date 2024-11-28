@@ -1,17 +1,17 @@
 import React from 'react';
-import Sidebar from '../components/Sidebar/Sidebar';
 import ReservationManagementTable from '../components/ReservationManagement';
 import { useDisclosure } from '@chakra-ui/react';
+import Header from '../components/Headerstaff';
+import Footer from '../components/Footer';
 
 const Adminorder = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  
   return (
-    <div className='admin'>
-      <div className='admin-container'>
-        <Sidebar />
+    <div className="min-h-screen bg-gray-100 flex flex-col">
+      <Header />
+      <main className="flex-1 container mx-auto p-6 bg-white shadow-md rounded-lg">
         <ReservationManagementTable />
-      </div>
+      </main>
+      <Footer />
     </div>
   );
 };

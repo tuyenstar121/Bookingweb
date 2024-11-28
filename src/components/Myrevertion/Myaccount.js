@@ -8,37 +8,57 @@ import PasswordManagementForm from '../password/password';
 import ReservationHistory from '../Userprofile/ReservationHistory';
 import Cookies from 'js-cookie';
 import UserInfoForm from '../Userprofile/UserProfileForm';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const AccountDashboard = () => {
-  const [activeComponent, setActiveComponent] = useState('dashboard');
+  const [activeComponent, setActiveComponent] = useState('accountInfo');
   const [userData, setUserData] = useState(null);
   const [storedUserId, setStoredUserId] = useState(null);
   const navigate = useNavigate();
-
   const [loggedIn, setLoggedIn] = useState(false);
+
   const fetchUserData = async (userId) => {
+    const token = Cookies.get('token');
     try {
-      const response = await fetch(`http://localhost:8080/api/users/id/${userId}`);
-      const data = await response.json();
-      setUserData(data);
+      const response = await axios.get(`http://localhost:8080/api/users/id/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setUserData(response.data);
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
   };
-  const handleUpdateUserData = (updatedData) => {
-    // Update user data logic here
-    console.log('Updated User Data:', updatedData);
-  };
-  const handleLogin = () => {
-    if (loggedIn) {
-      // Perform logout logic
-      setLoggedIn(false);
-    } else {
-      // Navigate to login page
-      navigate("/login");
-      Cookies.remove('userId');
+
+  const handleUpdateUserData = async (updatedData) => {
+    try {
+      const userId = Cookies.get('userId');
+      const token = Cookies.get('token');
+      if (!token) {
+        throw new Error('No JWT token found');
+      }
+      const response = await axios.put(`http://localhost:8080/api/users/${userId}`, updatedData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setUserData(response.data);
+      toast.success("User data updated successfully");
+    } catch (error) {
+      console.error("Error updating user data:", error);
+      toast.error("Error updating user data");
     }
   };
+
+  const handleLogin = () => {
+    if (loggedIn) {
+      setLoggedIn(false);
+      Cookies.remove('userId');
+    } else {
+      navigate("/login");
+    }
+  };
+
   useEffect(() => {
     const userId = Cookies.get('userId');
     if (userId) {
@@ -46,6 +66,7 @@ const AccountDashboard = () => {
       fetchUserData(userId);
     }
   }, []);
+
   return (
     <Container className="container1">
       <Row>

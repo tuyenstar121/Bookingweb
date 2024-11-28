@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Button, Form, Modal, OverlayTrigger, Popover, Table } from "react-bootstrap";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import RestaurantSelector from "./RestaurantSelector"; // Import the RestaurantSelector component
+import Cookies from 'js-cookie'; // Add this import at the top
 
 export default function TableManagement() {
   const [tables, setTables] = useState([]);
@@ -9,9 +12,10 @@ export default function TableManagement() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editTable, setEditTable] = useState(null);
   const [newTable, setNewTable] = useState({
+    id:"",
     tableNumber: "",
     capacity: "",
-    status: "",
+    status: "available",
   });
 
   useEffect(() => {
@@ -22,10 +26,20 @@ export default function TableManagement() {
 
   const fetchTablesByRestaurant = async (restaurantId) => {
     try {
-      const response = await axios.get(`http://localhost:8080/tables/by-restaurant/${restaurantId}`);
+      const token = Cookies.get('token');
+      if (!token) {
+        throw new Error('No JWT token found');
+      }
+  
+      const response = await axios.get(`http://localhost:8080/tables/by-restaurant/${restaurantId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       setTables(response.data);
     } catch (error) {
       console.error("Error fetching tables:", error);
+      toast.error("Error fetching tables");
     }
   };
 
@@ -41,42 +55,80 @@ export default function TableManagement() {
 
   const handleEditSubmit = async () => {
     try {
-      const response = await axios.put(`http://localhost:8080/tables/${editTable.id}`, editTable);
+      const token = Cookies.get('token');
+      if (!token) {
+        throw new Error('No JWT token found');
+      }
+  
+      const response = await axios.put(`http://localhost:8080/tables/${editTable.tableId}`, editTable, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+  
+      // Update only the edited table in the state
       setTables(tables.map((table) => (table.id === editTable.id ? response.data : table)));
+      toast.success("Table updated successfully");
     } catch (error) {
       console.error("Error editing table:", error);
+      const errorMessage = error.response?.data?.message || "Error editing table";
+      toast.error(errorMessage);
     }
+  
     handleEditModalClose();
   };
-
+ 
+  
   const handleAddTable = async () => {
     try {
-      const response = await axios.post("http://localhost:8080/tables", {
+      const token = Cookies.get('token');
+      if (!token) {
+        throw new Error('No JWT token found');
+      }
+  
+      const response = await axios.post("http://localhost:8080/tables/add", {
         ...newTable,
         restaurantId: selectedRestaurant,
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
       setTables([...tables, response.data]);
       setNewTable({
         tableNumber: "",
         capacity: "",
-        status: "",
+        status: "available",
       });
+      toast.success("Table added successfully");
     } catch (error) {
       console.error("Error adding table:", error);
+      toast.error("Error adding table");
     }
   };
-
   const handleDeleteTable = async (tableId) => {
+    
     try {
-      await axios.delete(`http://localhost:8080/tables/${tableId}`);
+      const token = Cookies.get('token');
+      if (!token) {
+        throw new Error('No JWT token found');
+      }
+      await axios.delete(`http://localhost:8080/tables/${tableId}`,{
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       setTables(tables.filter((table) => table.id !== tableId));
+      toast.success("Table deleted successfully");
     } catch (error) {
       console.error("Error deleting table:", error);
+      toast.error("Error deleting table");
     }
   };
 
   return (
     <div className="container mt-4">
+      <ToastContainer />
       <div className="admin-top">
         <h3>Table Management</h3>
         <RestaurantSelector
@@ -112,10 +164,13 @@ export default function TableManagement() {
                     <Form.Group controlId="formTableStatus">
                       <Form.Label>Status</Form.Label>
                       <Form.Control
-                        type="text"
+                        as="select"
                         value={newTable.status}
                         onChange={(e) => setNewTable({ ...newTable, status: e.target.value })}
-                      />
+                      >
+                        <option value="available">Available</option>
+                        <option value="occupied">Occupied</option>
+                      </Form.Control>
                     </Form.Group>
                     <Button variant="primary" onClick={handleAddTable}>
                       Add Table
@@ -140,9 +195,9 @@ export default function TableManagement() {
           </tr>
         </thead>
         <tbody>
-          {tables.map((table,index) => (
+          {tables.map((table, index) => (
             <tr key={table.id}>
-              <td>{index+1}</td>
+              <td>{index + 1}</td>
               <td>{table.tableNumber}</td>
               <td>{table.capacity}</td>
               <td>{table.status}</td>
@@ -150,7 +205,7 @@ export default function TableManagement() {
                 <Button variant="warning" onClick={() => handleEdit(table)} className="me-2">
                   Edit
                 </Button>
-                <Button variant="danger" onClick={() => handleDeleteTable(table.id)}>
+                <Button variant="danger" onClick={() => handleDeleteTable(table.tableId)}>
                   Delete
                 </Button>
               </td>
@@ -185,10 +240,13 @@ export default function TableManagement() {
             <Form.Group controlId="formEditTableStatus">
               <Form.Label>Status</Form.Label>
               <Form.Control
-                type="text"
-                value={editTable ? editTable.status : ""}
+                as="select"
+                value={editTable ? editTable.status : "available"}
                 onChange={(e) => setEditTable({ ...editTable, status: e.target.value })}
-              />
+              >
+                <option value="available">Available</option>
+                <option value="occupied">Occupied</option>
+              </Form.Control>
             </Form.Group>
           </Form>
         </Modal.Body>

@@ -1,26 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { Tabs, Tab } from 'react-bootstrap';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 import ReservationList from '../ReservationList/ReservationList';
 
 const ReservationHistory = ({ userId }) => {
-  const [key, setKey] = useState('pending');
+  const [key, setKey] = useState('Booked');
   const [reservations, setReservations] = useState([]);
 
   const fetchReservationsData = async (userId, status) => {
+    const token = Cookies.get('token');
     try {
-      const response = await fetch(`http://localhost:8080/api/reservations/by-user-and-status?userId=${userId}&status=${status}`);
-      const data = await response.json();
-      setReservations(data);
+      const response = await axios.get(`http://localhost:8080/api/reservations/by-user-and-status`, {
+        params: { userId, status },
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setReservations(response.data);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
   };
 
   const fetchAllReservationsData = async (userId) => {
+    const token = Cookies.get('token');
     try {
-      const response = await fetch(`http://localhost:8080/api/reservations/by-user?userId=${userId}`);
-      const data = await response.json();
-      setReservations(data);
+      const response = await axios.get(`http://localhost:8080/api/reservations/by-user`, {
+        params: { userId },
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setReservations(response.data);
     } catch (error) {
       console.error('Error fetching reservations data:', error);
     }
@@ -46,13 +54,13 @@ const ReservationHistory = ({ userId }) => {
       <Tab eventKey="Booked" title="Chờ xác nhận">
         <ReservationList reservations={reservations} />
       </Tab>
-      <Tab eventKey="confirmed" title="Đã tiếp nhận">
+      <Tab eventKey="Confirmed" title="Đã tiếp nhận">
         <ReservationList reservations={reservations} />
       </Tab>
-      <Tab eventKey="completed" title="Hoàn thành">
+      <Tab eventKey="Completed" title="Hoàn thành">
         <ReservationList reservations={reservations} />
       </Tab>
-      <Tab eventKey="cancelled" title="Đã hủy">
+      <Tab eventKey="Cancelled" title="Đã hủy">
         <ReservationList reservations={reservations} />
       </Tab>
       <Tab eventKey="all" title="Tất cả">

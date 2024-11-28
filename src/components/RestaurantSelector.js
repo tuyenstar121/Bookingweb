@@ -48,7 +48,7 @@ const RestaurantSelector = ({ selectedRestaurant, setSelectedRestaurant }) => {
   return (
     <div className="flex items-center space-x-4 mb-5">
       <label htmlFor="restaurant" className="block text-sm font-medium text-gray-700">
-        Select Restaurant: 
+        Chọn nhà hàng: 
       </label>
       <div className="relative inline-block w-64">
         <button
@@ -56,7 +56,7 @@ const RestaurantSelector = ({ selectedRestaurant, setSelectedRestaurant }) => {
           className="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           onClick={() => setIsOpen(!isOpen)}
         >
-          {restaurants.find(r => r.restaurantId === selectedRestaurant)?.name || "Select Restaurant"}
+          {restaurants.find(r => r.restaurantId === selectedRestaurant)?.name || "Chọn nhà hàng"}
         </button>
         {isOpen && (
           <ul className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">

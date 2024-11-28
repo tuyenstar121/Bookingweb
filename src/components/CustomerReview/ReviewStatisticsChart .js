@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Chart from 'react-apexcharts';
 import axios from 'axios';
 import RestaurantSelector from "../RestaurantSelector"; // Adjust the import path if necessary
+import Cookies from 'js-cookie';
 
 const ReviewStatisticsChart = () => {
   const [data, setData] = useState([]);
@@ -13,12 +14,22 @@ const ReviewStatisticsChart = () => {
       const fetchReviewStatistics = async () => {
         setLoading(true);
         try {
-          const response = await axios.get(`http://localhost:8080/api/reviews/statistics/${encodeURIComponent(selectedRestaurant)}`);
+          const token = Cookies.get('token'); // Get the JWT token from the cookie
+          if (!token) {
+            throw new Error('No JWT token found');
+          }
+      
+          const response = await axios.get(`http://localhost:8080/api/reviews/statistics/${encodeURIComponent(selectedRestaurant)}`, {
+            headers: {
+              Authorization: `Bearer ${token}` // Add the Authorization header with the JWT token
+            }
+          });
+
           const aggregatedData = aggregateReviewsByRating(response.data);
           setData(aggregatedData);
         } catch (error) {
           console.error('Error fetching review statistics:', error);
-          setData([]); // Set to empty array if there is an error
+          setData(getDefaultData()); // Set to default data if there is an error
         } finally {
           setLoading(false);
         }
@@ -36,11 +47,26 @@ const ReviewStatisticsChart = () => {
       }
       acc[rating] += numberOfReviews;
       return acc;
-    }, {});
+    }, getDefaultDataObject());
 
     return Object.keys(aggregatedData).map(rating => ({
       rating: parseInt(rating),
       numberOfReviews: aggregatedData[rating],
+    }));
+  };
+
+  const getDefaultDataObject = () => {
+    const defaultData = {};
+    for (let i = 1; i <= 5; i++) {
+      defaultData[i] = 0;
+    }
+    return defaultData;
+  };
+
+  const getDefaultData = () => {
+    return Object.keys(getDefaultDataObject()).map(rating => ({
+      rating: parseInt(rating),
+      numberOfReviews: 0,
     }));
   };
 
@@ -78,13 +104,9 @@ const ReviewStatisticsChart = () => {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        data.length > 0 ? (
-          <div className="w-full max-w-4xl p-4 bg-white shadow-lg rounded-lg">
-            <Chart options={chartOptions} series={chartSeries} type="bar" height={350} />
-          </div>
-        ) : (
-          <p>No data available for the selected restaurant.</p>
-        )
+        <div className="w-full max-w-4xl p-4 bg-white shadow-lg rounded-lg">
+          <Chart options={chartOptions} series={chartSeries} type="bar" height={350} />
+        </div>
       )}
     </div>
   );

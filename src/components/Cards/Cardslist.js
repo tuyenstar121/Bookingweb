@@ -10,16 +10,9 @@ const   ListCard = () => {
 
   const fetchRestaurants = async () => {
     try {
-      const token = Cookies.get('token'); // Lấy mã thông báo JWT từ cookie
-      if (!token) {
-        throw new Error('No JWT token found');
-      }
+     
   
-      const response = await axios.get('http://localhost:8080/restaurants', {
-        headers: {
-          Authorization: `Bearer ${token}` // Thêm tiêu đề Authorization với mã thông báo JWT
-        }
-      });
+      const response = await axios.get('http://localhost:8080/restaurants', );
   
       const fetchedRestaurants = response.data;
       setRestaurants(fetchedRestaurants);

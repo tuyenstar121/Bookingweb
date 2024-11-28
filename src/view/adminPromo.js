@@ -1,21 +1,20 @@
 import React from 'react';
 
-  
 import Sidebar from '../components/Sidebar/Sidebar';
 
-import TableManagement from '../components/TableManagement';
+import PromotionManagement from '../components/managerpromtionform';
 
 
-const Admintable = () => {
+const Adminpromotion = () => {
   return (
     <div className='admin'>
       <div className='admin-container'>
     <Sidebar/>
-    <TableManagement/>
+<PromotionManagement/>
    
     </div>
     </div>
   );
 };
 
-export default Admintable;
+export default Adminpromotion;
