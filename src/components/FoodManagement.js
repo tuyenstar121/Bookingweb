@@ -14,6 +14,8 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  Stack,
+  Autocomplete,
 } from "@mui/material";
 
 export default function FoodManagement() {
@@ -23,7 +25,29 @@ export default function FoodManagement() {
   const [newFoodItem, setNewFoodItem] = useState({ name: "", price: "", description: "", categoryId: "", img: "" });
   const [openDialog, setOpenDialog] = useState(false);
   const [search, setSearch] = useState('')
-  console.log(foodItems)
+  //promotion
+  const [promotions, setPromotions] = useState([]);
+  const [promotion, setPromotion] = useState({})
+  const [listFoodPromotions, setListFoodPromotions] = useState([])
+
+  const fetchPromotions = useCallback(async () => {
+    const token = Cookies.get('token');
+    try {
+      const response = await fetch("http://localhost:8080/api/promotions", {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      setPromotions(data);
+    } catch (error) {
+      console.error("Error fetching promotions:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchPromotions();
+  }, [fetchPromotions]);
 
   const fetchFoodItems = useCallback(async () => {
     const token = Cookies.get('token');
@@ -130,6 +154,35 @@ export default function FoodManagement() {
     }
   };
 
+  const handleAddPromotion = async () => {
+    if (!promotion.id || listFoodPromotions.length === 0) {
+      alert("Vui lòng nhập đầy đủ !");
+      return;
+    }
+
+    const body = {
+      promotionId: promotion.id.toString(),
+      foodId: listFoodPromotions.map(item => item.id).join(','),
+    }
+
+    try {
+      const token = Cookies.get('token');
+
+      const response = await fetch("http://localhost:8080/api/promotion-food-details/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+    } catch (error) {
+      console.error("Đã có lỗi xảy ra:", error);
+      alert(`Đã có lỗi xảy ra: ${error.message}`);
+    }
+  };
+
   const handleAddSubmit = async () => {
     const { name, img, price, description, categoryId } = newFoodItem;
 
@@ -171,21 +224,21 @@ export default function FoodManagement() {
   return (
     <div className="container mt-4">
       <h3 className="text-xl font-bold mb-4">Quản lý món ăn</h3>
-      <div className="flex justify-end">
+      <div className="flex justify-between  mb-4">
         <input
           type="text"
           placeholder="Tìm kiếm..."
           onChange={(e) => { setSearch(e.target.value) }}
-          className="px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:border-gray-500"
+          className="px-4 py-2  rounded-full border border-gray-300 focus:outline-none focus:border-gray-500"
         />
+        <button
+          className="bg-green-500 text-white py-2 px-4 rounded"
+          onClick={() => handleDialogOpen(null, "add")}
+        >
+          Thêm món mới
+        </button>
       </div>
-      <button
-        className="bg-green-500 text-white py-2 px-4 rounded mb-4"
-        onClick={() => handleDialogOpen(null, "add")}
-      >
-        Thêm món mới
-      </button>
-      <TableContainer component={Paper} className="shadow-lg rounded-lg">
+      <TableContainer component={Paper} className="shadow-lg rounded-lg" sx={{ height: '70%' }}>
         <Table sx={{ minWidth: 850 }} aria-label="simple table">
           <TableHead className="bg-gray-100">
             <TableRow>
@@ -353,6 +406,33 @@ export default function FoodManagement() {
           )}
         </DialogActions>
       </Dialog>
+      {/* <h3 className="text-xl font-bold mb-4">Thêm mã khuyến mãi cho món ăn</h3>
+      <Stack direction={'row'} spacing={2} >
+        <Autocomplete
+          size="small"
+          value={promotion?.id ? promotion : null}
+          disablePortal
+          options={promotions?.map((promotion) => ({ id: promotion.id, label: promotion.name }))}
+          sx={{ width: 300 }}
+          renderInput={(params) => <TextField {...params} label="Mã khuyến mãi" />}
+          onChange={(event, newValue) => {
+            setPromotion(newValue);
+          }}
+        />
+        <Autocomplete
+          multiple
+          size="small"
+          value={listFoodPromotions}
+          disablePortal
+          options={foodItems?.map((foodItem) => ({ id: foodItem.foodItemId, label: foodItem.name }))}
+          sx={{ width: 300 }}
+          renderInput={(params) => <TextField {...params} label="Món ăn" />}
+          onChange={(event, newValue) => {
+            setListFoodPromotions(newValue);
+          }}
+        />
+        <Button variant="contained" sx={{ height: 40 }} onClick={() => handleAddPromotion()}>Thêm</Button>
+      </Stack> */}
     </div>
   );
 }

@@ -15,6 +15,8 @@ import {
   DialogActions,
   TextField,
 } from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers";
+import dayjs from "dayjs";
 
 export default function PromotionManager() {
   const [promotions, setPromotions] = useState([]);
@@ -33,7 +35,6 @@ export default function PromotionManager() {
         }
       });
       const data = await response.json();
-      console.log(data)
       setPromotions(data);
     } catch (error) {
       console.error("Error fetching promotions:", error);
@@ -104,7 +105,7 @@ export default function PromotionManager() {
   const handleDeleteConfirm = async () => {
     try {
       const token = Cookies.get('token');
-      const response = await fetch(`http://localhost:8080/api/promotions/delete/${deletePromotion.id}`, {
+      const response = await fetch(`http://localhost:8080/api/promotions/${deletePromotion.id}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -136,7 +137,7 @@ export default function PromotionManager() {
     try {
       const token = Cookies.get('token');
 
-      const response = await fetch("http://localhost:8080/api/promotions/add", {
+      const response = await fetch("http://localhost:8080/api/promotions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -249,19 +250,21 @@ export default function PromotionManager() {
                 fullWidth
                 className="mb-3"
               />
-              <TextField
+              <DatePicker
                 label="Ngày bắt đầu"
-                value={editPromotion.startDate || ""}
-                onChange={(e) => setEditPromotion({ ...editPromotion, startDate: e.target.value })}
+                value={dayjs(editPromotion.startDate) || ""}
+                onChange={(e) => setEditPromotion({ ...editPromotion, startDate: dayjs(e).format('YYYY-MM-DD') })}
                 fullWidth
                 className="mb-3"
+                sx={{ width: '100%' }}
               />
-              <TextField
+              <DatePicker
                 label="Ngày kết thúc"
-                value={editPromotion.endDate || ""}
-                onChange={(e) => setEditPromotion({ ...editPromotion, endDate: e.target.value })}
+                value={dayjs(editPromotion.endDate) || ""}
+                onChange={(e) => setEditPromotion({ ...editPromotion, endDate: dayjs(e).format('YYYY-MM-DD') })}
                 fullWidth
                 className="mb-3"
+                sx={{ width: '100%' }}
               />
             </>
           )}
@@ -291,18 +294,18 @@ export default function PromotionManager() {
                 fullWidth
                 className="mb-3"
               />
-              <TextField
+              <DatePicker
                 label="Ngày bắt đầu"
-                value={newPromotion.startDate || ""}
-                onChange={(e) => setNewPromotion({ ...newPromotion, startDate: e.target.value })}
-                fullWidth
+                value={dayjs(newPromotion.startDate) || ""}
+                onChange={(e) => setNewPromotion({ ...newPromotion, startDate: dayjs(e).format('YYYY-MM-DD') })}
+                sx={{ width: '100%' }}
                 className="mb-3"
               />
-              <TextField
+              <DatePicker
                 label="Ngày kết thúc"
-                value={newPromotion.endDate || ""}
-                onChange={(e) => setNewPromotion({ ...newPromotion, endDate: e.target.value })}
-                fullWidth
+                value={dayjs(newPromotion.endDate) || ""}
+                onChange={(e) => setNewPromotion({ ...newPromotion, endDate: dayjs(e).format('YYYY-MM-DD') })}
+                sx={{ width: '100%' }}
                 className="mb-3"
               />
             </>
