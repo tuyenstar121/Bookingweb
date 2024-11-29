@@ -12,10 +12,10 @@ const Menu = () => {
   const [allItems, setAllItems] = useState([]);
   const [categories, setCategories] = useState(["all"]);
   const [activeCategory, setActiveCategory] = useState("all");
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchMenuItems = async () => {
@@ -28,16 +28,13 @@ const Menu = () => {
 
         setMenuItems(items);
         setAllItems(items);
-
         const categoryNames = items.map(item => item.category.name);
         const uniqueCategories = ["all", ...new Set(categoryNames)];
 
         setCategories(uniqueCategories);
-        setIsLoading(false);
       } catch (error) {
         console.error("There was an error fetching the menu items!", error);
         setError("Failed to fetch menu items.");
-        setIsLoading(false);
       }
     };
 
@@ -86,12 +83,38 @@ const Menu = () => {
     setIsCartOpen(!isCartOpen);
   };
 
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+    let categoryItems = [];
+    if (activeCategory == 'all'){
+      categoryItems = allItems;
+    } else categoryItems = allItems.filter(item => item.category.name === activeCategory)
+    const filteredItems = categoryItems.filter(item =>
+      item.name.toLowerCase().includes(e.target.value.toLowerCase())
+    );
+    setMenuItems(filteredItems);
+  };
+
   return (
     <div>
       <Header />
       <section className="section">
         {error && <p className="error-message">{error}</p>}
         <div className="underline"></div>
+        <div className="my-6 flex justify-end">
+          <div className="relative w-1/3">
+            <input
+              type="text"
+              placeholder="Tìm kiếm món ăn..."
+              value={searchTerm}
+              onChange={handleSearch}
+              className="form-control w-full p-2 pl-4 pr-10 border border-gray-300 rounded-lg"
+            />
+            <span className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+              <i className="fas fa-search text-gray-400"></i>
+            </span>
+          </div>
+        </div>
         <Categories
           categories={categories}
           activeCategory={activeCategory}

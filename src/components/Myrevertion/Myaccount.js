@@ -22,7 +22,7 @@ const AccountDashboard = () => {
   const [loggedIn, setLoggedIn] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [urlImage, setUrlImage] = useState(null)
-
+  const [previewImage, setPreviewImage] = useState(null);
   const fetchUserData = async (userId) => {
     const token = Cookies.get('token');
     try {
@@ -77,23 +77,25 @@ const AccountDashboard = () => {
     const selectedFile = event.target.files[0]
     if (selectedFile) {
       const img = await uploadToCloudinary(selectedFile)
-      const data = {
-        img: img
-      }
-      handleUpdateUserData(data)
-      toast({
-        title: "đã cập nhật ảnh đại diện",
-        status: "success",
-        duration: 5000,
-        isClosable: true
-      })
-      onClose()
-      setUrlImage(img)
-      // toast.success("Đã cập nhật ảnh đại diện thành công");
-
-
+      setPreviewImage(img);
     }
   }
+  const handleConfirmImageChange = async () => {
+    const img = await uploadToCloudinary(previewImage);
+    const data = {
+      img: img
+    }
+    handleUpdateUserData(data)
+    toast({
+      title: "đã cập nhật ảnh đại diện",
+      status: "success",
+      duration: 5000,
+      isClosable: true
+    })
+    onClose(); // Đóng modal sau khi xác nhận
+    setUrlImage(img)
+    setPreviewImage(null)
+}
 
   return (
     <>
@@ -140,6 +142,8 @@ const AccountDashboard = () => {
         handleProfileImageChange={handleProfileImageChange}
         isOpen={isOpen}
         onClose={onClose}
+        handleConfirmImageChange = {handleConfirmImageChange}
+        previewImage = {previewImage}
       />
     </>
   );
