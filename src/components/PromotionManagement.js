@@ -14,15 +14,17 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  Autocomplete,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 
 export default function PromotionManager() {
   const [promotions, setPromotions] = useState([]);
+  const [foodItems, setFoodItems] = useState([]);
   const [editPromotion, setEditPromotion] = useState(null);
   const [deletePromotion, setDeletePromotion] = useState(null);
-  const [newPromotion, setNewPromotion] = useState({ name: "", discountPercentage: "", description: "", startDate: "", endDate: "" });
+  const [newPromotion, setNewPromotion] = useState({ name: "", discountPercentage: "", description: "", image: "", foodIds: "", startDate: "", endDate: "" });
   const [openDialog, setOpenDialog] = useState(false);
   const [search, setSearch] = useState('');
 
@@ -44,6 +46,25 @@ export default function PromotionManager() {
   useEffect(() => {
     fetchPromotions();
   }, [fetchPromotions]);
+
+  const fetchFoodItems = useCallback(async () => {
+    const token = Cookies.get('token');
+    try {
+      const response = await fetch("http://localhost:8080/api/food/all", {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      setFoodItems(data);
+    } catch (error) {
+      console.error("Error fetching food items:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchFoodItems();
+  }, [fetchFoodItems]);
 
   const handleDialogOpen = (promotion, action) => {
     if (action === "edit") {
@@ -127,9 +148,9 @@ export default function PromotionManager() {
   };
 
   const handleAddSubmit = async () => {
-    const { name, discountPercentage, description, startDate, endDate } = newPromotion;
+    const { name, discountPercentage, description, image, foodIds, startDate, endDate } = newPromotion;
 
-    if (!name || !discountPercentage || !description || !startDate || !endDate) {
+    if (!name || !discountPercentage || !description || !startDate || !endDate || !image || !foodIds) {
       alert("Please fill in all fields.");
       return;
     }
@@ -294,6 +315,13 @@ export default function PromotionManager() {
                 fullWidth
                 className="mb-3"
               />
+              <TextField
+                label="Hình ảnh"
+                value={newPromotion.image || ""}
+                onChange={(e) => setNewPromotion({ ...newPromotion, image: e.target.value })}
+                fullWidth
+                className="mb-3"
+              />
               <DatePicker
                 label="Ngày bắt đầu"
                 value={dayjs(newPromotion.startDate) || ""}
@@ -307,6 +335,14 @@ export default function PromotionManager() {
                 onChange={(e) => setNewPromotion({ ...newPromotion, endDate: dayjs(e).format('YYYY-MM-DD') })}
                 sx={{ width: '100%' }}
                 className="mb-3"
+              />
+              <Autocomplete
+                fullWidth
+                multiple
+                disablePortal
+                options={foodItems?.map(foodItem => ({ ...foodItem, label: foodItem.name }))}
+                renderInput={(params) => <TextField {...params} label="Món ăn áp dụng khuyến mãi" />}
+                onChange={(_, value) => setNewPromotion({ ...newPromotion, foodIds: value?.map(item => item?.foodItemId) })}
               />
             </>
           )}

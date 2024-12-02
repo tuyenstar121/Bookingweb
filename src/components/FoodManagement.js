@@ -80,7 +80,6 @@ export default function FoodManagement() {
         ...editFoodItem,
         categoryId: editFoodItem.category.categoryId,  // Flattening the category object
       };
-      console.log(JSON.stringify(updatedFoodItem));
       const response = await fetch(`http://localhost:8080/api/food/edit/${editFoodItem.foodItemId}`, {
         method: "PUT",
         headers: {
