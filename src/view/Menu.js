@@ -40,7 +40,7 @@ const Menu = () => {
     };
     const fetchPromotionToday = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/promotions/today');
+        const response = await axios.get('http://localhost:8080/api/promotions/by-date?date=' + new Date().toISOString().split('T')[0]);
 
         const items = response.data;
 

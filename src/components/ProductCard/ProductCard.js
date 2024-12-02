@@ -3,16 +3,16 @@ import Cart from '../../view/cart';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const ProductCard = () => {
+const ProductCard = ({date}) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cart, setCart] = useState([]);
   const [promotionToday, setPromotionToday] = useState([]);
 
   const navigate = useNavigate();
 
-  const fetchPromotionToday = async () => {
+  const fetchPromotionByDate = async () => {
     try {
-      const response = await axios.get('http://localhost:8080/api/promotions/today');
+      const response = await axios.get('http://localhost:8080/api/promotions/by-date?date=' + date);
       const items = response.data;
       setPromotionToday(items);
     } catch (error) {
@@ -25,8 +25,13 @@ const ProductCard = () => {
     if (storedCart) {
       setCart(JSON.parse(storedCart));
     }
-    fetchPromotionToday();
   }, []);
+
+  useEffect(() => {
+    console.log(date)
+    console.log(promotionToday)
+    fetchPromotionByDate();
+  }, [date]);
 
   const calculateDiscountedPrice = (item) => {
     const promotion = promotionToday.find(promo => promo.foodItemId === item.foodItemId);
