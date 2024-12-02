@@ -2,9 +2,13 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 
-const Cart = ({isCartOpen, setIsCartOpen, cart, setCart}) => {
+const Cart = ({isCartOpen, setIsCartOpen, cart, setCart, promotionToday}) => {
 
-    const totalAmount = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+    const totalAmount = cart.reduce((total, item) => {
+        const promotion = promotionToday.find(promo => promo.foodItemId === item.foodItemId);
+        const price = promotion ? item.price - (item.price * (promotion.discountPercentage / 100)) : item.price;
+        return total + price * item.quantity;
+    }, 0);
 
     useEffect(() => {
     if (cart.length > 0){
@@ -55,47 +59,61 @@ const Cart = ({isCartOpen, setIsCartOpen, cart, setCart}) => {
             {cart.length > 0 ? (
                 <div>
                 <ul>
-                    {cart.map((item, index) => (
-                    <li key={index} className="flex flex-col mb-4">
-                        <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                            <img src={item.img} alt={item.name} className="w-16 h-16 mr-4"/>
-                            <p className="font-semibold">{item.name}</p>
-                        </div>
-                        <p>{item.price} VND</p>
-                        </div>
-                        <div className="flex items-center justify-between mt-2">
-                        <div className="flex items-center">
-                            <button
-                            className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-3 rounded-l"
-                            onClick={() => handleDecrementQuantity(item.foodItemId)}
-                            >
-                            -
-                            </button>
-                            <span className="px-3">{item.quantity}</span>
-                            <button
-                            className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-3 rounded-r"
-                            onClick={() => handleIncrementQuantity(item.foodItemId)}
-                            >
-                            +
-                            </button>
-                        </div>
-                        <div>{item.price * item.quantity} VND</div>
-                        </div>
-                        <div className="mt-2">
-                        <textarea
-                            className="w-full border rounded px-2 py-1"
-                            placeholder="Ghi chú"
-                            value={item.note}
-                            onChange={(e) => handleNoteChange(item.foodItemId, e.target.value)}
-                        />
-                        </div>
-                    </li>
-                    ))}
+                    {cart.map((item, index) => {
+                        const promotion = promotionToday.find(promo => promo.foodItemId === item.foodItemId);
+                        const discountedPrice = promotion ? item.price - (item.price * (promotion.discountPercentage / 100)) : item.price;
+
+                        return (
+                            <li key={index} className="flex flex-col mb-4">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center">
+                                        <img src={item.img} alt={item.name} className="w-16 h-16 mr-4"/>
+                                        <p className="font-semibold">{item.name}</p>
+                                    </div>
+                                    <div>
+                                        {promotion ? (
+                                            <div>
+                                                <span className="text-red-500 line-through">{item.price} VND</span> 
+                                                <span>{discountedPrice} VND</span>
+                                            </div>
+                                        ) : (
+                                            <span>{item.price} VND</span>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="flex items-center justify-between mt-2">
+                                    <div className="flex items-center">
+                                        <button
+                                            className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-3 rounded-l"
+                                            onClick={() => handleDecrementQuantity(item.foodItemId)}
+                                        >
+                                            -
+                                        </button>
+                                        <span className="px-3">{item.quantity}</span>
+                                        <button
+                                            className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-3 rounded-r"
+                                            onClick={() => handleIncrementQuantity(item.foodItemId)}
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                    <div>{discountedPrice * item.quantity} VND</div>
+                                </div>
+                                <div className="mt-2">
+                                    <textarea
+                                        className="w-full border rounded px-2 py-1"
+                                        placeholder="Ghi chú"
+                                        value={item.note}
+                                        onChange={(e) => handleNoteChange(item.foodItemId, e.target.value)}
+                                    />
+                                </div>
+                            </li>
+                        );
+                    })}
                 </ul>
                 <div className="flex justify-between items-center mt-4">
                     <span className="font-semibold">Tổng số tiền ({cart.length} sản phẩm):</span>
-                    <span className="text-red-500 font-bold">{totalAmount} VND</span>
+                    <span className="text-red-500 font-bold">{totalAmount.toFixed(2)} VND</span>
                 </div>
                 <button
                     className="mt-4 bg-red-500 text-white px-3 py-1 rounded"

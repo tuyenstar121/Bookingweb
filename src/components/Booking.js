@@ -31,6 +31,8 @@ const ReservationForm = ({ loggedInUser }) => {
 
   const navigate = useNavigate();
 
+
+
   useEffect(() => {
     const storedUserId = Cookies.get('userId');
     const token = Cookies.get('token');
@@ -274,7 +276,7 @@ const ReservationForm = ({ loggedInUser }) => {
         </div>
         <div className="mt-6">
           <h2 className="text-lg font-semibold mb-4">Các món ăn đã chọn</h2>
-          <ProductCard/>
+          <ProductCard />
         </div>
         {showTables && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
