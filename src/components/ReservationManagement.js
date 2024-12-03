@@ -322,7 +322,7 @@ function ReservationManagementTable() {
                 <TableCell align="left">{reservation.reservationTime}</TableCell>
                 <TableCell align="left">{reservation.numGuests}</TableCell>
                 <TableCell align="left">{reservation.user.phone}</TableCell>
-                <TableCell align="left">{reservation.table.restaurants.name}</TableCell>
+                <TableCell align="left">{reservation.table.restaurants?.name}</TableCell>
                 <TableCell align="left">{reservation.table.tableNumber}</TableCell>
                 <TableCell align="left">
                   <span

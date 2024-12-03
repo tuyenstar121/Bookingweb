@@ -15,14 +15,16 @@ import {
   DialogActions,
   TextField,
 } from "@mui/material";
+import UploadImage from "./Common/UploadImage";
 
 export default function FoodManagement() {
   const [foodItems, setFoodItems] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [editFoodItem, setEditFoodItem] = useState(null);
   const [deleteFoodItem, setDeleteFoodItem] = useState(null);
   const [newFoodItem, setNewFoodItem] = useState({ name: "", price: "", description: "", categoryId: "", img: "" });
   const [openDialog, setOpenDialog] = useState(false);
-
+  console.log(categories)
   const fetchFoodItems = useCallback(async () => {
     const token = Cookies.get('token');
     try {
@@ -41,6 +43,25 @@ export default function FoodManagement() {
   useEffect(() => {
     fetchFoodItems();
   }, [fetchFoodItems]);
+
+  const fetchCategories = useCallback(async () => {
+    const token = Cookies.get('token');
+    try {
+      const response = await fetch("http://localhost:8080/api/categories", {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      setCategories(data);
+    } catch (error) {
+      console.error("Error fetching food items:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   const handleDialogOpen = (foodItem, action) => {
     if (action === "edit") {
@@ -264,12 +285,11 @@ export default function FoodManagement() {
                 fullWidth
                 className="mb-3"
               />
-              <TextField
-                label="Image URL"
-                value={editFoodItem.img || ""}
-                onChange={(e) => setEditFoodItem({ ...editFoodItem, img: e.target.value })}
-                fullWidth
-                className="mb-3"
+              <UploadImage
+                defaultImage={editFoodItem.img}
+                onChange={(url) => {
+                  setEditFoodItem({ ...editFoodItem, img: url })
+                }}
               />
             </>
           )}
@@ -306,12 +326,11 @@ export default function FoodManagement() {
                 fullWidth
                 className="mb-3"
               />
-              <TextField
-                label="Image URL"
-                value={newFoodItem.img || ""}
-                onChange={(e) => setNewFoodItem({ ...newFoodItem, img: e.target.value })}
-                fullWidth
-                className="mb-3"
+              <UploadImage
+                defaultImage={newFoodItem.img}
+                onChange={(url) => {
+                  setNewFoodItem({ ...newFoodItem, img: url })
+                }}
               />
             </>
           )}

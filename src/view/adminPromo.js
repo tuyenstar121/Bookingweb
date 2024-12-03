@@ -9,10 +9,10 @@ const Adminpromotion = () => {
   return (
     <div className='admin'>
       <div className='admin-container'>
-    <Sidebar/>
-<PromotionManagement/>
-   
-    </div>
+        <Sidebar />
+        <PromotionManagement />
+
+      </div>
     </div>
   );
 };

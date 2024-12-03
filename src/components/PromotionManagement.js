@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
+import UploadImage from "./Common/UploadImage";
 
 export default function PromotionManager() {
   const [promotions, setPromotions] = useState([]);
@@ -27,7 +28,7 @@ export default function PromotionManager() {
   const [newPromotion, setNewPromotion] = useState({ name: "", discountPercentage: "", description: "", image: "", foodIds: "", startDate: "", endDate: "" });
   const [openDialog, setOpenDialog] = useState(false);
   const [search, setSearch] = useState('');
-
+  console.log(newPromotion)
   const fetchPromotions = useCallback(async () => {
     const token = Cookies.get('token');
     try {
@@ -258,6 +259,7 @@ export default function PromotionManager() {
                 className="mb-3"
               />
               <TextField
+                type="number"
                 label="Giảm giá (%)"
                 value={editPromotion.discountPercentage || ""}
                 onChange={(e) => setEditPromotion({ ...editPromotion, discountPercentage: e.target.value })}
@@ -287,6 +289,12 @@ export default function PromotionManager() {
                 className="mb-3"
                 sx={{ width: '100%' }}
               />
+              <UploadImage
+                defaultImage={editPromotion.image}
+                onChange={(url) => {
+                  setEditPromotion({ ...editPromotion, image: url })
+                }}
+              />
             </>
           )}
           {deletePromotion && (
@@ -302,6 +310,7 @@ export default function PromotionManager() {
                 className="mb-3"
               />
               <TextField
+                type="number"
                 label="Giảm giá (%)"
                 value={newPromotion.discountPercentage || ""}
                 onChange={(e) => setNewPromotion({ ...newPromotion, discountPercentage: e.target.value })}
@@ -312,13 +321,6 @@ export default function PromotionManager() {
                 label="Mô tả"
                 value={newPromotion.description || ""}
                 onChange={(e) => setNewPromotion({ ...newPromotion, description: e.target.value })}
-                fullWidth
-                className="mb-3"
-              />
-              <TextField
-                label="Hình ảnh"
-                value={newPromotion.image || ""}
-                onChange={(e) => setNewPromotion({ ...newPromotion, image: e.target.value })}
                 fullWidth
                 className="mb-3"
               />
@@ -344,6 +346,7 @@ export default function PromotionManager() {
                 renderInput={(params) => <TextField {...params} label="Món ăn áp dụng khuyến mãi" />}
                 onChange={(_, value) => setNewPromotion({ ...newPromotion, foodIds: value?.map(item => item?.foodItemId) })}
               />
+              <UploadImage onChange={(url) => { setNewPromotion({ ...newPromotion, image: url }) }} />
             </>
           )}
         </DialogContent>
