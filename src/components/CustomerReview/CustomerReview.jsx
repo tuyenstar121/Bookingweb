@@ -69,11 +69,11 @@ const CustomerReview = () => {
         }
       });
       const data = response.data;
-  
+
       const filledData = fillMissingMonths(data);
       const months = filledData.map(item => item.month);
       const reservations = filledData.map(item => item.count);
-  
+
       setChartData(prevState => ({
         ...prevState,
         series: [{ ...prevState.series[0], data: reservations }],
@@ -83,7 +83,7 @@ const CustomerReview = () => {
       console.error("Error fetching reservation stats:", error);
     }
   };
-  
+
 
 
   const fillMissingMonths = (data) => {

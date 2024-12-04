@@ -132,8 +132,8 @@ export default function UserManagementTable() {
         <table className="min-w-full bg-white">
           <thead>
             <tr>
-              <th className="py-2 px-4 border-b">Tên</th>
-              <th className="py-2 px-4 border-b">SĐT</th>
+              <th className="py-2 px-4 border-b">Name</th>
+              <th className="py-2 px-4 border-b">Phone Number</th>
               <th className="py-2 px-4 border-b">Email</th>
 <<<<<<< HEAD
               <th className="py-2 px-4 border-b">Role</th>
@@ -151,11 +151,7 @@ export default function UserManagementTable() {
             </tr>
           </thead>
           <tbody>
-            {users.filter((user) => {
-              return user.email.toLowerCase().includes(search.toLowerCase())
-                || user.phone.toLowerCase().includes(search.toLowerCase())
-                || user.username.toLowerCase().includes(search.toLowerCase())
-            }).map((user) => (
+            {users.map((user) => (
               <tr key={user.userId}>
                 <td className="py-2 px-4 border-b">{user.username}</td>
                 <td className="py-2 px-4 border-b">{user.phone}</td>
@@ -179,13 +175,13 @@ export default function UserManagementTable() {
                     className="bg-blue-500 text-white px-3 py-1 rounded mr-2"
                     onClick={() => handleDialogOpen(user, "edit")}
                   >
-                    Sửa
+                    Edit
                   </button>
                   <button
                     className="bg-red-500 text-white px-3 py-1 rounded"
                     onClick={() => handleDialogOpen(user, "delete")}
                   >
-                    Xóa
+                    Delete
                   </button>
                 </td>
               </tr>

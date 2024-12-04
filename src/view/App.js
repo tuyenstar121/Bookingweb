@@ -54,7 +54,7 @@ function App() {
     }
     link.href = url;
   };
-  
+
   return (
     <BrowserRouter>
       <UserProvider>
