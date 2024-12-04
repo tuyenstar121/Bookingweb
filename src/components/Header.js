@@ -63,6 +63,7 @@ const Header = () => {
         Cookies.remove('userId');
         Cookies.remove('token');
         setLoggedIn(false); // Cập nhật trạng thái đăng nhập
+        navigate("/login");
         console.log('Logged out successfully');
       } else {
         // Navigate to login page

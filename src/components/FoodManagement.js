@@ -14,8 +14,14 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  Autocomplete,
 } from "@mui/material";
 import UploadImage from "./Common/UploadImage";
+
+const getCategoryById = (id, options) => {
+  console.log({ id, options });
+  return options?.filter((option) => option.categoryId === id)
+}
 
 export default function FoodManagement() {
   const [foodItems, setFoodItems] = useState([]);
@@ -24,7 +30,7 @@ export default function FoodManagement() {
   const [deleteFoodItem, setDeleteFoodItem] = useState(null);
   const [newFoodItem, setNewFoodItem] = useState({ name: "", price: "", description: "", categoryId: "", img: "" });
   const [openDialog, setOpenDialog] = useState(false);
-  console.log(categories)
+  const [search, setSearch] = useState('');
   const fetchFoodItems = useCallback(async () => {
     const token = Cookies.get('token');
     try {
@@ -39,7 +45,7 @@ export default function FoodManagement() {
       console.error("Error fetching food items:", error);
     }
   }, []);
-
+  console.log(editFoodItem)
   useEffect(() => {
     fetchFoodItems();
   }, [fetchFoodItems]);
@@ -167,12 +173,11 @@ export default function FoodManagement() {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(newFoodItem),
+        body: JSON.stringify({ ...newFoodItem, categoryId: categoryId.categoryId }),
       });
 
       // Handle the response
       if (response.ok) {
-        console.log("Food item added successfully");
         fetchFoodItems();  // Refresh the food items list
         handleDialogClose();  // Close the dialog
       } else {
@@ -189,12 +194,21 @@ export default function FoodManagement() {
   return (
     <div className="container mt-4">
       <h3 className="text-xl font-bold mb-4">Food Management</h3>
+      <div className="flex justify-end">
+        <input
+          type="text"
+          placeholder="Tìm kiếm..."
+          onChange={(e) => { setSearch(e.target.value) }}
+          className="px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:border-gray-500"
+        />
+      </div>
       <button
         className="bg-green-500 text-white py-2 px-4 rounded mb-4"
         onClick={() => handleDialogOpen(null, "add")}
       >
         Add Food Item
       </button>
+
       <TableContainer component={Paper} className="shadow-lg rounded-lg">
         <Table sx={{ minWidth: 850 }} aria-label="simple table">
           <TableHead className="bg-gray-100">
@@ -209,7 +223,11 @@ export default function FoodManagement() {
           </TableHead>
           <TableBody>
             {foodItems
-              .filter(foodItem => foodItem && foodItem.category) // Filter out items with null category
+              .filter(foodItem => foodItem && foodItem.category)
+              .filter((foodItem) => {
+                return foodItem.name.toLowerCase().includes(search.toLowerCase())
+                  || foodItem.price.toString().toLowerCase().includes(search.toLowerCase())
+              })
               .map((foodItem) => (
                 <TableRow key={foodItem.foodItemId}>
                   <TableCell>{foodItem.name}</TableCell>
@@ -278,12 +296,13 @@ export default function FoodManagement() {
                 fullWidth
                 className="mb-3"
               />
-              <TextField
-                label="Category ID"
-                value={editFoodItem.category?.categoryId || ""}
-                onChange={(e) => setEditFoodItem({ ...editFoodItem, category: { ...editFoodItem.category, categoryId: e.target.value } })}
-                fullWidth
-                className="mb-3"
+              <Autocomplete
+                disablePortal
+                defaultValue={{ ...editFoodItem?.category, label: editFoodItem?.category.name }}
+                options={categories?.map((category, i) => ({ ...category, label: category.name }))}
+                sx={{ width: '100%' }}
+                renderInput={(params) => <TextField {...params} label="Category ID" />}
+                onChange={(e, newValue) => setEditFoodItem({ ...editFoodItem, category: newValue })}
               />
               <UploadImage
                 defaultImage={editFoodItem.img}
@@ -319,12 +338,12 @@ export default function FoodManagement() {
                 fullWidth
                 className="mb-3"
               />
-              <TextField
-                label="Category ID"
-                value={newFoodItem.categoryId || ""}
-                onChange={(e) => setNewFoodItem({ ...newFoodItem, categoryId: e.target.value })}
-                fullWidth
-                className="mb-3"
+              <Autocomplete
+                disablePortal
+                options={categories?.map((category, i) => ({ ...category, label: category.name }))}
+                sx={{ width: '100%' }}
+                renderInput={(params) => <TextField {...params} label="Category ID" />}
+                onChange={(e, newValue) => setNewFoodItem({ ...newFoodItem, categoryId: newValue })}
               />
               <UploadImage
                 defaultImage={newFoodItem.img}

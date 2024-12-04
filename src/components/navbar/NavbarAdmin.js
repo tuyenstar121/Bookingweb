@@ -45,11 +45,11 @@ export default function AdminNavbar(props) {
 					/>
 					<FaSearch className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
 				</div> */}
-				<FaBell className="text-gray-500 text-xl cursor-pointer" />
-				<div className="flex items-center bg-gray-200 p-2 rounded-full">
+				{/* <FaBell className="text-gray-500 text-xl cursor-pointer" /> */}
+				{/* <div className="flex items-center bg-gray-200 p-2 rounded-full">
 					<FaEthereum className="text-gray-700" />
 					<span className="ml-2 font-semibold text-gray-700">1,924 ETH</span>
-				</div>
+				</div> */}
 				<div className="relative">
 					<FaUserCircle className="text-gray-700 text-2xl cursor-pointer" onClick={toggleDropdown} />
 					{dropdownOpen && (

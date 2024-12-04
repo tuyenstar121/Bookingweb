@@ -58,11 +58,19 @@ const Sidebar = () => {
             </NavLink>
           ))}
 
-          <div className="menuItem" onClick={handleSignOut}>
+          <div style={{
+            width: '100vw',
+            right: '24px',
+            position: 'absolute',
+            top: '24px',
+            display: 'flex',
+            justifyContent: 'right',
+            zIndex: 999
+          }} onClick={handleSignOut}>
             <UilSignOutAlt />
           </div>
         </div>
-      </motion.div>
+      </motion.div >
     </>
   );
 };

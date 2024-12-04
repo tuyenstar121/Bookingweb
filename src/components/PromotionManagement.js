@@ -28,7 +28,7 @@ export default function PromotionManager() {
   const [newPromotion, setNewPromotion] = useState({ name: "", discountPercentage: "", description: "", image: "", foodIds: "", startDate: "", endDate: "" });
   const [openDialog, setOpenDialog] = useState(false);
   const [search, setSearch] = useState('');
-  console.log(newPromotion)
+
   const fetchPromotions = useCallback(async () => {
     const token = Cookies.get('token');
     try {
