@@ -28,7 +28,7 @@ const RestaurantManagement = () => {
       if (!token) {
         throw new Error('No JWT token found');
       }
-  
+
       const response = await axios.get('http://localhost:8080/restaurants', {
         headers: {
           Authorization: `Bearer ${token}` // Add the Authorization header with the JWT token
@@ -58,14 +58,14 @@ const RestaurantManagement = () => {
   };
 
 
-  
+
   const handleSubmit = async () => {
     try {
       const token = Cookies.get('token'); // Get the JWT token from the cookie
       if (!token) {
         throw new Error('No JWT token found');
       }
-  
+
       if (isEditing) {
         await axios.put(`http://localhost:8080/restaurants/${currentRestaurant.restaurantId}`, currentRestaurant, {
           headers: {
@@ -85,14 +85,14 @@ const RestaurantManagement = () => {
       console.error('Error saving restaurant:', error);
     }
   };
-  
+
   const handleDelete = async (restaurantId) => {
     try {
       const token = Cookies.get('token'); // Get the JWT token from the cookie
       if (!token) {
         throw new Error('No JWT token found');
       }
-  
+
       await axios.delete(`http://localhost:8080/restaurants/${restaurantId}`, {
         headers: {
           Authorization: `Bearer ${token}` // Add the Authorization header with the JWT token
@@ -110,8 +110,8 @@ const RestaurantManagement = () => {
       <Button variant="primary" onClick={() => handleShowModal()}>Add New Restaurant</Button>
       <Table striped bordered hover className="mt-4">
         <thead>
-            <tr>
-          <th>STT</th>
+          <tr>
+            <th>STT</th>
             <th>Name</th>
             <th>Address</th>
             <th>Phone</th>
@@ -121,9 +121,9 @@ const RestaurantManagement = () => {
           </tr>
         </thead>
         <tbody>
-          {restaurants.map((restaurant,index) => (
+          {restaurants.map((restaurant, index) => (
             <tr key={restaurant.restaurantId}>
-              <td> {index+1}</td>
+              <td> {index + 1}</td>
               <td>{restaurant.name}</td>
               <td>{restaurant.address}</td>
               <td>{restaurant.phone}</td>

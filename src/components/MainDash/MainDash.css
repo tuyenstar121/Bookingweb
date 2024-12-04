@@ -41,9 +41,9 @@
     align-content: flex-end;
   }
   
-.control-buttons button{
+/* .control-buttons button{
     margin-top  : 20px;
-}
+} */
 .container {
     overflow-y: auto;
     width: 1200px;

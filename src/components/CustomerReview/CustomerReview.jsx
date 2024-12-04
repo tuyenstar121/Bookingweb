@@ -85,12 +85,13 @@ const CustomerReview = () => {
   };
   
 
+
   const fillMissingMonths = (data) => {
     const allMonths = [
       "2024-01", "2024-02", "2024-03", "2024-04", "2024-05", "2024-06", "2024-07", "2024-08",
       "2024-09", "2024-10", "2024-11", "2024-12"
     ];
-    
+
     const dataMap = data.reduce((map, item) => {
       map[item.month] = item.count;
       return map;

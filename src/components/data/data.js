@@ -6,7 +6,7 @@ import {
   UilPackage,
   UilChart,
   UilRestaurant,
-  UilTable ,
+  UilTable,
 
   UilSignOutAlt,
 } from "@iconscout/react-unicons";
@@ -29,28 +29,33 @@ export const SidebarData = [
   },
   {
     icon: UilClipboardAlt,
-    heading: "Orders",
+    heading: "Đặt bàn",
     path: "/admin/order",
   },
   {
     icon: UilUsersAlt,
-    heading: "User",
+    heading: "Người dùng",
     path: "/admin/customers",
   },
   {
-    icon:   UilRestaurant,
-    heading: 'Restaurant',
+    icon: UilRestaurant,
+    heading: 'Nhà hàng',
     path: "/admin/Products",
   },
   {
     icon: UilTable,
-    heading: 'Table',
-    path:"/admin/analytics",
+    heading: 'Bàn',
+    path: "/admin/analytics",
   },
   {
     icon: UilChart,
-    heading: 'Food',
-    path:"/admin/Food",
+    heading: 'Món ăn',
+    path: "/admin/Food",
+  },
+  {
+    icon: UilChart,
+    heading: 'Khuyến mãi',
+    path: "/admin/promotion",
   },
 ];
 

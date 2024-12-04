@@ -17,10 +17,6 @@ const rows = [
   createData("Big Baza Bang", "987654321", "Table 2", "Pending", "Restaurant B"),
   createData("Mouth Freshner", "555666777", "Table 1", "Approved", "Restaurant A"),
   createData("Cupcake", "111222333", "Table 3", "Delivered", "Restaurant C"),
-  
-
-  
-  
 ];
 
 const makeStyle = (status) => {
@@ -45,7 +41,7 @@ const makeStyle = (status) => {
 export default function BasicTable() {
   return (
     <div className="Table">
-      <h3>Recent Orders</h3>
+      <h3>Danh sách đặt bàn</h3>
       <TableContainer
         component={Paper}
         style={{ boxShadow: "0px 13px 20px 0px #80808029" }}
@@ -56,7 +52,7 @@ export default function BasicTable() {
               <TableCell>Khách hàng</TableCell>
               <TableCell align="left">Số điện thoại</TableCell>
               <TableCell align="left">Số bàn</TableCell>
-              
+
               <TableCell align="left">Trạng thái</TableCell>
               <TableCell align="left">Nhà hàng</TableCell>
             </TableRow>

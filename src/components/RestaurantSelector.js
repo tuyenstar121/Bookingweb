@@ -63,15 +63,13 @@ const RestaurantSelector = ({ selectedRestaurant, setSelectedRestaurant }) => {
             {restaurants.map((restaurant) => (
               <li
                 key={restaurant.restaurantId}
-                className={`cursor-pointer select-none relative py-2 pl-10 pr-4 ${
-                  selectedRestaurant === restaurant.restaurantId ? "text-white bg-indigo-600" : "text-gray-900"
-                }`}
+                className={`cursor-pointer select-none relative py-2 pl-10 pr-4 ${selectedRestaurant === restaurant.restaurantId ? "text-white bg-indigo-600" : "text-gray-900"
+                  }`}
                 onClick={() => handleSelect(restaurant.restaurantId)}
               >
                 <span
-                  className={`block truncate ${
-                    selectedRestaurant === restaurant.restaurantId ? "font-semibold" : "font-normal"
-                  }`}
+                  className={`block truncate ${selectedRestaurant === restaurant.restaurantId ? "font-semibold" : "font-normal"
+                    }`}
                 >
                   {restaurant.name}
                 </span>
