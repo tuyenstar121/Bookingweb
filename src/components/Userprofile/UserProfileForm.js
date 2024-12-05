@@ -1,4 +1,4 @@
-import React ,{useEffect,useState}from 'react';
+import React, { useEffect, useState } from 'react';
 
 const UserInfoForm = ({ userData, onUpdate }) => {
   const [name, setName] = useState(userData?.name || '');
@@ -9,11 +9,47 @@ const UserInfoForm = ({ userData, onUpdate }) => {
   // const [yearOfBirth, setYearOfBirth] = useState(userData?.yearOfBirth || '');
   const [gender, setGender] = useState(userData?.gender || 'Nam');
 
+  const [errors, setErrors] = useState({
+    name: '',
+    phone: '',
+    email: '',
+  });
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    const updatedData = { name, phone ,email,
+    const newErrors = {};
+
+    if (!name) {
+      newErrors.name = 'Tên không được để trống';
+    }
+
+    // Validate phone number (basic check for length or format)
+    if (!phone) {
+      newErrors.phone = 'Số điện thoại không được để trống';
+    } else if (!/^\d{10,15}$/.test(phone)) {
+      newErrors.phone = 'Số điện thoại không hợp lệ';
+    }
+
+    // Validate email format
+    if (!email) {
+      newErrors.email = 'Email không được để trống';
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = 'Email không hợp lệ';
+    }
+
+    // If there are errors, set them to state and do not submit
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    // If no errors, clear errors and submit data
+    setErrors({});
+    const updatedData = {
+      name, phone, email,
       //  dayOfBirth, monthOfBirth, yearOfBirth, 
-                      gender };
+      gender
+    };
     onUpdate(updatedData);
   };
 
@@ -35,6 +71,7 @@ const UserInfoForm = ({ userData, onUpdate }) => {
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700">Tên:</label>
         <input
+          disabled
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -49,15 +86,16 @@ const UserInfoForm = ({ userData, onUpdate }) => {
           onChange={(e) => setPhone(e.target.value)}
           className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm p-2"
         />
+        {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700">Email:</label>
         <input
-          type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm p-2"
         />
+        {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
       </div>
       {/* <div className="mb-4 flex space-x-2">
         <div>
