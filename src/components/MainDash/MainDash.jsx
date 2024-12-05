@@ -11,7 +11,10 @@ const MainDash = () => {
 
   return (
     <div className="MainDash">
-      <Payment></Payment>
+     <Payment></Payment>    
+     
+      
+
     </div>
   );
 };

@@ -39,7 +39,7 @@ const Register = () => {
       const response = await Axios.post("http://localhost:8080/auth/register", {
         username: formData.username,
         password: formData.password,
-        Phone: formData.mobile,
+        phone: formData.mobile,
      
         dob: formData.dob,
         email: formData.email,

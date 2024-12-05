@@ -1,8 +1,46 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
-const MenuTable = ({ foodItems = [], onRemove, onIncrement, onDecrement }) => {
+const Menuedit = (onRemove, onIncrement, onDecrement) => {
+  const [foodItems, setFoodItems] = useState(() => {
+    const savedCart = localStorage.getItem('cart');
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
+
+  useEffect(() => {
+    const updateCart = () => {
+      const storedCart = localStorage.getItem("cart");
+      if (storedCart) {
+        setFoodItems(JSON.parse(storedCart));
+      }
+    };
+
+    // Kiểm tra sự thay đổi trong localStorage mỗi giây
+    const intervalId = setInterval(updateCart, 1000);
+
+    // Cleanup khi component unmount
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
+
+  const handleAddToCart = (newItem) => {
+    const currentCart = foodItems.slice();
+    const existingItem = currentCart.find(
+      (item) => item.foodItemId === newItem.foodItemId
+    );
+
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      currentCart.push({ ...newItem, quantity: 1 });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(currentCart));
+    setFoodItems(currentCart); // Cập nhật state ngay lập tức
+  };
+
   const totalAmount = foodItems.reduce(
-    (sum, item) => sum + item.quantity * item.foodItem.price,
+    (sum, item) => sum + item.quantity * item.price,
     0
   );
 
@@ -29,45 +67,45 @@ const MenuTable = ({ foodItems = [], onRemove, onIncrement, onDecrement }) => {
             </tr>
           ) : (
             foodItems.map((item) => (
-              <tr key={item.foodItem.foodItemId} className="border border-gray-300">
+              <tr key={item.foodItemId} className="border border-gray-300">
                 <td className="border border-gray-300 p-2">
                   <img
-                    src={item.foodItem.img || "/placeholder-image.png"} // Default placeholder if image is missing
-                    alt={item.foodItem.name}
+                    src={item.img || "/placeholder-image.png"} // Default placeholder if image is missing
+                    alt={item.name}
                     className="w-16 h-16 object-cover rounded-md"
                   />
                 </td>
-                <td className="border border-gray-300 p-2">{item.foodItem.name}</td>
+                <td className="border border-gray-300 p-2">{item.name}</td>
                 <td className="border border-gray-300 p-2">
                   <div className="flex items-center justify-center space-x-2">
                     <button
                       className="text-red-500 font-bold"
-                      onClick={() => onDecrement(item.foodItem.foodItemId)}
+                      onClick={() => onDecrement(item.foodItemId)}
                     >
                       -
                     </button>
                     <span>{item.quantity}</span>
                     <button
                       className="text-green-500 font-bold"
-                      onClick={() => onIncrement(item.foodItem.foodItemId)}
+                      onClick={() => onIncrement(item.foodItemId)}
                     >
                       +
                     </button>
                   </div>
                 </td>
                 <td className="border border-gray-300 p-2">
-                  {item.foodItem.price.toLocaleString()} đ
+                  {item.price.toLocaleString()} đ
                 </td>
                 <td className="border border-gray-300 p-2">
                   {item.description || "Không có ghi chú"}
                 </td>
                 <td className="border border-gray-300 p-2">
-                  {(item.quantity * item.foodItem.price).toLocaleString()} đ
+                  {(item.quantity * item.price).toLocaleString()} đ
                 </td>
                 <td className="border border-gray-300 p-2">
                   <button
                     className="text-black hover:text-red-600"
-                    onClick={() => onRemove(item.foodItem.foodItemId)}
+                    onClick={() => onRemove(item.foodItemId)}
                   >
                     🗑️
                   </button>
@@ -92,4 +130,4 @@ const MenuTable = ({ foodItems = [], onRemove, onIncrement, onDecrement }) => {
   );
 };
 
-export default MenuTable;
+export default Menuedit;

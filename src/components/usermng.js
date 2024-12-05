@@ -11,7 +11,11 @@ export default function UserManagementTable() {
   const [deleteUser, setDeleteUser] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [error, setError] = useState(null);
+<<<<<<< HEAD
 
+=======
+  const [search, setSearch] = useState('')
+>>>>>>> dddbbfc1d5948023088cbdd71e2f9bbdab60784c
   const fetchUsers = useCallback(async () => {
     try {
       const token = Cookies.get('token');
@@ -110,7 +114,19 @@ export default function UserManagementTable() {
 
   return (
     <div className="container mx-auto mt-4">
+<<<<<<< HEAD
       <h3 className="text-2xl font-bold">User Management</h3>
+=======
+      <h3 className="text-2xl font-bold">Quản lý người dùng</h3>
+      <div className="flex justify-end">
+        <input
+          type="text"
+          placeholder="Tìm kiếm..."
+          onChange={(e) => { setSearch(e.target.value) }}
+          className="px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:border-gray-500"
+        />
+      </div>
+>>>>>>> dddbbfc1d5948023088cbdd71e2f9bbdab60784c
       {error && <p className="text-red-500">{error}</p>}
       <div className="overflow-x-auto mt-4">
         <table className="min-w-full bg-white">
@@ -119,11 +135,19 @@ export default function UserManagementTable() {
               <th className="py-2 px-4 border-b">Name</th>
               <th className="py-2 px-4 border-b">Phone Number</th>
               <th className="py-2 px-4 border-b">Email</th>
+<<<<<<< HEAD
               <th className="py-2 px-4 border-b">Role</th>
               <th className="py-2 px-4 border-b">Image</th>
               <th className="py-2 px-4 border-b">Date of Birth</th>
               <th className="py-2 px-4 border-b">Gender</th>
               <th className="py-2 px-4 border-b">Actions</th>
+=======
+              <th className="py-2 px-4 border-b">Quyền</th>
+              <th className="py-2 px-4 border-b">Ảnh</th>
+              <th className="py-2 px-4 border-b">Ngày sinh</th>
+              <th className="py-2 px-4 border-b">Giới tính</th>
+              <th className="py-2 px-4 border-b">Hành động</th>
+>>>>>>> dddbbfc1d5948023088cbdd71e2f9bbdab60784c
             </tr>
           </thead>
           <tbody>

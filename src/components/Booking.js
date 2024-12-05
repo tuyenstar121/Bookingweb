@@ -18,7 +18,7 @@ const ReservationForm = ({ loggedInUser }) => {
   const [date1, setDate1] = useState('');
   const [time, setTime] = useState('');
   const [selectedTable, setSelectedTable] = useState('');
-  const [selectedRestaurant, setSelectedRestaurant] = useState('');
+  const [, setSelectedRestaurant] = useState('');
   const [availableTables, setAvailableTables] = useState([]);
   const [restaurants, setRestaurants] = useState([]);
   const [user, setUser] = useState(null);
@@ -26,8 +26,6 @@ const ReservationForm = ({ loggedInUser }) => {
   const [adults, setAdults] = useState(2);
   const [selectedRestaurantInfo, setSelectedRestaurantInfo] = useState(null);
   const [selectedTableInfo, setSelectedTableInfo] = useState(null);
-
-
 
   const navigate = useNavigate();
 
@@ -37,17 +35,18 @@ const ReservationForm = ({ loggedInUser }) => {
     const storedUserId = Cookies.get('userId');
     const token = Cookies.get('token');
     if (storedUserId && token) {
-      axios.get(`http://localhost:8080/api/users/id/${storedUserId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-        .then(response => {
+      axios
+        .get(`http://localhost:8080/api/users/id/${storedUserId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
           const user = response.data;
           setUser(user);
           setPhoneNumber(user.phone);
           setName(user.username);
           setEmail(user.email);
         })
-        .catch(error => {
+        .catch((error) => {
           console.error('Error fetching user:', error);
         });
     }
@@ -55,7 +54,6 @@ const ReservationForm = ({ loggedInUser }) => {
   }, [loggedInUser]);
 
   useEffect(() => {
-    // Set default values for date and time
     const now = new Date();
     setDate1(now.toISOString().split('T')[0]); // YYYY-MM-DD
     setTime(now.toTimeString().split(' ')[0].substring(0, 5)); // HH:MM
@@ -64,9 +62,16 @@ const ReservationForm = ({ loggedInUser }) => {
   const fetchTablesByRestaurant = async (restaurantId) => {
     const token = Cookies.get('token');
     try {
-      const response = await axios.get(`http://localhost:8080/tables/by-restaurant/${restaurantId}`, {
-        headers: { Authorization: `Bearer ${token}` }
+      const response = await axios.get(`http://localhost:8080/tables/available`, {
+        headers: { Authorization: `Bearer ${token}` },
+        params: {
+          restaurantId,
+          reservationDate: date1,
+          reservationTime: time,
+          guestsCount: adults,
+        },
       });
+
       const tablesWithStatus = response.data.map((table) => ({
         ...table,
         status: table.status.toLowerCase(),
@@ -75,7 +80,7 @@ const ReservationForm = ({ loggedInUser }) => {
       setSelectedTable('');
       setShowTables(true);
     } catch (error) {
-      console.error('Error fetching tables:', error);
+      console.error('Error fetching available tables:', error);
     }
   };
 
@@ -83,7 +88,7 @@ const ReservationForm = ({ loggedInUser }) => {
     const token = Cookies.get('token');
     try {
       const response = await axios.get('http://localhost:8080/restaurants', {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       setRestaurants(response.data);
     } catch (error) {
@@ -95,7 +100,7 @@ const ReservationForm = ({ loggedInUser }) => {
     const restaurantName = event.target.textContent;
     setSelectedRestaurantInfo({
       id: eventKey,
-      name: restaurantName
+      name: restaurantName,
     });
     setSelectedRestaurant(eventKey);
     fetchTablesByRestaurant(eventKey);
@@ -105,25 +110,25 @@ const ReservationForm = ({ loggedInUser }) => {
     if (status === 'available') {
       setSelectedTableInfo({
         number: tableNumber,
-        id: tableId
+        id: tableId,
       });
       setSelectedTable(tableId);
       toast.success(`Bạn đã chọn bàn số ${tableNumber} tại ${selectedRestaurantInfo.name}.`);
       setShowTables(false);
     } else {
-      toast.error(`Bàn ${tableNumber} đã được đặt chỗ`);
+      toast.error(`Bàn ${tableNumber} đã được đặt chỗ.`);
     }
   };
 
   const handleUpdate = async () => {
     if (!user) {
-      toast.error('Bạn cần đăng nhập để đặt bàn');
+      toast.error('Bạn cần đăng nhập để đặt bàn.');
       navigate('/login');
       return;
     }
 
     if (!selectedTable || !date1 || !time) {
-      toast.error('Vui lòng điền đầy đủ các thông tin');
+      toast.error('Vui lòng điền đầy đủ các thông tin.');
       return;
     }
 
@@ -132,21 +137,21 @@ const ReservationForm = ({ loggedInUser }) => {
       tableId: selectedTable,
       reservationDate: date1,
       reservationTime: time,
-      numberOfGuests: adults
+      numberOfGuests: adults,
     };
 
     const token = Cookies.get('token');
     try {
       const response = await axios.post('http://localhost:8080/api/reservations/book', requestData, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       const reservationId = response.data;
-      toast.success('Đặt bàn thành công');
+      toast.success('Đặt bàn thành công.');
       console.log('Reservation ID:', reservationId);
       setShowTables(false);
       await createAdditionalItems(reservationId);
     } catch (error) {
-      toast.error('Lỗi đặt bàn');
+      toast.error('Lỗi đặt bàn.');
       console.error(error);
     }
   };
@@ -159,25 +164,27 @@ const ReservationForm = ({ loggedInUser }) => {
       return;
     }
 
-    const itemsToAdd = items.map(item => ({
+    const itemsToAdd = items.map((item) => ({
       foodItemId: item.foodItemId,
-      reservationId: reservationId,
+      reservationId,
       quantity: item.quantity,
-      description:item.note
+      description: item.note,
     }));
 
     const token = Cookies.get('token');
     try {
-      await Promise.all(itemsToAdd.map(async (item) => {
-        await axios.post('http://localhost:8080/api/order-food-mapping/select-food-item', item, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-      }));
+      await Promise.all(
+        itemsToAdd.map(async (item) => {
+          await axios.post('http://localhost:8080/api/order-food-mapping/select-food-item', item, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+        })
+      );
 
-      toast.success('Thêm món ăn thành công');
+      toast.success('Thêm món ăn thành công.');
       localStorage.removeItem('cart'); // Clear cart items after adding
     } catch (error) {
-      toast.error('Lỗi thêm món ăn');
+      toast.error('Lỗi thêm món ăn.');
       console.error(error);
     }
   };
@@ -283,7 +290,7 @@ const ReservationForm = ({ loggedInUser }) => {
             <div className="bg-white rounded-lg shadow-lg p-6 max-w-3xl w-full relative">
               <button className="absolute top-4 right-4 text-gray-600 hover:text-gray-800" onClick={() => setShowTables(false)}>×</button>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Chọn bàn:</label>
+                <label className="block text-sm font-medium text-gray-700">Choose Table:</label>
                 <div className="flex flex-wrap gap-2">
                   {availableTables.map((table) => (
                     <button

@@ -26,7 +26,7 @@ p {
 .section {
   width: 90vw;
   margin: 0 auto;
-  max-width: 1300px;
+  max-width: 1200px;
 }
 
 @media screen and (min-width: 992px) {
