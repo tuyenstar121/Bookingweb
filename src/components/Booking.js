@@ -18,11 +18,8 @@ const ReservationForm = ({ loggedInUser }) => {
   const [date1, setDate1] = useState('');
   const [time, setTime] = useState('');
   const [selectedTable, setSelectedTable] = useState('');
-  const [, setSelectedRestaurant] = useState('');
   const [availableTables, setAvailableTables] = useState([]);
-  const [restaurants, setRestaurants] = useState([]);
   const [user, setUser] = useState(null);
-  const [showTables, setShowTables] = useState(false);
   const [adults, setAdults] = useState(2);
   const [selectedRestaurantInfo, setSelectedRestaurantInfo] = useState(null);
   const [selectedTableInfo, setSelectedTableInfo] = useState(null);
@@ -50,7 +47,7 @@ const ReservationForm = ({ loggedInUser }) => {
           console.error('Error fetching user:', error);
         });
     }
-    fetchRestaurants();
+    fetchTables();
   }, [loggedInUser]);
 
   useEffect(() => {
@@ -59,51 +56,21 @@ const ReservationForm = ({ loggedInUser }) => {
     setTime(now.toTimeString().split(' ')[0].substring(0, 5)); // HH:MM
   }, []);
 
-  const fetchTablesByRestaurant = async (restaurantId) => {
+  const fetchTables = async () => {
     const token = Cookies.get('token');
     try {
-      const response = await axios.get(`http://localhost:8080/tables/available`, {
+      const response = await axios.get(`http://localhost:8080/tables`, {
         headers: { Authorization: `Bearer ${token}` },
-        params: {
-          restaurantId,
-          reservationDate: date1,
-          reservationTime: time,
-          guestsCount: adults,
-        },
       });
-
       const tablesWithStatus = response.data.map((table) => ({
         ...table,
         status: table.status.toLowerCase(),
       }));
       setAvailableTables(tablesWithStatus);
       setSelectedTable('');
-      setShowTables(true);
     } catch (error) {
-      console.error('Error fetching available tables:', error);
+      console.error('Lỗi lấy dữ liệu bàn:', error);
     }
-  };
-
-  const fetchRestaurants = async () => {
-    const token = Cookies.get('token');
-    try {
-      const response = await axios.get('http://localhost:8080/restaurants', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setRestaurants(response.data);
-    } catch (error) {
-      console.error('Error fetching restaurants:', error);
-    }
-  };
-
-  const handleRestaurantSelect = (eventKey, event) => {
-    const restaurantName = event.target.textContent;
-    setSelectedRestaurantInfo({
-      id: eventKey,
-      name: restaurantName,
-    });
-    setSelectedRestaurant(eventKey);
-    fetchTablesByRestaurant(eventKey);
   };
 
   const handleTableClick = (tableNumber, tableId, status) => {
@@ -113,8 +80,7 @@ const ReservationForm = ({ loggedInUser }) => {
         id: tableId,
       });
       setSelectedTable(tableId);
-      toast.success(`Bạn đã chọn bàn số ${tableNumber} tại ${selectedRestaurantInfo.name}.`);
-      setShowTables(false);
+      toast.success(`Bạn đã chọn bàn số ${tableNumber}.`);
     } else {
       toast.error(`Bàn ${tableNumber} đã được đặt chỗ.`);
     }
@@ -132,6 +98,7 @@ const ReservationForm = ({ loggedInUser }) => {
       return;
     }
 
+
     const requestData = {
       userId: user.userId,
       tableId: selectedTable,
@@ -148,7 +115,6 @@ const ReservationForm = ({ loggedInUser }) => {
       const reservationId = response.data;
       toast.success('Đặt bàn thành công.');
       console.log('Reservation ID:', reservationId);
-      setShowTables(false);
       await createAdditionalItems(reservationId);
     } catch (error) {
       toast.error('Lỗi đặt bàn.');
@@ -242,28 +208,6 @@ const ReservationForm = ({ loggedInUser }) => {
                   onChange={(e) => setTime(e.target.value)}
                 />
               </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Chọn nhà hàng</label>
-                <DropdownButton
-                  id="dropdown-basic-button"
-                  title="Chọn nhà hàng"
-                  className="mt-1 block w-full"
-                  onSelect={handleRestaurantSelect}
-                >
-                  {restaurants.map((restaurant) => (
-                    <Dropdown.Item key={restaurant.restaurantId} eventKey={restaurant.restaurantId}>
-                      {restaurant.name}
-                    </Dropdown.Item>
-                  ))}
-                </DropdownButton>
-              </div>
-              {selectedRestaurantInfo && (
-                <div className="mb-4">
-                  <p className="text-sm text-gray-700">
-                    Nhà hàng đã chọn: {selectedRestaurantInfo.name} (ID: {selectedRestaurantInfo.id})
-                  </p>
-                </div>
-              )}
               {selectedTableInfo && (
                 <div className="mb-4">
                   <p className="text-sm text-gray-700">
@@ -271,24 +215,6 @@ const ReservationForm = ({ loggedInUser }) => {
                   </p>
                 </div>
               )}
-              <button
-                type="button"
-                className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                onClick={handleUpdate}
-              >
-                Đặt bàn
-              </button>
-            </form>
-          </div>
-        </div>
-        <div className="mt-6">
-          <h2 className="text-lg font-semibold mb-4">Các món ăn đã chọn</h2>
-          <ProductCard date={date1}/>
-        </div>
-        {showTables && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-            <div className="bg-white rounded-lg shadow-lg p-6 max-w-3xl w-full relative">
-              <button className="absolute top-4 right-4 text-gray-600 hover:text-gray-800" onClick={() => setShowTables(false)}>×</button>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">Choose Table:</label>
                 <div className="flex flex-wrap gap-2">
@@ -306,9 +232,20 @@ const ReservationForm = ({ loggedInUser }) => {
                   ))}
                 </div>
               </div>
-            </div>
+              <button
+                type="button"
+                className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                onClick={handleUpdate}
+              >
+                Đặt bàn
+              </button>
+            </form>
           </div>
-        )}
+        </div>
+        <div className="mt-6">
+          <h2 className="text-lg font-semibold mb-4">Các món ăn đã chọn</h2>
+          <ProductCard date={date1}/>
+        </div>
       </div>
       <ToastContainer />
     </div>

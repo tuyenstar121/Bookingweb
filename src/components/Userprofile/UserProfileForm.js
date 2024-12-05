@@ -94,8 +94,8 @@ const UserInfoForm = ({ userData, onUpdate }) => {
           <label className="mr-4">
             <input
               type="radio"
-              value="Nam"
-              checked={gender === 'Nam'}
+              value="male"
+              checked={gender === 'male'}
               onChange={(e) => setGender(e.target.value)}
               className="form-radio h-4 w-4 text-yellow-600"
             />
@@ -104,8 +104,8 @@ const UserInfoForm = ({ userData, onUpdate }) => {
           <label>
             <input
               type="radio"
-              value="Nữ"
-              checked={gender === 'Nữ'}
+              value="female"
+              checked={gender === 'female'}
               onChange={(e) => setGender(e.target.value)}
               className="form-radio h-4 w-4 text-yellow-600"
             />
