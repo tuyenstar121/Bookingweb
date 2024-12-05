@@ -48,7 +48,7 @@ const RestaurantSelector = ({ selectedRestaurant, setSelectedRestaurant }) => {
   return (
     <div className="flex items-center space-x-4 mb-5">
       <label htmlFor="restaurant" className="block text-sm font-medium text-gray-700">
-        Chọn nhà hàng:
+        Chọn nhà hàng: 
       </label>
       <div className="relative inline-block w-64">
         <button

@@ -67,11 +67,13 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/Booking" element={<Booking />} />
+              <Route path="/NV" element={<ProtectedRoute component={Staffview} requiredRole="Staff"/>}  />
+              <Route path="/order" element={<ProtectedRoute component={Adminorder} requiredRole="Staff" />} />
               <Route path="/login/admin/Dashboard" element={<ProtectedRoute component={Admin} requiredRole="Admin" />} />
 
               <Route path="/admin/customers" element={<ProtectedRoute component={Adminu} requiredRole="Admin" />} />
               <Route path="/admin/Products" element={<ProtectedRoute component={Adminre} requiredRole="Admin" />} />
-              <Route path="/admin/order" element={<ProtectedRoute component={Adminorder} requiredRole="Admin" />} />
+             
               <Route path="/admin/analytics" element={<ProtectedRoute component={Admintable} requiredRole="Admin" />} />
               <Route path="/admin/food" element={<ProtectedRoute component={AdminFood} requiredRole="Admin" />} />
               <Route path="/admin/promotion" element={<ProtectedRoute component={AdminPromotion} requiredRole="Admin" />} />

@@ -62,7 +62,7 @@ const CustomerReview = () => {
       if (!token) {
         throw new Error('No JWT token found');
       }
-
+  
       const response = await axios.get(`http://localhost:8080/api/reservations/monthly-stats-by-restaurant?restaurant_id=${encodeURIComponent(selectedRestaurant)}`, {
         headers: {
           Authorization: `Bearer ${token}` // Add the Authorization header with the JWT token

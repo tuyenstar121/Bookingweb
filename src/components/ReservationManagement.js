@@ -24,7 +24,7 @@ import RestaurantSelector from "./RestaurantSelector";
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react';
 import classNames from "classnames";
 import { ChevronDownIcon } from '@heroicons/react/16/solid';
-import Navbar from './navbar/NavbarAdmin';
+
 import { useDisclosure } from '@chakra-ui/react';
 import { FiX, FiEdit } from "react-icons/fi"; // Biểu tượng từ React-Icons
 import { useNavigate } from "react-router-dom";
@@ -32,14 +32,28 @@ function ReservationManagementTable() {
   const [reservations, setReservations] = useState([]);
   const [error, setError] = useState("");
   const [selectedRestaurant, setSelectedRestaurant] = useState("");
+  const [filteredReservations, setFilteredReservations] = useState([]);
   const [sortBy, setSortBy] = useState(null);
   const [filterStatus, setFilterStatus] = useState(null);
   const [foodItems, setFoodItems] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { onOpen } = useDisclosure();
+  const [selectedDate, setSelectedDate] = useState("");
   const fixed = false; // Example value, update as necessary
   const rest = {}; // Example value, update as necessary
   const navigate = useNavigate();
+  useEffect(() => {
+    // Lọc dữ liệu dựa trên searchQuery
+    const lowerQuery = searchQuery.toLowerCase();
+    const filtered = reservations.filter((reservation) => {
+      return (
+        reservation.user.username.toLowerCase().includes(lowerQuery) ||
+        reservation.user.phone.toLowerCase().includes(lowerQuery)
+      );
+    });
+    setFilteredReservations(filtered);
+  }, [searchQuery, reservations]);
   useEffect(() => {
     fetchReservations();
   }, [selectedRestaurant, sortBy, filterStatus]);
@@ -155,18 +169,62 @@ function ReservationManagementTable() {
     setReservations([]);
     setError("");
   };
+  const fetchReservationsByDate = async () => {
+    const token = Cookies.get("token"); // Lấy token từ cookie
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/reservations/by-date?date=${selectedDate}`,
+        {
+          headers: { Authorization: `Bearer ${token}` }, // Thêm JWT vào header
+        }
+      );
+      setReservations(response.data); // Cập nhật danh sách reservation
+    } catch (error) {
+      console.error("Error fetching reservations by date:", error);
+      setError("Error fetching reservations by date"); // Thông báo lỗi
+    }
+  };
+  const handleDateChange = (event) => {
+    const selected = event.target.value;
+    setSelectedDate(selected); // Cập nhật ngày
+  };
 
+  // Tự động gọi API khi ngày thay đổi
+  useEffect(() => {
+    if (selectedDate) {
+      fetchReservationsByDate();
+    }
+  }, [selectedDate]);
   const filterByStatus = (status) => {
     setFilterStatus(status);
   };
   const handleEditFood = (reservationId) => {
-    console.log(reservationId)
-    // Lưu ID đơn đặt vào localStorage
-    localStorage.setItem("reservationId", reservationId);
-    navigate("/nv");
-    // Chuyển hướng sang trang /nv
-
+    console.log(foodItems);
+    if (foodItems.length > 0) {
+      const cartItems = foodItems.map((item) => ({
+        foodItemId: item.foodItem.foodItemId,
+        img:item.foodItem.img,
+        name: item.foodItem.name,
+        price: item.foodItem.price,
+        quantity: item.quantity,
+      }));
+      localStorage.setItem("cart", JSON.stringify(cartItems)); // Lưu vào localStorage
+      
+    } else {
+      localStorage.removeItem("cart");
+    }
+    localStorage.setItem("reservationId", reservationId); // Lưu Reservation ID để sử dụng sau nếu cần
+      navigate("/nv"); // Chuyển hướng sang trang chỉnh sửa
   };
+
+  // const filteredReservations = reservations.filter((reservation) => {
+  //   const lowerQuery = searchQuery.toLowerCase();
+  //   return (
+    
+  //     reservation.user.username.toLowerCase().includes(lowerQuery) ||
+  //     reservation.user.phone.toLowerCase().includes(lowerQuery)
+  //   );
+  // });
 
 
   const handleDialogClose = () => {
@@ -175,20 +233,37 @@ function ReservationManagementTable() {
   };
   return (
     <div className="container">
-      <Navbar
-        onOpen={onOpen}
-        logoText={'Horizon UI Dashboard PRO'}
-        brandText={'Order'}
-        secondary={'/admin'}
-        fixed={fixed}
-        {...rest}
-      />
+    
       <div className="admin-top">
         <div className="control-buttons">
           <RestaurantSelector
             selectedRestaurant={selectedRestaurant}
             setSelectedRestaurant={setSelectedRestaurant}
           />
+          
+          <div className="relative w-1/4">
+            <input
+              type="text"
+              value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search by name or phone..."
+              className="form-control w-full p-2 pl-4 pr-10 border border-gray-300 rounded-lg"
+            />
+            <span className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+              <i className="fas fa-search text-gray-400"></i>
+            </span>
+          
+        </div>
+        <div className="mb-4">
+        <label htmlFor="date" className="mr-2">Select Date:</label>
+        <input
+          type="date"
+          id="date"
+          value={selectedDate}
+          onChange={handleDateChange}
+          className="p-2 border border-gray-300 rounded-md"
+        />
+      </div>
           <Menu as="div" className="relative inline-block text-left">
             <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
               Options

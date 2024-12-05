@@ -23,7 +23,6 @@ const AccountDashboard = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [urlImage, setUrlImage] = useState(null)
   const [previewImage, setPreviewImage] = useState(null);
-
   const fetchUserData = async (userId) => {
     const token = Cookies.get('token');
     try {
