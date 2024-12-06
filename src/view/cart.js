@@ -16,7 +16,9 @@ const Cart = ({isCartOpen, setIsCartOpen, cart, setCart}) => {
         setCart([]);
         localStorage.removeItem("cart");
     };
-
+    const formatCurrency = (amount) => {
+        return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    };
     const handleCartClick = () => {
         setIsCartOpen(!isCartOpen);
     };
@@ -62,7 +64,7 @@ const Cart = ({isCartOpen, setIsCartOpen, cart, setCart}) => {
                             <img src={item.img} alt={item.name} className="w-16 h-16 mr-4"/>
                             <p className="font-semibold">{item.name}</p>
                         </div>
-                        <p>{item.price} VND</p>
+                        <p>{formatCurrency(item.price)} </p>
                         </div>
                         <div className="flex items-center justify-between mt-2">
                         <div className="flex items-center">
@@ -72,7 +74,7 @@ const Cart = ({isCartOpen, setIsCartOpen, cart, setCart}) => {
                             >
                             -
                             </button>
-                            <span className="px-3">{item.quantity}</span>
+                            <span className="px-3">{formatCurrency(item.quantity)}</span>
                             <button
                             className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-3 rounded-r"
                             onClick={() => handleIncrementQuantity(item.foodItemId)}
@@ -80,7 +82,7 @@ const Cart = ({isCartOpen, setIsCartOpen, cart, setCart}) => {
                             +
                             </button>
                         </div>
-                        <div>{item.price * item.quantity} VND</div>
+                        <div>{formatCurrency(item.price * item.quantity)}</div>
                         </div>
                         <div className="mt-2">
                         <textarea
@@ -95,7 +97,8 @@ const Cart = ({isCartOpen, setIsCartOpen, cart, setCart}) => {
                 </ul>
                 <div className="flex justify-between items-center mt-4">
                     <span className="font-semibold">Tổng số tiền ({cart.length} sản phẩm):</span>
-                    <span className="text-red-500 font-bold">{totalAmount} VND</span>
+                    <span className="text-red-500 font-bold">{formatCurrency(totalAmount)}</span>
+
                 </div>
                 <button
                     className="mt-4 bg-red-500 text-white px-3 py-1 rounded"

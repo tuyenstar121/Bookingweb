@@ -16,6 +16,7 @@ const Menu = () => {
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [promotionToday, setPromotionToday] = useState([]);
 
   useEffect(() => {
     const fetchMenuItems = async () => {
@@ -34,11 +35,23 @@ const Menu = () => {
         setCategories(uniqueCategories);
       } catch (error) {
         console.error("There was an error fetching the menu items!", error);
-        setError("Failed to fetch menu items.");
+        setError("Lỗi tải dữ liệu món ăn");
       }
     };
+    const fetchPromotionToday = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/promotions/by-date?date=' + new Date().toISOString().split('T')[0]);
 
+        const items = response.data;
+
+        setPromotionToday(items)
+      } catch (error) {
+        console.error("There was an error fetching the menu items!", error);
+        setError("Lỗi tải dữ liệu khuyến mãi");
+      }
+    };
     fetchMenuItems();
+    fetchPromotionToday();
   }, []);
 
   useEffect(() => {
@@ -120,7 +133,7 @@ const Menu = () => {
           activeCategory={activeCategory}
           filterItems={filterItems}
         />
-        <MenuItems items={menuItems} onAddToCart={handleAddToCart} />
+        <MenuItems items={menuItems} onAddToCart={handleAddToCart} promotionToday={promotionToday}/>
       </section>
 
       <button className="shopping-cart-button fixed bottom-4 right-4 bg-blue-500 text-white rounded-full p-4 shadow-lg" onClick={handleCartClick}>
@@ -128,7 +141,7 @@ const Menu = () => {
         {cart.length > 0 && <span className="badge">{cart.length}</span>}
       </button>
       {
-        isCartOpen && <Cart cart={cart} setCart={setCart} isCartOpen={isCartOpen} setIsCartOpen={setIsCartOpen} />
+        isCartOpen && <Cart cart={cart} setCart={setCart} isCartOpen={isCartOpen} setIsCartOpen={setIsCartOpen}  promotionToday={promotionToday}/>
       }
 
       <Footer />

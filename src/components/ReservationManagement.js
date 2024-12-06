@@ -40,8 +40,8 @@ function ReservationManagementTable() {
   const [searchQuery, setSearchQuery] = useState("");
   const { onOpen } = useDisclosure();
   const [selectedDate, setSelectedDate] = useState("");
-  const fixed = false; // Example value, update as necessary
-  const rest = {}; // Example value, update as necessary
+  const [currentReservation, setCurrentReservation] = useState(null);
+  
   const navigate = useNavigate();
   useEffect(() => {
     // Lọc dữ liệu dựa trên searchQuery
@@ -87,6 +87,7 @@ function ReservationManagementTable() {
 
   const fetchFoodItems = async (reservationId) => {
     const token = Cookies.get('token');
+    setCurrentReservation(reservationId);
     try {
       const response = await axios.get(`http://localhost:8080/api/order-food-mapping/reservation/${reservationId}`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -198,7 +199,7 @@ function ReservationManagementTable() {
   const filterByStatus = (status) => {
     setFilterStatus(status);
   };
-  const handleEditFood = (reservationId) => {
+  const handleEditFood = () => {
     console.log(foodItems);
     if (foodItems.length > 0) {
       const cartItems = foodItems.map((item) => ({
@@ -213,7 +214,7 @@ function ReservationManagementTable() {
     } else {
       localStorage.removeItem("cart");
     }
-    localStorage.setItem("reservationId", reservationId); // Lưu Reservation ID để sử dụng sau nếu cần
+    localStorage.setItem("reservationId", currentReservation); // Lưu Reservation ID để sử dụng sau nếu cần
       navigate("/nv"); // Chuyển hướng sang trang chỉnh sửa
   };
 
@@ -467,26 +468,28 @@ function ReservationManagementTable() {
 
 
         <DialogActions className="flex justify-end gap-4">
-          {/* Close Button */}
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleDialogClose}
-            startIcon={<FiX className="text-lg" />} // Biểu tượng Close
-          >
-            Close
-          </Button>
+  {/* Close Button */}
+  <Button
+    variant="contained"
+    color="primary"
+    onClick={handleDialogClose}
+    startIcon={<FiX className="text-lg" />} // Biểu tượng Close
+  >
+    Close
+  </Button>
 
-          {/* Edit Button */}
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => handleEditFood(foodItems[0]?.reservations.reservationId)}  // Wrapped in function
-            startIcon={<FiEdit className="text-lg" />} // Edit icon
-          >
-            Edit
-          </Button>
-        </DialogActions>
+  {/* Edit Button - chỉ hiển thị nếu trạng thái là "Confirmed" */}
+  {reservations.find((res) => res.reservationId === currentReservation)?.status === "Confirmed" && (
+    <Button
+      variant="contained"
+      color="secondary"
+      onClick={handleEditFood} // Đã gói trong hàm
+      startIcon={<FiEdit className="text-lg" />} // Biểu tượng Edit
+    >
+      Edit
+    </Button>
+  )}
+</DialogActions>
 
 
       </Dialog>

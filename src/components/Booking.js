@@ -120,7 +120,10 @@ const ReservationForm = ({ loggedInUser }) => {
 
   const handleUpdate = async () => {
     if (!user) {
-      toast.error('Bạn cần đăng nhập để đặt bàn.');
+      
+      setTimeout(() => {
+        toast.error('Bạn cần đăng nhập để đặt bàn.');
+      }, 2000);
       navigate('/login');
       return;
     }
@@ -129,7 +132,11 @@ const ReservationForm = ({ loggedInUser }) => {
       toast.error('Vui lòng điền đầy đủ các thông tin.');
       return;
     }
-
+    const today = new Date().toISOString().split('T')[0]; // Lấy ngày hiện tại ở định dạng YYYY-MM-DD
+    if (date1 < today) {
+      toast.error('Ngày đặt bàn không được trước ngày hôm nay.');
+      return;
+    }
     const requestData = {
       userId: user.userId,
       tableId: selectedTable,
@@ -296,7 +303,7 @@ const ReservationForm = ({ loggedInUser }) => {
                       type="button"
                       className={`p-2 rounded border ${selectedTable === table.tableId ? 'border-yellow-500' : 'border-gray-300'} ${table.status === 'available' ? 'bg-green-200 hover:bg-green-300' : 'bg-red-200'}`}
                       onClick={() => handleTableClick(table.tableNumber, table.tableId, table.status)}
-                      disabled={table.status !== 'available'}
+                     
                     >
                       <FontAwesomeIcon icon={table.status === 'available' ? faChair : faCouch} />
                       <span className="ml-2">{table.tableNumber}</span>
