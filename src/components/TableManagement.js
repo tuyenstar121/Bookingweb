@@ -86,7 +86,7 @@ export default function TableManagement() {
 
       const response = await axios.post("http://localhost:8080/tables/add", {
         ...newTable,
-        restaurantId: selectedRestaurant,
+        restaurantId: 1,
       }, {
         headers: {
           Authorization: `Bearer ${token}`
