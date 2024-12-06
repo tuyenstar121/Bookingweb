@@ -9,7 +9,7 @@ const MenuItems = ({ items, onAddToCart, promotionToday }) => {
   };
 
   const getDiscountPercentage = (itemId) => {
-    const promotion = promotionToday.find(promo => promo.foodItemId === itemId);
+    const promotion = promotionToday?.find(promo => promo.foodItemId === itemId);
     return promotion ? promotion.discountPercentage : null;
   };
 

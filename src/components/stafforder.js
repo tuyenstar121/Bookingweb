@@ -13,7 +13,7 @@ import {
   DialogActions,
   Button,
 } from "@mui/material";
-
+import ConfirmDialog from "./ConfirmDialog";
 const CombinedLayout = () => {
   const [cart, setCart] = useState(() => {
     return JSON.parse(localStorage.getItem("cart")) || [];
@@ -27,7 +27,10 @@ const CombinedLayout = () => {
   const [reservationDetails, setReservationDetails] = useState(null);
   const [foodItems, setFoodItems] = useState([]);
   const [loading, setLoading] = useState(false); // Trạng thái tải
-
+  const [newTableId, setNewTableId] = useState(null);
+  const [switchingTable, setSwitchingTable] = useState(false);
+ 
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   // Đồng bộ hóa giỏ hàng với localStorage
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
@@ -58,22 +61,26 @@ const CombinedLayout = () => {
   }, [selectedRestaurant, fetchTablesByRestaurant]);
 
   // Lấy thông tin đặt bàn
-  const fetchReservationDetails = useCallback(async (id) => {
+  const fetchReservationDetails = useCallback(async (reservationId) => {
     try {
       const token = Cookies.get("token");
       const response = await axios.get(
-        `http://localhost:8080/api/reservations/${id}`,
+        `http://localhost:8080/api/reservations/${reservationId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const { restaurantId, table } = response.data;
+  
+      // Update reservation details and other states
+      setReservationDetails(response.data); // Save the entire reservation details
       setSelectedRestaurant(restaurantId);
       setSelectedTable({ id: table.id, number: table.tableNumber });
-      setReservationDetails(response.data);
+  
     } catch (error) {
       console.error("Error fetching reservation details:", error);
       toast.error("Không thể lấy thông tin đặt bàn!");
     }
   }, []);
+  
   const fetchFoodItems = async (reservationId) => {
     const token = Cookies.get('token');
     try {
@@ -132,17 +139,66 @@ const CombinedLayout = () => {
     },
     [cart, updateCart]
   );
+  const toggleSwitchingTable = () => {
+    setSwitchingTable(!switchingTable);
+    if (!switchingTable) toast.info("Chọn bàn mới để chuyển đến.");
+  };
+  const executeSwitchTable = async () => {
+    setShowConfirmDialog(false);
+    try {
+      const token = Cookies.get("token");
+      const response = await axios.post(
+        `http://localhost:8080/api/reservations/change-table/${reservationId}`,
+        null,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { newTableId },
+        }
+      );
 
-  // Xử lý chọn bàn
-  const handleTableClick = (table) => {
-    if (table.status === "available") {
-      setSelectedTable({ id: table.id, number: table.tableNumber });
-      setShowMenuTable(true);
-    } else {
-      toast.warn("Bàn này đã có khách!");
+      if (response.status === 200) {
+        toast.success("Chuyển bàn thành công!");
+        const updatedReservation = response.data;
+        setSelectedTable({
+          id: updatedReservation.table.id,
+          number: updatedReservation.table.tableNumber,
+        });
+        fetchTablesByRestaurant(selectedRestaurant);
+      } else {
+        toast.error("Không thể chuyển bàn!");
+      }
+    } catch (error) {
+      console.error("Error switching tables:", error);
+      toast.error("Đã xảy ra lỗi khi chuyển bàn!");
     }
   };
-
+  const handleSwitchTable = async (newTableId) => {
+    setShowConfirmDialog(true);
+  };
+  const handleTableClick = (table) => {
+    if (switchingTable) {
+      if (table.status === "available") {
+        setNewTableId(table.tableId);
+        handleSwitchTable(table.tableId); // Gọi API đổi bàn
+      } else {
+        toast.warn("Bàn này đã có khách. Vui lòng chọn bàn trống!");
+      }
+    } else {
+      if (table.status === "available") {
+        setSelectedTable({ id: table.id, number: table.tableNumber });
+        setShowMenuTable(true);
+      } else {
+        toast.warn("Bàn này đã có khách!");
+      }
+    }
+  };
+function getDiscountPercentage(itemId, promotions) {
+  if (!promotions || promotions.length === 0) {
+    return 0; // Không có khuyến mãi
+  }
+  const promotion = promotions.find((p) => p.itemId === itemId);
+  return promotion ? promotion.discount : 0;
+}
   const handlePaymentClick = () => setShowInvoice(true);
   const handleCloseInvoice = () => setShowInvoice(false);
 
@@ -161,7 +217,13 @@ const CombinedLayout = () => {
     <h3 className="text-lg font-bold">
       Đơn đặt bàn: {reservationId}
     </h3>
-    <p>Nhà hàng đã chọn: {selectedRestaurant}</p>
+    <h2 className="text-xl font-bold mb-4">
+    {reservationDetails?.table ? (
+  <p>Bàn: {reservationDetails.table.tableNumber}</p>
+) : (
+  <p>Chưa có thông tin bàn</p>
+)}
+            </h2>
   </div>
 )}
         {!showMenuTable ? (
@@ -180,7 +242,7 @@ const CombinedLayout = () => {
                     <span className="text-lg font-bold">{table.tableNumber}</span>
                   </div>
                   <div
-                    className={`flex-1 flex items-center justify-center rounded-b-lg ${
+                    className={`flex-1.1 flex items-center justify-center rounded-b-lg ${
                       table.status === "available" ? "bg-green-500" : "bg-gray-400"
                     }`}
                   >
@@ -198,11 +260,11 @@ const CombinedLayout = () => {
               Bàn: {selectedTable?.number}
             </h2>
             <MenuEdit
-              foodItems={cart}
-              onRemove={removeFromCart}
-              onIncrement={incrementQuantity}
-              onDecrement={decrementQuantity}
-            />
+  foodItems={cart || []} // Đảm bảo cart không phải là undefined
+  onRemove={removeFromCart}
+  onIncrement={incrementQuantity}
+  onDecrement={decrementQuantity}
+/>
             <button
               className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
               onClick={handleBackToTableSelection}
@@ -225,12 +287,24 @@ const CombinedLayout = () => {
           <button className="flex items-center px-3 py-2 bg-yellow-600 text-white font-bold rounded-full shadow-lg hover:shadow-yellow-700 transition duration-300">
             <i className="fas fa-compress-alt mr-1"></i> Gộp bàn
           </button>
-          <button className="flex items-center px-3 py-2 bg-purple-600 text-white font-bold rounded-full shadow-lg hover:shadow-purple-800 transition duration-300">
-            <i className="fas fa-arrows-alt mr-1"></i> Chuyển bàn
-          </button>
+          <button
+  className={`flex items-center px-3 py-2 ${
+    switchingTable ? "bg-red-500" : "bg-purple-600"
+  } text-white font-bold rounded-full shadow-lg hover:shadow-purple-800 transition duration-300`}
+  onClick={toggleSwitchingTable}
+>
+  <i className="fas fa-arrows-alt mr-1"></i> {switchingTable ? "Hủy chuyển bàn" : "Chuyển bàn"}
+</button>
         </div>
       </div>
-
+      {showConfirmDialog && (
+        <ConfirmDialog
+          title="Xác nhận chuyển bàn"
+          message={`Bạn có chắc chắn muốn chuyển đến bàn ${selectedTable?.number}}?`}
+          onConfirm={executeSwitchTable}
+          onCancel={() => setShowConfirmDialog(false)}
+        />
+      )}
       {/* Invoice Modal */}
       <Dialog open={showInvoice} onClose={handleCloseInvoice} maxWidth="md" fullWidth>
         <DialogTitle>Hóa Đơn</DialogTitle>

@@ -99,7 +99,7 @@ const Menu = () => {
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
     let categoryItems = [];
-    if (activeCategory == 'all'){
+    if (activeCategory == 'all') {
       categoryItems = allItems;
     } else categoryItems = allItems.filter(item => item.category.name === activeCategory)
     const filteredItems = categoryItems.filter(item =>
@@ -133,7 +133,7 @@ const Menu = () => {
           activeCategory={activeCategory}
           filterItems={filterItems}
         />
-        <MenuItems items={menuItems} onAddToCart={handleAddToCart} promotionToday={promotionToday}/>
+        <MenuItems items={menuItems} onAddToCart={handleAddToCart} promotionToday={promotionToday} />
       </section>
 
       <button className="shopping-cart-button fixed bottom-4 right-4 bg-blue-500 text-white rounded-full p-4 shadow-lg" onClick={handleCartClick}>
@@ -141,7 +141,7 @@ const Menu = () => {
         {cart.length > 0 && <span className="badge">{cart.length}</span>}
       </button>
       {
-        isCartOpen && <Cart cart={cart} setCart={setCart} isCartOpen={isCartOpen} setIsCartOpen={setIsCartOpen}  promotionToday={promotionToday}/>
+        isCartOpen && <Cart cart={cart} setCart={setCart} isCartOpen={isCartOpen} setIsCartOpen={setIsCartOpen} promotionToday={promotionToday} />
       }
 
       <Footer />
