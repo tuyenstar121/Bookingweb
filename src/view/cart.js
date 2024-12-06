@@ -20,7 +20,13 @@ const Cart = ({ isCartOpen, setIsCartOpen, cart, setCart, promotionToday }) => {
         setCart([]);
         localStorage.removeItem("cart");
     };
-
+    const formatPrice = (price) => {
+        return new Intl.NumberFormat('vi-VN', {
+          style: 'currency',
+          currency: 'VND',
+          minimumFractionDigits: 0,
+        }).format(price);
+      };
     const handleCartClick = () => {
         setIsCartOpen(!isCartOpen);
     };
@@ -73,11 +79,11 @@ const Cart = ({ isCartOpen, setIsCartOpen, cart, setCart, promotionToday }) => {
                                             <div>
                                                 {promotion ? (
                                                     <div>
-                                                        <span className="text-red-500 line-through">{item.price} VND</span>
-                                                        <span>{discountedPrice} VND</span>
+                                                        <span className="text-red-500 line-through">{formatPrice(item.price)} </span>
+                                                        <span>{formatPrice(discountedPrice)} VND</span>
                                                     </div>
                                                 ) : (
-                                                    <span>{item.price} VND</span>
+                                                    <span>{formatPrice(item.price)} VND</span>
                                                 )}
                                             </div>
                                         </div>
@@ -97,7 +103,7 @@ const Cart = ({ isCartOpen, setIsCartOpen, cart, setCart, promotionToday }) => {
                                                     +
                                                 </button>
                                             </div>
-                                            <div>{discountedPrice * item.quantity} VND</div>
+                                            <div>{formatPrice(discountedPrice * item.quantity)} </div>
                                         </div>
                                         <div className="mt-2">
                                             <textarea
@@ -113,7 +119,7 @@ const Cart = ({ isCartOpen, setIsCartOpen, cart, setCart, promotionToday }) => {
                         </ul>
                         <div className="flex justify-between items-center mt-4">
                             <span className="font-semibold">Tổng số tiền ({cart.length} sản phẩm):</span>
-                            <span className="text-red-500 font-bold">{totalAmount.toFixed(2)} VND</span>
+                            <span className="text-red-500 font-bold">{formatPrice(totalAmount.toFixed(2))} </span>
                         </div>
                         <button
                             className="mt-4 bg-red-500 text-white px-3 py-1 rounded"

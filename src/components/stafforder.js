@@ -55,10 +55,10 @@ const CombinedLayout = () => {
   }, []);
 
   useEffect(() => {
-    if (selectedRestaurant) {
-      fetchTablesByRestaurant(selectedRestaurant);
+   
+      fetchTablesByRestaurant(1);
     }
-  }, [selectedRestaurant, fetchTablesByRestaurant]);
+  );
 
   // Lấy thông tin đặt bàn
   const fetchReservationDetails = useCallback(async (reservationId) => {

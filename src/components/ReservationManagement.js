@@ -59,9 +59,7 @@ function ReservationManagementTable() {
   }, [selectedRestaurant, sortBy, filterStatus]);
   const fetchReservations = async () => {
     let url = "http://localhost:8080/api/reservations/list";
-    if (selectedRestaurant) {
-      url = `http://localhost:8080/api/reservations/by-restaurant?restaurantId=${selectedRestaurant}`;
-    }
+   
 
     const token = Cookies.get('token');
     try {
@@ -237,17 +235,14 @@ function ReservationManagementTable() {
     
       <div className="admin-top">
         <div className="control-buttons">
-          <RestaurantSelector
-            selectedRestaurant={selectedRestaurant}
-            setSelectedRestaurant={setSelectedRestaurant}
-          />
+         
           
-          <div className="relative w-1/4">
+          <div className="relative w-1/3">
             <input
               type="text"
               value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search by name or phone..."
+          placeholder="Tìm kiếm theo tên hoặc số điện thoại"
               className="form-control w-full p-2 pl-4 pr-10 border border-gray-300 rounded-lg"
             />
             <span className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
@@ -255,8 +250,8 @@ function ReservationManagementTable() {
             </span>
           
         </div>
-        <div className="mb-4">
-        <label htmlFor="date" className="mr-2">Select Date:</label>
+        <div >
+        <label htmlFor="date" className="mr-2">Chọn ngày</label>
         <input
           type="date"
           id="date"
@@ -267,8 +262,8 @@ function ReservationManagementTable() {
       </div>
           <Menu as="div" className="relative inline-block text-left">
             <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-              Options
-              <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
+                Options
+                <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
             </MenuButton>
             <Transition
               enter="transition ease-out duration-100"
@@ -289,7 +284,7 @@ function ReservationManagementTable() {
                       )}
                       onClick={() => sortByDate()}
                     >
-                      Sort by Date
+                      Sắp xếp theo ngày
                     </a>
                   )}
                 </MenuItem>
@@ -303,7 +298,7 @@ function ReservationManagementTable() {
                       )}
                       onClick={() => filterByStatus("Confirmed")}
                     >
-                      Filter by Confirmed
+                    Lọc trạng thái Confirmed
                     </a>
                   )}
                 </MenuItem>
@@ -317,7 +312,7 @@ function ReservationManagementTable() {
                       )}
                       onClick={() => filterByStatus("Cancelled")}
                     >
-                      Filter by Cancelled
+                         Lọc trạng thái Cancelled
                     </a>
                   )}
                 </MenuItem>
@@ -331,7 +326,7 @@ function ReservationManagementTable() {
                       )}
                       onClick={() => filterByStatus("Booked")}
                     >
-                      Filter by Booked
+                          Lọc trạng thái  Booked
                     </a>
                   )}
                 </MenuItem>
@@ -345,7 +340,7 @@ function ReservationManagementTable() {
                       )}
                       onClick={() => filterByStatus("Completed")}
                     >
-                      Filter by Completed
+                          Lọc trạng thái  Completed
                     </a>
                   )}
                 </MenuItem>
@@ -359,7 +354,7 @@ function ReservationManagementTable() {
                         'block w-full px-4 py-2 text-left text-sm'
                       )}
                     >
-                      See all
+                  Xem tất cả
                     </button>
                   )}
                 </MenuItem>
@@ -376,16 +371,16 @@ function ReservationManagementTable() {
             <TableRow>
               <TableCell>STT</TableCell>
               <TableCell>Code</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell align="left">Date</TableCell>
-              <TableCell align="left">Time</TableCell>
-              <TableCell align="left">Guests</TableCell>
-              <TableCell align="left">Phone Number</TableCell>
-              <TableCell align="left">Restaurant Name</TableCell>
-              <TableCell align="left">Table Number</TableCell>
-              <TableCell align="left">Status</TableCell>
-              <TableCell align="left">Actions</TableCell>
-              <TableCell align="left">Food Items</TableCell>
+              <TableCell>Tên</TableCell>
+              <TableCell align="left">Ngày</TableCell>
+              <TableCell align="left">Giờ</TableCell>
+              <TableCell align="left">Số khách</TableCell>
+              <TableCell align="left">Số điện thoại</TableCell>
+              <TableCell align="left">Tên nhà hàng</TableCell>
+              <TableCell align="left">Số Bàn</TableCell>
+              <TableCell align="left">Trạng thái</TableCell>
+              <TableCell align="left">Hành động</TableCell>
+              <TableCell align="left">Món ăn</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

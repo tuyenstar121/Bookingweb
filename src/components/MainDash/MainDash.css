@@ -46,7 +46,7 @@
 } */
 .container {
     overflow-y: auto;
-    width: 1200px;
+    width: 1500px;
     height: calc(100% - 30px); /* Adjust height to account for admin-top */
     margin-top: -30px; /* Compensate for the height of admin-top */
     padding-top: 30px; 

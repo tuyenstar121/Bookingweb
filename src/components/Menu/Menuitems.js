@@ -12,7 +12,13 @@ const MenuItems = ({ items, onAddToCart, promotionToday }) => {
     const promotion = promotionToday?.find(promo => promo.foodItemId === itemId);
     return promotion ? promotion.discountPercentage : null;
   };
-
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+      minimumFractionDigits: 0,
+    }).format(price);
+  };
   return (
     <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-5">
       {items.map((item) => {
@@ -27,7 +33,7 @@ const MenuItems = ({ items, onAddToCart, promotionToday }) => {
                   <span className="text-lg  font-semibold">{name}</span>
                 </div>
                 <div>
-                  <span className="text-lg  font-semibold">{price} VND</span>
+                  <span className="text-lg  font-semibold">{formatPrice(price)} </span>
                 </div>
               </header>
               <p className="text-sm text-gray-700 mb-2 flex-grow">{description}</p>

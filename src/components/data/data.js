@@ -27,21 +27,13 @@ export const SidebarData = [
     heading: "Dashboard",
     path: "/login/admin/Dashboard",
   },
-  {
-    icon: UilClipboardAlt,
-    heading: "Đặt bàn",
-    path: "/admin/order",
-  },
+
   {
     icon: UilUsersAlt,
     heading: "Người dùng",
     path: "/admin/customers",
   },
-  {
-    icon: UilRestaurant,
-    heading: 'Nhà hàng',
-    path: "/admin/Products",
-  },
+
   {
     icon: UilTable,
     heading: 'Bàn',

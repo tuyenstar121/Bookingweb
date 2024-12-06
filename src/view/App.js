@@ -31,20 +31,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
 
-  useEffect(() => {
-    checkLoggedInStatus();
-  }, []);
-
-  const checkLoggedInStatus = async () => {
-    try {
-      const response = await axios.get('http://localhost:8080/auth/current-user', {
-        withCredentials: true,
-      });
-      setLoggedIn(response.data !== null);
-    } catch (error) {
-      console.error('Error fetching current user:', error);
-    }
-  };
   const setFavicon = (url) => {
     const link = document.querySelector("link[rel~='icon']");
     if (!link) {

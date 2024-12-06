@@ -39,6 +39,7 @@ export default function PromotionManager() {
       });
       const data = await response.json();
       setPromotions(data);
+      console.log(promotions);
     } catch (error) {
       console.error("Error fetching promotions:", error);
     }
@@ -57,6 +58,7 @@ export default function PromotionManager() {
         }
       });
       const data = await response.json();
+      
       setFoodItems(data);
     } catch (error) {
       console.error("Error fetching food items:", error);

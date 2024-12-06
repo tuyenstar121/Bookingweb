@@ -19,10 +19,8 @@ export default function TableManagement() {
   });
 
   useEffect(() => {
-    if (selectedRestaurant) {
-      fetchTablesByRestaurant(selectedRestaurant);
-    }
-  }, [selectedRestaurant]);
+    fetchTablesByRestaurant(1);
+  });
 
   const fetchTablesByRestaurant = async (restaurantId) => {
     try {
@@ -131,10 +129,7 @@ export default function TableManagement() {
       <ToastContainer />
       <div className="admin-top">
         <h3>Table Management</h3>
-        <RestaurantSelector
-          selectedRestaurant={selectedRestaurant}
-          setSelectedRestaurant={setSelectedRestaurant}
-        />
+       
         <div className="mt-4">
           <h4>Add New Table</h4>
           <OverlayTrigger

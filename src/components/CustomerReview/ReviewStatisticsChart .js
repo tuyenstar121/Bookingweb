@@ -1,43 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import Chart from 'react-apexcharts';
 import axios from 'axios';
-import RestaurantSelector from "../RestaurantSelector"; // Adjust the import path if necessary
 import Cookies from 'js-cookie';
 
 const ReviewStatisticsChart = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedRestaurant, setSelectedRestaurant] = useState("");
 
   useEffect(() => {
-    if (selectedRestaurant) {
-      const fetchReviewStatistics = async () => {
-        setLoading(true);
-        try {
-          const token = Cookies.get('token'); // Get the JWT token from the cookie
-          if (!token) {
-            throw new Error('No JWT token found');
-          }
-      
-          const response = await axios.get(`http://localhost:8080/api/reviews/statistics/${encodeURIComponent(selectedRestaurant)}`, {
-            headers: {
-              Authorization: `Bearer ${token}` // Add the Authorization header with the JWT token
-            }
-          });
-
-          const aggregatedData = aggregateReviewsByRating(response.data);
-          setData(aggregatedData);
-        } catch (error) {
-          console.error('Error fetching review statistics:', error);
-          setData(getDefaultData()); // Set to default data if there is an error
-        } finally {
-          setLoading(false);
+    const fetchReviewStatistics = async () => {
+      setLoading(true);
+      try {
+        const token = Cookies.get('token'); // Get the JWT token from the cookie
+        if (!token) {
+          throw new Error('No JWT token found');
         }
-      };
 
-      fetchReviewStatistics();
-    }
-  }, [selectedRestaurant]);
+        // Always fetch data for restaurant_id = 1
+        const response = await axios.get(
+          `http://localhost:8080/api/reviews/statistics/1`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Add the Authorization header with the JWT token
+            },
+          }
+        );
+
+        const aggregatedData = aggregateReviewsByRating(response.data);
+        setData(aggregatedData);
+      } catch (error) {
+        console.error('Error fetching review statistics:', error);
+        setData(getDefaultData()); // Set to default data if there is an error
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchReviewStatistics();
+  }, []);
 
   const aggregateReviewsByRating = (reviews) => {
     const aggregatedData = reviews.reduce((acc, review) => {
@@ -49,7 +49,7 @@ const ReviewStatisticsChart = () => {
       return acc;
     }, getDefaultDataObject());
 
-    return Object.keys(aggregatedData).map(rating => ({
+    return Object.keys(aggregatedData).map((rating) => ({
       rating: parseInt(rating),
       numberOfReviews: aggregatedData[rating],
     }));
@@ -64,7 +64,7 @@ const ReviewStatisticsChart = () => {
   };
 
   const getDefaultData = () => {
-    return Object.keys(getDefaultDataObject()).map(rating => ({
+    return Object.keys(getDefaultDataObject()).map((rating) => ({
       rating: parseInt(rating),
       numberOfReviews: 0,
     }));
@@ -75,7 +75,7 @@ const ReviewStatisticsChart = () => {
       id: 'review-statistics',
     },
     xaxis: {
-      categories: data.map(stat => `Rating ${stat.rating}`),
+      categories: data.map((stat) => `Rating ${stat.rating}`),
     },
     yaxis: {
       title: {
@@ -91,16 +91,12 @@ const ReviewStatisticsChart = () => {
   const chartSeries = [
     {
       name: 'Number of Reviews',
-      data: data.map(stat => stat.numberOfReviews),
+      data: data.map((stat) => stat.numberOfReviews),
     },
   ];
 
   return (
-    <div className="flex flex-col items-start h-full">
-      <RestaurantSelector
-        selectedRestaurant={selectedRestaurant}
-        setSelectedRestaurant={setSelectedRestaurant}
-      />
+    <div className="flex flex-col items-center h-full">
       {loading ? (
         <p>Loading...</p>
       ) : (

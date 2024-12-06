@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChair, faCouch } from '@fortawesome/free-solid-svg-icons';
-import DropdownButton from 'react-bootstrap/DropdownButton';
-import Dropdown from 'react-bootstrap/Dropdown';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -15,19 +13,17 @@ const ReservationForm = ({ loggedInUser }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [date1, setDate1] = useState('');
+  const [date, setDate] = useState('');
   const [time, setTime] = useState('');
-  const [selectedTable, setSelectedTable] = useState('');
-  const [availableTables, setAvailableTables] = useState([]);
-  const [user, setUser] = useState(null);
   const [adults, setAdults] = useState(2);
-  const [selectedRestaurantInfo, setSelectedRestaurantInfo] = useState(null);
+  const [selectedTable, setSelectedTable] = useState('');
   const [selectedTableInfo, setSelectedTableInfo] = useState(null);
-
+  const [availableTables, setAvailableTables] = useState([]);
+  const [showTablePopup, setShowTablePopup] = useState(false);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
-
-
+  // Fetch user info and available tables on mount
   useEffect(() => {
     const storedUserId = Cookies.get('userId');
     const token = Cookies.get('token');
@@ -47,21 +43,23 @@ const ReservationForm = ({ loggedInUser }) => {
           console.error('Error fetching user:', error);
         });
     }
-    fetchTables();
+    
   }, [loggedInUser]);
 
-  useEffect(() => {
-    const now = new Date();
-    setDate1(now.toISOString().split('T')[0]); // YYYY-MM-DD
-    setTime(now.toTimeString().split(' ')[0].substring(0, 5)); // HH:MM
-  }, []);
-
+ 
   const fetchTables = async () => {
     const token = Cookies.get('token');
     try {
-      const response = await axios.get(`http://localhost:8080/tables`, {
+      const response = await axios.get(`http://localhost:8080/tables/available`, {
         headers: { Authorization: `Bearer ${token}` },
+        params: {
+          restaurantId: 1,
+          reservationDate: date,
+          reservationTime: time,
+          guestsCount: adults,
+        },
       });
+
       const tablesWithStatus = response.data.map((table) => ({
         ...table,
         status: table.status.toLowerCase(),
@@ -69,47 +67,46 @@ const ReservationForm = ({ loggedInUser }) => {
       setAvailableTables(tablesWithStatus);
       setSelectedTable('');
     } catch (error) {
-      console.error('Lỗi lấy dữ liệu bàn:', error);
+      console.error('Error fetching available tables:', error);
     }
   };
 
   const handleTableClick = (tableNumber, tableId, status) => {
     if (status === 'available') {
-      setSelectedTableInfo({
-        number: tableNumber,
-        id: tableId,
-      });
+      setSelectedTableInfo({ number: tableNumber, id: tableId });
       setSelectedTable(tableId);
       toast.success(`Bạn đã chọn bàn số ${tableNumber}.`);
+      setShowTablePopup(false); // Close the popup
     } else {
       toast.error(`Bàn ${tableNumber} đã được đặt chỗ.`);
     }
   };
-
+  const handleclickchoseTable = async () => {
+    fetchTables();
+    setShowTablePopup(true);
+  }
   const handleUpdate = async () => {
     if (!user) {
-
-      setTimeout(() => {
-        toast.error('Bạn cần đăng nhập để đặt bàn.');
-      }, 2000);
+      toast.error('Bạn cần đăng nhập để đặt bàn.');
       navigate('/login');
       return;
     }
 
-    if (!selectedTable || !date1 || !time) {
+    if (!selectedTable || !date || !time) {
       toast.error('Vui lòng điền đầy đủ các thông tin.');
       return;
     }
 
-    const today = new Date().toISOString().split('T')[0]; // Lấy ngày hiện tại ở định dạng YYYY-MM-DD
-    if (date1 < today) {
+    const today = new Date().toISOString().split('T')[0];
+    if (date < today) {
       toast.error('Ngày đặt bàn không được trước ngày hôm nay.');
       return;
     }
+
     const requestData = {
       userId: user.userId,
       tableId: selectedTable,
-      reservationDate: date1,
+      reservationDate: date,
       reservationTime: time,
       numberOfGuests: adults,
     };
@@ -121,7 +118,6 @@ const ReservationForm = ({ loggedInUser }) => {
       });
       const reservationId = response.data;
       toast.success('Đặt bàn thành công.');
-      console.log('Reservation ID:', reservationId);
       await createAdditionalItems(reservationId);
     } catch (error) {
       toast.error('Lỗi đặt bàn.');
@@ -155,13 +151,12 @@ const ReservationForm = ({ loggedInUser }) => {
       );
 
       toast.success('Thêm món ăn thành công.');
-      localStorage.removeItem('cart'); // Clear cart items after adding
+      localStorage.removeItem('cart');
     } catch (error) {
       toast.error('Lỗi thêm món ăn.');
       console.error(error);
     }
   };
-
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
@@ -172,7 +167,7 @@ const ReservationForm = ({ loggedInUser }) => {
           <div className="bg-gray-50 p-4 rounded-lg">
             <h2 className="text-lg font-semibold mb-4">Chi tiết đặt bàn</h2>
             <form>
-              <div className="form-group flex items-center space-x-4">
+            <div className="form-group flex items-center space-x-4">
                 <label className="block text-sm font-medium text-gray-700 flex items-center">
                   <span role="img" aria-label="adults" className="mr-1">👤</span> Số người:
                   <select
@@ -199,14 +194,12 @@ const ReservationForm = ({ loggedInUser }) => {
                 </label> */}
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  <span role="img" aria-label="arrival-time">🕒</span> Thời gian đến
-                </label>
+                <label className="block text-sm font-medium text-gray-700">Thời gian đến:</label>
                 <input
                   type="date"
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm p-2"
-                  value={date1}
-                  onChange={(e) => setDate1(e.target.value)}
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
                 />
                 <input
                   type="time"
@@ -215,30 +208,20 @@ const ReservationForm = ({ loggedInUser }) => {
                   onChange={(e) => setTime(e.target.value)}
                 />
               </div>
-              {selectedTableInfo && (
-                <div className="mb-4">
-                  <p className="text-sm text-gray-700">
-                    Bàn đã chọn: {selectedTableInfo.number} (ID: {selectedTableInfo.id})
-                  </p>
-                </div>
-              )}
               <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700">Choose Table:</label>
-                <div className="flex flex-wrap gap-2">
-                  {availableTables.map((table) => (
-                    <button
-                      key={table.tableId}
-                      type="button"
-                      className={`p-2 rounded border ${selectedTable === table.tableId ? 'border-yellow-500' : 'border-gray-300'} ${table.status === 'available' ? 'bg-green-200 hover:bg-green-300' : 'bg-red-200'}`}
-                      onClick={() => handleTableClick(table.tableNumber, table.tableId, table.status)}
-
-                    >
-                      <FontAwesomeIcon icon={table.status === 'available' ? faChair : faCouch} />
-                      <span className="ml-2">{table.tableNumber}</span>
-                    </button>
-                  ))}
-                </div>
+                <button
+                  type="button"
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                  onClick={() =>handleclickchoseTable ()}
+                >
+                  Chọn bàn
+                </button>
               </div>
+              {selectedTableInfo && (
+                <p className="text-sm text-gray-700">
+                  Bàn đã chọn: {selectedTableInfo.number} (ID: {selectedTableInfo.id})
+                </p>
+              )}
               <button
                 type="button"
                 className="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
@@ -251,10 +234,43 @@ const ReservationForm = ({ loggedInUser }) => {
         </div>
         <div className="mt-6">
           <h2 className="text-lg font-semibold mb-4">Các món ăn đã chọn</h2>
-          <ProductCard date={date1} />
+          <ProductCard />
         </div>
+        {showTablePopup && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+            <div className="bg-white rounded-lg shadow-lg p-6 max-w-3xl w-full relative">
+              <button
+                className="absolute top-4 right-4 text-gray-600 hover:text-gray-800"
+                onClick={() => setShowTablePopup(false)}
+              >
+                ×
+              </button>
+              <h2 className="text-xl font-semibold mb-4">Danh sách bàn</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {availableTables.map((table) => (
+                  <button
+                    key={table.tableId}
+                    className={`p-4 rounded-lg shadow-md flex flex-col items-center ${
+                      table.status === 'available' ? 'bg-green-100' : 'bg-red-100'
+                    }`}
+                    onClick={() => handleTableClick(table.tableNumber, table.tableId, table.status)}
+                  >
+                    <FontAwesomeIcon
+                      icon={table.capacity > 4 ? faCouch : faChair}
+                      size="lg"
+                      className="mb-2"
+                    />
+                    <span className="text-sm">
+                      Bàn {table.tableNumber} ({table.capacity} chỗ)
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+        <ToastContainer />
       </div>
-      <ToastContainer />
     </div>
   );
 };
