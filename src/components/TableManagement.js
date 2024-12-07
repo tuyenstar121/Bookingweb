@@ -26,7 +26,7 @@ export default function TableManagement() {
     try {
       const token = Cookies.get('token');
       if (!token) {
-        throw new Error('No JWT token found');
+        throw new Error('Không tìm thấy token JWT');
       }
 
       const response = await axios.get(`http://localhost:8080/tables/by-restaurant/${restaurantId}`, {
@@ -36,8 +36,8 @@ export default function TableManagement() {
       });
       setTables(response.data);
     } catch (error) {
-      console.error("Error fetching tables:", error);
-      toast.error("Error fetching tables");
+      console.error("Lỗi khi lấy danh sách bàn:", error);
+      toast.error("Lỗi khi lấy danh sách bàn");
     }
   };
 
@@ -55,7 +55,7 @@ export default function TableManagement() {
     try {
       const token = Cookies.get('token');
       if (!token) {
-        throw new Error('No JWT token found');
+        throw new Error('Không tìm thấy token JWT');
       }
 
       const response = await axios.put(`http://localhost:8080/tables/${editTable.tableId}`, editTable, {
@@ -64,12 +64,12 @@ export default function TableManagement() {
         }
       });
 
-      // Update only the edited table in the state
+      // Cập nhật chỉ bàn đã chỉnh sửa trong trạng thái
       setTables(tables.map((table) => (table.id === editTable.id ? response.data : table)));
-      toast.success("Table updated successfully");
+      toast.success("Cập nhật bàn thành công");
     } catch (error) {
-      console.error("Error editing table:", error);
-      const errorMessage = error.response?.data?.message || "Error editing table";
+      console.error("Lỗi khi chỉnh sửa bàn:", error);
+      const errorMessage = error.response?.data?.message || "Lỗi khi chỉnh sửa bàn";
       toast.error(errorMessage);
     }
 
@@ -81,7 +81,7 @@ export default function TableManagement() {
     try {
       const token = Cookies.get('token');
       if (!token) {
-        throw new Error('No JWT token found');
+        throw new Error('Không tìm thấy token JWT');
       }
 
       const response = await axios.post("http://localhost:8080/tables/add", {
@@ -98,10 +98,10 @@ export default function TableManagement() {
         capacity: "",
         status: "available",
       });
-      toast.success("Table added successfully");
+      toast.success("Thêm bàn mới thành công");
     } catch (error) {
-      console.error("Error adding table:", error);
-      toast.error("Error adding table");
+      console.error("Lỗi khi thêm bàn:", error);
+      toast.error("Lỗi khi thêm bàn");
     }
   };
   const handleDeleteTable = async (tableId) => {
@@ -109,7 +109,7 @@ export default function TableManagement() {
     try {
       const token = Cookies.get('token');
       if (!token) {
-        throw new Error('No JWT token found');
+        throw new Error('Không tìm thấy token JWT');
       }
       await axios.delete(`http://localhost:8080/tables/${tableId}`, {
         headers: {
@@ -117,10 +117,10 @@ export default function TableManagement() {
         }
       });
       setTables(tables.filter((table) => table.id !== tableId));
-      toast.success("Table deleted successfully");
+      toast.success("Xóa bàn thành công");
     } catch (error) {
-      console.error("Error deleting table:", error);
-      toast.error("Error deleting table");
+      console.error("Lỗi khi xóa bàn:", error);
+      toast.error("Lỗi khi xóa bàn");
     }
   };
 
@@ -128,20 +128,20 @@ export default function TableManagement() {
     <div className="container mt-4">
       <ToastContainer />
       <div className="admin-top">
-        <h3>Table Management</h3>
-       
+        <h3>Quản lý Bàn</h3>
+
         <div className="mt-4">
-          <h4>Add New Table</h4>
+          <h4>Thêm Bàn Mới</h4>
           <OverlayTrigger
             trigger="click"
             placement="bottom"
             overlay={
               <Popover id="popover-add-table">
-                <Popover.Header as="h3">Add New Table</Popover.Header>
+                <Popover.Header as="h3">Thêm Bàn Mới</Popover.Header>
                 <Popover.Body>
                   <Form>
                     <Form.Group controlId="formTableNumber">
-                      <Form.Label>Number</Form.Label>
+                      <Form.Label>Số Bàn</Form.Label>
                       <Form.Control
                         type="text"
                         value={newTable.tableNumber}
@@ -149,33 +149,40 @@ export default function TableManagement() {
                       />
                     </Form.Group>
                     <Form.Group controlId="formTableCapacity">
-                      <Form.Label>Capacity</Form.Label>
+                      <Form.Label>Sức Chứa</Form.Label>
                       <Form.Control
-                        type="text"
+                        type="number"
                         value={newTable.capacity}
-                        onChange={(e) => setNewTable({ ...newTable, capacity: e.target.value })}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value > 0 && !isNaN(value)) {
+                            setNewTable({ ...newTable, capacity: value });
+                          }
+                        }}
+                        min="1"
+                        step="1"
                       />
                     </Form.Group>
                     <Form.Group controlId="formTableStatus">
-                      <Form.Label>Status</Form.Label>
+                      <Form.Label>Trạng Thái</Form.Label>
                       <Form.Control
                         as="select"
                         value={newTable.status}
                         onChange={(e) => setNewTable({ ...newTable, status: e.target.value })}
                       >
-                        <option value="available">Available</option>
-                        <option value="occupied">Occupied</option>
+                        <option value="available">Còn Trống</option>
+                        <option value="occupied">Đã Đặt</option>
                       </Form.Control>
                     </Form.Group>
                     <Button variant="primary" onClick={handleAddTable}>
-                      Add Table
+                      Thêm Bàn
                     </Button>
                   </Form>
                 </Popover.Body>
               </Popover>
             }
           >
-            <Button variant="primary">Add New Table</Button>
+            <Button variant="primary">Thêm Bàn Mới</Button>
           </OverlayTrigger>
         </div>
       </div>
@@ -183,10 +190,10 @@ export default function TableManagement() {
         <thead>
           <tr>
             <th>STT</th>
-            <th>Number</th>
-            <th>Capacity</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>Số Bàn</th>
+            <th>Sức Chứa</th>
+            <th>Trạng Thái</th>
+            <th>Thao Tác</th>
           </tr>
         </thead>
         <tbody>
@@ -195,13 +202,13 @@ export default function TableManagement() {
               <td>{index + 1}</td>
               <td>{table.tableNumber}</td>
               <td>{table.capacity}</td>
-              <td>{table.status}</td>
+              <td>{table.status === 'available' ? 'Còn Trống' : 'Đã Đặt'}</td>
               <td>
                 <Button variant="warning" onClick={() => handleEdit(table)} className="me-2">
-                  Edit
+                  Chỉnh Sửa
                 </Button>
                 <Button variant="danger" onClick={() => handleDeleteTable(table.tableId)}>
-                  Delete
+                  Xóa
                 </Button>
               </td>
             </tr>
@@ -212,12 +219,12 @@ export default function TableManagement() {
       {/* Edit Table Modal */}
       <Modal show={showEditModal} onHide={handleEditModalClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Edit Table</Modal.Title>
+          <Modal.Title>Chỉnh Sửa Bàn</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Form.Group controlId="formEditTableNumber">
-              <Form.Label>Number</Form.Label>
+              <Form.Label>Số Bàn</Form.Label>
               <Form.Control
                 type="text"
                 value={editTable ? editTable.tableNumber : ""}
@@ -225,7 +232,7 @@ export default function TableManagement() {
               />
             </Form.Group>
             <Form.Group controlId="formEditTableCapacity">
-              <Form.Label>Capacity</Form.Label>
+              <Form.Label>Sức Chứa</Form.Label>
               <Form.Control
                 type="text"
                 value={editTable ? editTable.capacity : ""}
@@ -233,24 +240,24 @@ export default function TableManagement() {
               />
             </Form.Group>
             <Form.Group controlId="formEditTableStatus">
-              <Form.Label>Status</Form.Label>
+              <Form.Label>Trạng Thái</Form.Label>
               <Form.Control
                 as="select"
                 value={editTable ? editTable.status : "available"}
                 onChange={(e) => setEditTable({ ...editTable, status: e.target.value })}
               >
-                <option value="available">Available</option>
-                <option value="occupied">Occupied</option>
+                <option value="available">Còn Trống</option>
+                <option value="occupied">Đã Đặt</option>
               </Form.Control>
             </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleEditModalClose}>
-            Cancel
+            Hủy
           </Button>
           <Button variant="primary" onClick={handleEditSubmit}>
-            Save
+            Lưu
           </Button>
         </Modal.Footer>
       </Modal>
