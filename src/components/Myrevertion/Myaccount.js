@@ -24,6 +24,7 @@ const AccountDashboard = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [urlImage, setUrlImage] = useState(null)
   const [previewImage, setPreviewImage] = useState(null);
+  const [isLoadingImage, setIsLoadingImage] = useState(true)
   const fetchUserData = async (userId) => {
     const token = Cookies.get('token');
     try {
@@ -76,10 +77,12 @@ const AccountDashboard = () => {
   }, []);
 
   const handleProfileImageChange = async (event) => {
+    setIsLoadingImage(true)
     const selectedFile = event.target.files[0]
     if (selectedFile) {
       const img = await uploadToCloudinary(selectedFile)
       setPreviewImage(img);
+      setIsLoadingImage(false)
     }
   }
   const handleConfirmImageChange = async () => {
@@ -146,6 +149,7 @@ const AccountDashboard = () => {
         onClose={onClose}
         handleConfirmImageChange={handleConfirmImageChange}
         previewImage={previewImage}
+        isLoadingImage={isLoadingImage}
       />
       <ToastContainer />
     </>

@@ -32,6 +32,13 @@ const ReservationList = ({ reservations }) => {
     }
   };
 
+  const status = {
+    Booked : "Chờ xác nhận",
+    Confirmed: "Đã tiếp nhận",
+    Completed: "Hoàn thành",
+    Cancelled: "Đã hủy"
+  }
+
   const handleReviewButtonClick = (reservation) => {
     setSelectedReservation(reservation);
     setShowReviewForm(true);
@@ -105,7 +112,7 @@ const ReservationList = ({ reservations }) => {
             <Row className="mt-2">
               <Col>
                 <p className={`text-sm rounded px-2 py-1 ${getStatusColor(reservation.status)}`}>
-                  {reservation.status}
+                  {status[reservation.status]}
                 </p>
               </Col>
               {reservation.status === 'Completed' && (

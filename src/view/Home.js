@@ -23,9 +23,9 @@ const Home = () => {
       {/* <div className="search-container">
         <Booking />
       </div> */}
-      <div className={`Restaurant-form `}>
+      {/* <div className={`Restaurant-form `}>
         <Card2 />
-      </div>
+      </div> */}
       <div className='Restaurant-form'>
         <AboutUs />
       </div>

@@ -10,9 +10,6 @@ import ReservationForm1 from './form/form';
 import ProductCard from './ProductCard/ProductCard';
 
 const ReservationForm = ({ loggedInUser }) => {
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [adults, setAdults] = useState(2);
@@ -35,9 +32,6 @@ const ReservationForm = ({ loggedInUser }) => {
         .then((response) => {
           const user = response.data;
           setUser(user);
-          setPhoneNumber(user.phone);
-          setName(user.username);
-          setEmail(user.email);
         })
         .catch((error) => {
           console.error('Error fetching user:', error);
@@ -45,6 +39,13 @@ const ReservationForm = ({ loggedInUser }) => {
     }
     
   }, [loggedInUser]);
+
+  useEffect(() => {
+    // Set default values for date and time
+    const now = new Date();
+    setDate(now.toISOString().split('T')[0]); // YYYY-MM-DD
+    setTime(now.toTimeString().split(' ')[0].substring(0, 5)); // HH:MM
+  }, []);
 
  
   const fetchTables = async () => {
@@ -234,7 +235,7 @@ const ReservationForm = ({ loggedInUser }) => {
         </div>
         <div className="mt-6">
           <h2 className="text-lg font-semibold mb-4">Các món ăn đã chọn</h2>
-          <ProductCard />
+          <ProductCard date={date}/>
         </div>
         {showTablePopup && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">

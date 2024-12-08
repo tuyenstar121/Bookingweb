@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ChangeProfilePhotoModal = ({ isOpen, onClose, handleProfileImageChange, previewImage, handleConfirmImageChange }) => {
+const ChangeProfilePhotoModal = ({ isOpen, onClose, handleProfileImageChange, previewImage, handleConfirmImageChange, isLoadingImage }) => {
     if (!isOpen) return null; // Không hiển thị modal nếu isOpen là false
 
     return (
@@ -27,7 +27,7 @@ const ChangeProfilePhotoModal = ({ isOpen, onClose, handleProfileImageChange, pr
                     <button onClick={onClose} className="text-blue-500">
                         Hủy
                     </button>
-                    <button onClick={handleConfirmImageChange} className="bg-blue-500 text-white py-2 px-4 rounded">
+                    <button disabled={isLoadingImage} onClick={handleConfirmImageChange} className={`${isLoadingImage?"bg-neutral-500":"bg-blue-500"} text-white py-2 px-4 rounded`}>
                         Xác nhận
                     </button>
                 </div>

@@ -78,7 +78,7 @@ const ProductCard = ({date}) => {
             <div>
               {discountedPrice < item.price ? (
                 <div>
-                  <span className="line-through">{item.price} VND</span> <span>{discountedPrice.toFixed(2)} VND</span>
+                  <span className="line-through text-red-500">{item.price} VND</span> <span>{discountedPrice} VND</span>
                 </div>
               ) : (
                 <span className="font-semibold">{item.price} VND</span>
@@ -89,7 +89,7 @@ const ProductCard = ({date}) => {
       })}
       <div className="flex justify-between items-center mb-2">
         <div className='font-bold'>Tổng cộng:</div>
-        <span className="font-semibold">{totalAmount.toFixed(2)} VND</span>
+        <span className="font-semibold">{totalAmount} VND</span>
       </div>
       {isCartOpen && <Cart cart={cart} setCart={setCart} isCartOpen={isCartOpen} setIsCartOpen={setIsCartOpen} promotionToday={promotionToday} />}
     </div>
