@@ -19,6 +19,8 @@ import {
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import UploadImage from "./Common/UploadImage";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function PromotionManager() {
   const [promotions, setPromotions] = useState([]);
@@ -39,9 +41,8 @@ export default function PromotionManager() {
       });
       const data = await response.json();
       setPromotions(data);
-      console.log(promotions);
     } catch (error) {
-      console.error("Error fetching promotions:", error);
+      console.error("Lỗi khi lấy dữ liệu chương trình khuyến mãi:", error);
     }
   }, []);
 
@@ -58,10 +59,10 @@ export default function PromotionManager() {
         }
       });
       const data = await response.json();
-      
+
       setFoodItems(data);
     } catch (error) {
-      console.error("Error fetching food items:", error);
+      console.error("Lỗi khi lấy danh sách món ăn:", error);
     }
   }, []);
 
@@ -93,14 +94,14 @@ export default function PromotionManager() {
 
   const handleEditSubmit = async () => {
     if (!editPromotion?.name || !editPromotion?.discountPercentage || !editPromotion?.description || !editPromotion?.startDate || !editPromotion?.endDate) {
-      alert("Please fill in all fields.");
+      alert("Vui lòng điền đầy đủ thông tin.");
       return;
     }
 
     try {
       const token = Cookies.get('token');
       if (!token) {
-        throw new Error('No JWT token found');
+        throw new Error('Không tìm thấy JWT token');
       }
 
       const response = await fetch(`http://localhost:8080/api/promotions/${editPromotion.id}`, {
@@ -109,20 +110,25 @@ export default function PromotionManager() {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(editPromotion),
+        body: JSON.stringify({
+          ...editPromotion, foodIds: editPromotion?.promotionFoodDetails?.map((promotionFoodDetail) => {
+            return promotionFoodDetail.food
+          })?.map(item => item.foodItemId)
+        }),
       });
 
       if (response.ok) {
         fetchPromotions();
         handleDialogClose();
+        toast('Sửa thành công !')
       } else {
         const errorData = await response.json();
-        console.error("Error updating promotion:", errorData.message || response.statusText);
-        alert(`Failed to update promotion: ${errorData.message || response.statusText}`);
+        console.error("Lỗi khi cập nhật chương trình khuyến mãi:", errorData.message || response.statusText);
+        alert(`Cập nhật chương trình khuyến mãi thất bại: ${errorData.message || response.statusText}`);
       }
     } catch (error) {
-      console.error("Error updating promotion:", error);
-      alert(`An error occurred: ${error.message}`);
+      console.error("Lỗi khi cập nhật chương trình khuyến mãi:", error);
+      alert(`Đã xảy ra lỗi: ${error.message}`);
     }
   };
 
@@ -139,14 +145,15 @@ export default function PromotionManager() {
       if (response.ok) {
         fetchPromotions();
         handleDialogClose();
+        toast('Xóa thành công !')
       } else {
         const errorData = await response.json();
-        console.error("Error deleting promotion:", errorData.message || response.statusText);
-        alert(`Failed to delete promotion: ${errorData.message || response.statusText}`);
+        console.error("Lỗi khi xóa chương trình khuyến mãi:", errorData.message || response.statusText);
+        alert(`Xóa chương trình khuyến mãi thất bại: ${errorData.message || response.statusText}`);
       }
     } catch (error) {
-      console.error("Error deleting promotion:", error);
-      alert(`An error occurred: ${error.message}`);
+      console.error("Lỗi khi xóa chương trình khuyến mãi:", error);
+      alert(`Đã xảy ra lỗi: ${error.message}`);
     }
   };
 
@@ -154,7 +161,7 @@ export default function PromotionManager() {
     const { name, discountPercentage, description, image, foodIds, startDate, endDate } = newPromotion;
 
     if (!name || !discountPercentage || !description || !startDate || !endDate || !image || !foodIds) {
-      alert("Please fill in all fields.");
+      alert("Vui lòng điền đầy đủ thông tin.");
       return;
     }
 
@@ -173,14 +180,15 @@ export default function PromotionManager() {
       if (response.ok) {
         fetchPromotions();
         handleDialogClose();
+        toast('Thêm thành công !')
       } else {
         const errorData = await response.json();
-        console.error("Error adding promotion:", errorData.message || response.statusText);
-        alert(`Failed to add promotion: ${errorData.message || response.statusText}`);
+        console.error("Lỗi khi thêm chương trình khuyến mãi:", errorData.message || response.statusText);
+        alert(`Thêm chương trình khuyến mãi thất bại: ${errorData.message || response.statusText}`);
       }
     } catch (error) {
-      console.error("Error adding promotion:", error);
-      alert(`An error occurred: ${error.message}`);
+      console.error("Lỗi khi thêm chương trình khuyến mãi:", error);
+      alert(`Đã xảy ra lỗi: ${error.message}`);
     }
   };
 
@@ -291,6 +299,17 @@ export default function PromotionManager() {
                 className="mb-3"
                 sx={{ width: '100%' }}
               />
+              <Autocomplete
+                fullWidth
+                multiple
+                defaultValue={editPromotion?.promotionFoodDetails?.map((promotionFoodDetail) => {
+                  return promotionFoodDetail.food
+                })?.map(foodItem => ({ ...foodItem, label: foodItem.name })) || []}
+                disablePortal
+                options={foodItems?.map(foodItem => ({ ...foodItem, label: foodItem.name }))}
+                renderInput={(params) => <TextField {...params} label="Món ăn áp dụng khuyến mãi" />}
+                onChange={(_, value) => setNewPromotion({ ...newPromotion, foodIds: value?.map(item => item?.foodItemId) })}
+              />
               <UploadImage
                 defaultImage={editPromotion.image}
                 onChange={(url) => {
@@ -300,7 +319,7 @@ export default function PromotionManager() {
             </>
           )}
           {deletePromotion && (
-            <p>Bạn có chắc chắn xóa chương trình khuyến mãi {deletePromotion?.name}?</p>
+            <p>Bạn có chắc chắn muốn xóa chương trình khuyến mãi {deletePromotion?.name}?</p>
           )}
           {!editPromotion && !deletePromotion && (
             <>
@@ -373,6 +392,7 @@ export default function PromotionManager() {
           )}
         </DialogActions>
       </Dialog>
+      <ToastContainer />
     </div>
   );
 }
