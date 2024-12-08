@@ -58,9 +58,9 @@ const PasswordManagementForm = () => {
         }
       });
 
-      toast.success('Password changed successfully.');
+      toast.success('Thay đổi mật khẩu thành công.');
     } catch (error) {
-      toast.error(error.response?.data || 'An error occurred');
+      toast.error(error.response?.data || 'Lỗi');
     }
   };
 

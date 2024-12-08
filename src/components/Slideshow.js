@@ -13,8 +13,8 @@ function Slideshow() {
           />
           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div className="text-center text-white p-4">
-              <h3 className="text-xl text-white font-bold">Nhà hàng A - Đẳng cấp ẩm thực</h3>
-              <p className="mt-2  text-white">Mang đến cho bạn trải nghiệm ẩm thực tuyệt vời với các món ăn đa dạng từ các nền văn hóa khác nhau, kết hợp cùng không gian sang trọng và dịch vụ chuyên nghiệp.</p>
+              <h3 className="text-xl text-white font-bold">Chào mừng bạn đến với Nhà hàng</h3>
+              <p className="mt-2  text-white">Nơi bạn sẽ được thưởng thức những món ăn tinh tế do đầu bếp tài hoa của chúng tôi chế biến, đảm bảo làm hài lòng mọi giác quan.</p>
             </div>
           </div>
         </div>
@@ -28,8 +28,8 @@ function Slideshow() {
           />
           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div className="text-center text-white p-4">
-              <h3 className="text-xl  text-white font-bold">Nhà hàng B - Hương vị truyền thống</h3>
-              <p className="mt-2  text-white">Với các món ăn đậm chất truyền thống và không gian ấm cúng, chúng tôi cam kết mang đến cho bạn những bữa ăn ngon miệng và những trải nghiệm đáng nhớ.</p>
+              <h3 className="text-xl  text-white font-bold">Khám phá hành trình ẩm thực tuyệt vời tại Nhà hàng của chúng tôi</h3>
+              <p className="mt-2  text-white">Nơi sự sáng tạo trong từng món ăn và dịch vụ đẳng cấp quốc tế luôn chào đón bạn.</p>
             </div>
           </div>
         </div>
@@ -43,8 +43,8 @@ function Slideshow() {
           />
           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div className="text-center text-white p-4">
-              <h3 className="text-xl  text-white font-bold">Third slide label</h3>
-              <p className="mt-2  text-white">Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
+              <h3 className="text-xl  text-white font-bold">Đến với Nhà hàng của chúng tôi</h3>
+              <p className="mt-2  text-white">Bạn sẽ được trải nghiệm không gian ấm cúng, thân thiện và thưởng thức những món ăn tuyệt hảo được chế biến từ nguyên liệu tươi ngon nhất.</p>
             </div>
           </div>
         </div>

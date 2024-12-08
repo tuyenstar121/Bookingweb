@@ -14,9 +14,9 @@ import {
   DialogActions,
   Button,
 } from "@mui/material";
-import ConfirmDialog from "./ConfirmDialog";
-import { json } from "react-router-dom";
 
+import ConfirmDialog from "./ConfirmDialog";
+import MergeTableModal from "./Modal/modal-merge-table";
 const CombinedLayout = () => {
   const [cart, setCart] = useState(() => {
     return JSON.parse(localStorage.getItem("cart")) || [];
@@ -36,6 +36,7 @@ const CombinedLayout = () => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [promotionToday, setPromotionToday] = useState([]);
   const [error, setError] = useState("");
+  const [isShowMergeTable, setIsShowMergeTable] = useState(false);
   const restaurantId=1;
   // Đồng bộ hóa giỏ hàng với localStorage
   useEffect(() => {
@@ -187,6 +188,68 @@ const CombinedLayout = () => {
   const handlePaymentClick = () => setShowInvoice(true);
   const handleCloseInvoice = () => setShowInvoice(false);
 
+  // const fetchSetStatusTableAvailable = async(tableId)=>{
+  //   try {
+  //     const token = Cookies.get("token");
+  //     await axios.put(
+  //       `http://localhost:8080/tables/set-status-available/${tableId}`,
+  //       null,
+  //       {
+  //         headers: { Authorization: `Bearer ${token}` }
+  //       }
+  //     );
+  //   } catch (error) {
+  //     console.error("Lỗi fetchSetStatusTableAvailable:", error);
+  //   }
+  // }
+  const fetchSetStatusTableOccupied = async(tableId)=>{
+    try {
+      const token = Cookies.get("token");
+      await axios.put(
+        `http://localhost:8080/tables/set-status-occupied/${tableId}`,
+        null,
+        {
+          headers: { Authorization: `Bearer ${token}` ,'Access-Control-Allow-Origin':'http://localhost:3000'}
+        }
+      );
+    } catch (error) {
+      console.error("Lỗi fetchSetStatusTableOccupied:", error);
+    }
+  }
+
+  const handleMergeTable = async (newTable) => {
+    try {
+      const token = Cookies.get("token");
+      const response = await axios.post(
+        `http://localhost:8080/api/reservations/change-table/${reservationId}`,
+        null,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { newTableId : newTable.tableId },
+        }
+      );
+      if (response.status === 200) {
+        const updatedReservation = response.data;
+        console.log(updatedReservation)
+        setSelectedTable({
+          id: newTable.tableId,
+          number: newTable.tableNumber,
+        });
+        fetchSetStatusTableOccupied(newTable?.tableId)
+        fetchSetStatusTableOccupied(reservationDetails?.table?.tableId)
+        fetchTablesByRestaurant(selectedRestaurant);
+        setIsShowMergeTable(false)
+        toast.success("Gộp bàn thành công!");
+      } else {
+        toast.error("Không thể gộp bàn!");
+      }
+    } catch (error) {
+      console.error("Error switching tables:", error);
+      toast.error("Đã xảy ra lỗi khi gộp bàn!");
+    }
+  }
+
+
   return (
     <div className="flex flex-col md:flex-row h-screen">
       {/* Left-Side: Menu */}
@@ -260,7 +323,7 @@ const CombinedLayout = () => {
           >
             <i className="fas fa-shopping-cart mr-1"></i> Thanh toán
           </button>
-          <button className="flex items-center px-3 py-2 bg-yellow-600 text-white font-bold rounded-full shadow-lg hover:shadow-yellow-700 transition duration-300">
+          <button onClick={()=>setIsShowMergeTable(!isShowMergeTable)} className="flex items-center px-3 py-2 bg-yellow-600 text-white font-bold rounded-full shadow-lg hover:shadow-yellow-700 transition duration-300">
             <i className="fas fa-compress-alt mr-1"></i> Gộp bàn
           </button>
           <button
@@ -292,6 +355,14 @@ const CombinedLayout = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <MergeTableModal 
+        setIsShowMergeTable={setIsShowMergeTable} 
+        isShowMergeTable={isShowMergeTable}
+        selectedTable={reservationDetails?.table}
+        tables={tables}
+        handleMergeTable={handleMergeTable}
+      />
     </div>
   );
 };
