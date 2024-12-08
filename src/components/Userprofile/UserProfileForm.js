@@ -23,12 +23,13 @@ const UserInfoForm = ({ userData, onUpdate }) => {
       newErrors.name = 'Tên không được để trống';
     }
 
-    // Validate phone number (basic check for length or format)
+    // Validate phone number (basic check for Vietnam phone number)
     if (!phone) {
       newErrors.phone = 'Số điện thoại không được để trống';
-    } else if (!/^\d{10,15}$/.test(phone)) {
+    } else if (!/^0(3[2-9]|5[6|8|9]|7[0|6-9]|8[1-5]|9[0-9])\d{7}$/.test(phone)) {
       newErrors.phone = 'Số điện thoại không hợp lệ';
     }
+
 
     // Validate email format
     if (!email) {
@@ -46,8 +47,9 @@ const UserInfoForm = ({ userData, onUpdate }) => {
     // If no errors, clear errors and submit data
     setErrors({});
     const updatedData = {
-      name, phone, email,
-      //  dayOfBirth, monthOfBirth, yearOfBirth, 
+      name,
+      phone,
+      email,
       gender
     };
     onUpdate(updatedData);
@@ -132,8 +134,8 @@ const UserInfoForm = ({ userData, onUpdate }) => {
           <label className="mr-4">
             <input
               type="radio"
-              value="male"
-              checked={gender === 'male'}
+              value="Nam"
+              checked={gender === 'Nam'}
               onChange={(e) => setGender(e.target.value)}
               className="form-radio h-4 w-4 text-yellow-600"
             />
@@ -142,8 +144,8 @@ const UserInfoForm = ({ userData, onUpdate }) => {
           <label>
             <input
               type="radio"
-              value="female"
-              checked={gender === 'female'}
+              value="Nữ"
+              checked={gender === 'Nữ'}
               onChange={(e) => setGender(e.target.value)}
               className="form-radio h-4 w-4 text-yellow-600"
             />

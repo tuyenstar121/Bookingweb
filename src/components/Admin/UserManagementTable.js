@@ -110,7 +110,7 @@ export default function UserManagementTable() {
                             className="border rounded-lg p-2 focus:outline-none focus:ring focus:border-blue-300"
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                        
+
                     </div>
                 </div>
             </div>
@@ -127,7 +127,7 @@ export default function UserManagementTable() {
                         </tr>
                     </thead>
                     <tbody>
-                        {users.map((user) => (
+                        {users?.filter((user) => user.username.includes(searchTerm)).map((user) => (
                             <tr key={user.userId} className="hover:bg-gray-50">
                                 <td className="px-4 py-2 border-b flex items-center">
                                     <img src={user.img || 'https://via.placeholder.com/40'} alt={user.username} className="w-10 h-10 rounded-full mr-3" />
@@ -138,9 +138,8 @@ export default function UserManagementTable() {
                                 </td>
                                 <td className="px-4 py-2 border-b">
                                     <span
-                                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                                            user.role === 'Admin' ? 'bg-gray-800 text-white' : 'bg-green-500 text-white'
-                                        }`}
+                                        className={`px-2 py-1 rounded-full text-xs font-semibold ${user.role === 'Admin' ? 'bg-gray-800 text-white' : 'bg-green-500 text-white'
+                                            }`}
                                     >
                                         {user.role}
                                     </span>

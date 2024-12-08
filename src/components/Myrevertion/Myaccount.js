@@ -9,7 +9,7 @@ import ReservationHistory from '../Userprofile/ReservationHistory';
 import Cookies from 'js-cookie';
 import UserInfoForm from '../Userprofile/UserProfileForm';
 import axios from 'axios';
-import { toast } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import { useDisclosure } from '@chakra-ui/react';
 import { uploadToCloudinary } from '../../config/UploadToCloudinary';
 import ChangeProfilePhotoModal from './ChangeProfilePhotoModal';
@@ -17,6 +17,7 @@ import ChangeProfilePhotoModal from './ChangeProfilePhotoModal';
 const AccountDashboard = () => {
   const [activeComponent, setActiveComponent] = useState('accountInfo');
   const [userData, setUserData] = useState(null);
+
   const [storedUserId, setStoredUserId] = useState(null);
   const navigate = useNavigate();
   const [loggedIn, setLoggedIn] = useState(false);
@@ -35,7 +36,7 @@ const AccountDashboard = () => {
       console.error('Error fetching user data:', error);
     }
   };
-  
+
 
   const handleUpdateUserData = async (updatedData) => {
     try {
@@ -49,7 +50,7 @@ const AccountDashboard = () => {
           Authorization: `Bearer ${token}`
         }
       });
-      setUserData(response.data);
+      setUserData(response.data.user);
       toast.success("Cập nhật thông tin thành công");
     } catch (error) {
       console.error("Error updating user data:", error);
@@ -96,7 +97,7 @@ const AccountDashboard = () => {
     onClose(); // Đóng modal sau khi xác nhận
     setUrlImage(img)
     setPreviewImage(null)
-}
+  }
 
   return (
     <>
@@ -143,9 +144,10 @@ const AccountDashboard = () => {
         handleProfileImageChange={handleProfileImageChange}
         isOpen={isOpen}
         onClose={onClose}
-        handleConfirmImageChange = {handleConfirmImageChange}
-        previewImage = {previewImage}
+        handleConfirmImageChange={handleConfirmImageChange}
+        previewImage={previewImage}
       />
+      <ToastContainer />
     </>
   );
 };

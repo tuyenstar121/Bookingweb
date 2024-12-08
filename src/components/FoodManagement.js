@@ -17,6 +17,8 @@ import {
   Autocomplete,
 } from "@mui/material";
 import UploadImage from "./Common/UploadImage";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const getCategoryById = (id, options) => {
   console.log({ id, options });
@@ -42,10 +44,9 @@ export default function FoodManagement() {
       const data = await response.json();
       setFoodItems(data);
     } catch (error) {
-      console.error("Error fetching food items:", error);
+      console.error("Lỗi khi lấy danh sách món ăn:", error);
     }
   }, []);
-  console.log(editFoodItem)
   useEffect(() => {
     fetchFoodItems();
   }, [fetchFoodItems]);
@@ -61,7 +62,7 @@ export default function FoodManagement() {
       const data = await response.json();
       setCategories(data);
     } catch (error) {
-      console.error("Error fetching food items:", error);
+      console.error("Lỗi khi lấy danh mục món ăn:", error);
     }
   }, []);
 
@@ -93,14 +94,14 @@ export default function FoodManagement() {
 
   const handleEditSubmit = async () => {
     if (!editFoodItem?.name || !editFoodItem?.price || !editFoodItem?.description || !editFoodItem?.category?.categoryId) {
-      alert("Please fill in all fields.");
+      alert("Vui lòng điền đầy đủ thông tin.");
       return;
     }
 
     try {
       const token = Cookies.get('token');
       if (!token) {
-        throw new Error('No JWT token found');
+        throw new Error('Không tìm thấy JWT token');
       }
 
       const updatedFoodItem = {
@@ -119,14 +120,15 @@ export default function FoodManagement() {
       if (response.ok) {
         fetchFoodItems();
         handleDialogClose();
+        toast('Sửa thành công !')
       } else {
         const errorData = await response.json();
-        console.error("Error updating food item:", errorData.message || response.statusText);
-        alert(`Failed to update food item: ${errorData.message || response.statusText}`);
+        console.error("Lỗi khi cập nhật món ăn:", errorData.message || response.statusText);
+        alert(`Cập nhật món ăn không thành công: ${errorData.message || response.statusText}`);
       }
     } catch (error) {
-      console.error("Error updating food item:", error);
-      alert(`An error occurred: ${error.message}`);
+      console.error("Lỗi khi cập nhật món ăn:", error);
+      alert(`Đã xảy ra lỗi: ${error.message}`);
     }
   };
 
@@ -143,30 +145,31 @@ export default function FoodManagement() {
       if (response.ok) {
         fetchFoodItems();
         handleDialogClose();
+        toast('Xóa thành công !')
       } else {
         const errorData = await response.json();
-        console.error("Error deleting food item:", errorData.message || response.statusText);
-        alert(`Failed to delete food item: ${errorData.message || response.statusText}`);
+        console.error("Lỗi khi xóa món ăn:", errorData.message || response.statusText);
+        alert(`Xóa món ăn không thành công: ${errorData.message || response.statusText}`);
       }
     } catch (error) {
-      console.error("Error deleting food item:", error);
-      alert(`An error occurred: ${error.message}`);
+      console.error("Lỗi khi xóa món ăn:", error);
+      alert(`Đã xảy ra lỗi: ${error.message}`);
     }
   };
 
   const handleAddSubmit = async () => {
     const { name, img, price, description, categoryId } = newFoodItem;
 
-    // Validation: Ensure all fields are filled
+    // Kiểm tra các trường hợp còn thiếu thông tin
     if (!name || !img || !price || !description || !categoryId) {
-      alert("Please fill in all fields.");
+      alert("Vui lòng điền đầy đủ thông tin.");
       return;
     }
 
     try {
       const token = Cookies.get('token');
 
-      // Send the POST request to add a new food item
+      // Gửi yêu cầu POST để thêm món ăn mới
       const response = await fetch("http://localhost:8080/api/food/add", {
         method: "POST",
         headers: {
@@ -176,24 +179,24 @@ export default function FoodManagement() {
         body: JSON.stringify({ ...newFoodItem, categoryId: categoryId.categoryId }),
       });
 
-      // Handle the response
       if (response.ok) {
-        fetchFoodItems();  // Refresh the food items list
-        handleDialogClose();  // Close the dialog
+        fetchFoodItems();  // Làm mới danh sách món ăn
+        handleDialogClose();  // Đóng hộp thoại
+        toast('Thêm thành công !')
       } else {
         const errorData = await response.json();
-        console.error("Error adding food item:", errorData.message || response.statusText);
-        alert(`Failed to add food item: ${errorData.message || response.statusText}`);
+        console.error("Lỗi khi thêm món ăn:", errorData.message || response.statusText);
+        alert(`Thêm món ăn không thành công: ${errorData.message || response.statusText}`);
       }
     } catch (error) {
-      console.error("Error adding food item:", error);
-      alert(`An error occurred: ${error.message}`);
+      console.error("Lỗi khi thêm món ăn:", error);
+      alert(`Đã xảy ra lỗi: ${error.message}`);
     }
   };
 
   return (
     <div className="container mt-4">
-      <h3 className="text-xl font-bold mb-4">Food Management</h3>
+      <h3 className="text-xl font-bold mb-4">Quản lý Món Ăn</h3>
       <div className="flex justify-end">
         <input
           type="text"
@@ -206,19 +209,19 @@ export default function FoodManagement() {
         className="bg-green-500 text-white py-2 px-4 rounded mb-4"
         onClick={() => handleDialogOpen(null, "add")}
       >
-        Add Food Item
+        Thêm Món Ăn
       </button>
 
       <TableContainer component={Paper} className="shadow-lg rounded-lg">
         <Table sx={{ minWidth: 850 }} aria-label="simple table">
           <TableHead className="bg-gray-100">
             <TableRow>
-              <TableCell className="font-semibold">Name</TableCell>
-              <TableCell className="font-semibold">Image</TableCell>
-              <TableCell className="font-semibold" align="left">Price</TableCell>
-              <TableCell className="font-semibold" align="left">Description</TableCell>
-              <TableCell className="font-semibold" align="left">Category</TableCell>
-              <TableCell className="font-semibold" align="left">Actions</TableCell>
+              <TableCell className="font-semibold">Tên Món</TableCell>
+              <TableCell className="font-semibold">Hình Ảnh</TableCell>
+              <TableCell className="font-semibold" align="left">Giá</TableCell>
+              <TableCell className="font-semibold" align="left">Mô Tả</TableCell>
+              <TableCell className="font-semibold" align="left">Danh Mục</TableCell>
+              <TableCell className="font-semibold" align="left">Hành Động</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -243,7 +246,7 @@ export default function FoodManagement() {
                         }}
                       />
                     ) : (
-                      <span>No Image</span>
+                      <span>Không có hình ảnh</span>
                     )}
                   </TableCell>
                   <TableCell align="left">{foodItem.price}</TableCell>
@@ -254,13 +257,13 @@ export default function FoodManagement() {
                       className="bg-blue-500 text-white py-1 px-3 rounded mr-2"
                       onClick={() => handleDialogOpen(foodItem, "edit")}
                     >
-                      Edit
+                      Chỉnh sửa
                     </button>
                     <button
                       className="bg-red-500 text-white py-1 px-3 rounded"
                       onClick={() => handleDialogOpen(foodItem, "delete")}
                     >
-                      Delete
+                      Xóa
                     </button>
                   </TableCell>
                 </TableRow>
@@ -270,27 +273,27 @@ export default function FoodManagement() {
       </TableContainer>
       <Dialog open={openDialog} onClose={handleDialogClose}>
         <DialogTitle>
-          {editFoodItem ? "Edit Food Item" : deleteFoodItem ? "Delete Food Item" : "Add Food Item"}
+          {editFoodItem ? "Chỉnh Sửa Món Ăn" : deleteFoodItem ? "Xóa Món Ăn" : "Thêm Món Ăn"}
         </DialogTitle>
         <DialogContent>
           {editFoodItem && (
             <>
               <TextField
-                label="Name"
+                label="Tên Món"
                 value={editFoodItem.name || ""}
                 onChange={(e) => setEditFoodItem({ ...editFoodItem, name: e.target.value })}
                 fullWidth
                 className="mb-3"
               />
               <TextField
-                label="Price"
+                label="Giá"
                 value={editFoodItem.price || ""}
                 onChange={(e) => setEditFoodItem({ ...editFoodItem, price: e.target.value })}
                 fullWidth
                 className="mb-3"
               />
               <TextField
-                label="Description"
+                label="Mô Tả"
                 value={editFoodItem.description || ""}
                 onChange={(e) => setEditFoodItem({ ...editFoodItem, description: e.target.value })}
                 fullWidth
@@ -301,7 +304,7 @@ export default function FoodManagement() {
                 defaultValue={{ ...editFoodItem?.category, label: editFoodItem?.category.name }}
                 options={categories?.map((category, i) => ({ ...category, label: category.name }))}
                 sx={{ width: '100%' }}
-                renderInput={(params) => <TextField {...params} label="Category ID" />}
+                renderInput={(params) => <TextField {...params} label="Danh Mục" />}
                 onChange={(e, newValue) => setEditFoodItem({ ...editFoodItem, category: newValue })}
               />
               <UploadImage
@@ -313,26 +316,26 @@ export default function FoodManagement() {
             </>
           )}
           {deleteFoodItem && (
-            <p>Are you sure you want to delete {deleteFoodItem?.name}?</p>
+            <p>Bạn có chắc chắn muốn xóa món {deleteFoodItem?.name}?</p>
           )}
           {!editFoodItem && !deleteFoodItem && (
             <>
               <TextField
-                label="Name"
+                label="Tên Món"
                 value={newFoodItem.name || ""}
                 onChange={(e) => setNewFoodItem({ ...newFoodItem, name: e.target.value })}
                 fullWidth
                 className="mb-3"
               />
               <TextField
-                label="Price"
+                label="Giá"
                 value={newFoodItem.price || ""}
                 onChange={(e) => setNewFoodItem({ ...newFoodItem, price: e.target.value })}
                 fullWidth
                 className="mb-3"
               />
               <TextField
-                label="Description"
+                label="Mô Tả"
                 value={newFoodItem.description || ""}
                 onChange={(e) => setNewFoodItem({ ...newFoodItem, description: e.target.value })}
                 fullWidth
@@ -342,7 +345,7 @@ export default function FoodManagement() {
                 disablePortal
                 options={categories?.map((category, i) => ({ ...category, label: category.name }))}
                 sx={{ width: '100%' }}
-                renderInput={(params) => <TextField {...params} label="Category ID" />}
+                renderInput={(params) => <TextField {...params} label="Danh Mục" />}
                 onChange={(e, newValue) => setNewFoodItem({ ...newFoodItem, categoryId: newValue })}
               />
               <UploadImage
@@ -356,25 +359,26 @@ export default function FoodManagement() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDialogClose} color="primary">
-            Cancel
+            Hủy
           </Button>
           {editFoodItem && (
             <Button onClick={handleEditSubmit} color="primary">
-              Save
+              Lưu
             </Button>
           )}
           {deleteFoodItem && (
             <Button onClick={handleDeleteConfirm} color="secondary">
-              Delete
+              Xóa
             </Button>
           )}
           {!editFoodItem && !deleteFoodItem && (
             <Button onClick={handleAddSubmit} color="primary">
-              Add
+              Thêm
             </Button>
           )}
         </DialogActions>
       </Dialog>
+      <ToastContainer />
     </div>
   );
 }

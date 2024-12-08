@@ -58,16 +58,9 @@ const Sidebar = () => {
             </NavLink>
           ))}
 
-          <div style={{
-            width: '100vw',
-            right: '24px',
-            position: 'absolute',
-            top: '24px',
-            display: 'flex',
-            justifyContent: 'right',
-            zIndex: 999
-          }} onClick={handleSignOut}>
+          <div style={{ display: 'flex', paddingLeft: 30, gap: 16, color: 'white', cursor: 'pointer' }} onClick={handleSignOut}>
             <UilSignOutAlt />
+            <span>Đăng xuất</span>
           </div>
         </div>
       </motion.div >

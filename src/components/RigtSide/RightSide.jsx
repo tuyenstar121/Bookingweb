@@ -7,10 +7,10 @@ import "./RightSide.css";
 const RightSide = () => {
   return (
     <div className="RightSide">
-      <div>
+      {/* <div>
         <h3>Đánh giá</h3>
         <Updates />
-      </div>
+      </div> */}
       <div>
         <h3 className="mt-8">Thống kê đặt chỗ</h3>
         <CustomerReview />
