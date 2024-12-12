@@ -148,7 +148,7 @@ export default function UserManagementTable() {
                                 <td className="px-4 py-2 border-b">{user.gender || 'N/A'}</td>
                                 <td className="px-4 py-2 border-b flex items-center space-x-4">
                                     <button onClick={() => handleDialogOpen(user, "edit")} className="text-blue-500 hover:underline">Chỉnh sửa</button>
-                                    <button onClick={() => handleDialogOpen(user, "delete")} className="text-red-500 hover:underline">Xóa</button>
+                                    {/* <button onClick={() => handleDialogOpen(user, "delete")} className="text-red-500 hover:underline">Xóa</button> */}
                                 </td>
                             </tr>
                         ))}

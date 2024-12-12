@@ -79,18 +79,18 @@ const ReviewStatisticsChart = () => {
     },
     yaxis: {
       title: {
-        text: 'Number of Reviews',
+        text: 'Số lượng đánh giá',
       },
     },
     title: {
-      text: 'Review Statistics by Rating',
+      text: 'Thống kê số sao đánh giá',
       align: 'center',
     },
   };
 
   const chartSeries = [
     {
-      name: 'Number of Reviews',
+      name: 'Số lượng đánh giá',
       data: data.map((stat) => stat.numberOfReviews),
     },
   ];

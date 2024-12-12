@@ -63,32 +63,32 @@ const ReservationForm = ({ loggedInUser }) => {
 
   const validate = () => {
     const newErrors = {};
-  
+
     // Kiểm tra tên
     if (!formData.name.trim()) {
       newErrors.name = 'Tên không được để trống hoặc chỉ chứa khoảng trắng.';
     } else if (formData.name.length < 2) {
       newErrors.name = 'Tên phải có ít nhất 2 ký tự.';
     }
-  
+
     // Kiểm tra số điện thoại
     if (!formData.phone.trim()) {
       newErrors.phone = 'Số điện thoại không được để trống hoặc chỉ chứa khoảng trắng.';
     } else if (!/^\d{9,15}$/.test(formData.phone)) {
       newErrors.phone = 'Số điện thoại phải chỉ chứa số và có độ dài từ 10-11 ký tự.';
     }
-  
+
     // Kiểm tra email
     if (!formData.email.trim()) {
       newErrors.email = 'Email không được để trống hoặc chỉ chứa khoảng trắng.';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Địa chỉ email không hợp lệ.';
     }
-  
+
     return newErrors;
   };
-  
-  
+
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -126,15 +126,15 @@ const ReservationForm = ({ loggedInUser }) => {
             Tên liên lạc <span className="text-red-500">*</span>
           </label>
           <input
+            disabled="disabled"
             type="text"
             id="name"
             name="name"
             disabled
             value={formData.name}
             onChange={handleChange}
-            className={`mt-1 block w-full border ${
-              errors.name ? 'border-red-500' : 'border-gray-300'
-            } rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm p-2`}
+            className={`mt-1 block w-full border ${errors.name ? 'border-red-500' : 'border-gray-300'
+              } rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm p-2`}
             placeholder="Nhập tên liên hệ"
             required
           />
@@ -150,9 +150,8 @@ const ReservationForm = ({ loggedInUser }) => {
             name="phone"
             value={formData.phone}
             onChange={handleChange}
-            className={`mt-1 block w-full border ${
-              errors.phone ? 'border-red-500' : 'border-gray-300'
-            } rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm p-2`}
+            className={`mt-1 block w-full border ${errors.phone ? 'border-red-500' : 'border-gray-300'
+              } rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm p-2`}
             placeholder="Nhập số điện thoại"
             required
           />
@@ -168,9 +167,8 @@ const ReservationForm = ({ loggedInUser }) => {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className={`mt-1 block w-full border ${
-              errors.email ? 'border-red-500' : 'border-gray-300'
-            } rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm p-2`}
+            className={`mt-1 block w-full border ${errors.email ? 'border-red-500' : 'border-gray-300'
+              } rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm p-2`}
             placeholder="Nhập Email"
             required
           />

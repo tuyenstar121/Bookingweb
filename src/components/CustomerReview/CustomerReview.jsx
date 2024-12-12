@@ -36,7 +36,7 @@ const CustomerReview = () => {
       },
       yaxis: {
         title: {
-          text: "Number of Reservations",
+          text: "Số lượng đặt bàn",
         },
       },
       fill: {
