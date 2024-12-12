@@ -57,9 +57,9 @@ const LoginForm = () => {
      
       if (role === 'Admin') {
         navigate('admin/Dashboard'); // Redirect to admin page
-      } else {
-        navigate('/Booking'); // Redirect to booking page
-      }
+      } else if (role === 'Staff') {
+        navigate('/NV');
+      } else navigate('/Booking');
     } catch (error) {
       if (error.response) {
         if (error.response.status === 403) {
