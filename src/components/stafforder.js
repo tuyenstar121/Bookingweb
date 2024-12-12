@@ -209,7 +209,7 @@ const CombinedLayout = () => {
         `http://localhost:8080/tables/set-status-occupied/${tableId}`,
         null,
         {
-          headers: { Authorization: `Bearer ${token}` ,'Access-Control-Allow-Origin':'http://localhost:3000'}
+          headers: { Authorization: `Bearer ${token}`}
         }
       );
     } catch (error) {
@@ -220,6 +220,7 @@ const CombinedLayout = () => {
   const handleMergeTable = async (newTable) => {
     try {
       const token = Cookies.get("token");
+      console.log(reservationId);
       const response = await axios.post(
         `http://localhost:8080/api/reservations/change-table/${reservationId}`,
         null,
