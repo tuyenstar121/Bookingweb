@@ -43,6 +43,18 @@ function ReservationManagementTable() {
   const [currentReservation, setCurrentReservation] = useState(null);
   
   const navigate = useNavigate();
+
+  const status = {
+    Booked : "Chờ xác nhận",
+    Confirmed: "Đã tiếp nhận",
+    Completed: "Hoàn thành",
+    Cancelled: "Đã hủy"
+  }
+
+  // useEffect(()=>{
+  //   const now = new Date();
+  //   setSelectedDate(now.toISOString().split('T')[0]);
+  // },[])
   useEffect(() => {
     // Lọc dữ liệu dựa trên searchQuery
     const lowerQuery = searchQuery.toLowerCase();
@@ -262,7 +274,7 @@ function ReservationManagementTable() {
       </div>
           <Menu as="div" className="relative inline-block text-left">
             <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                Options
+                Lọc
                 <ChevronDownIcon className="-mr-1 h-5 w-5 text-gray-400" aria-hidden="true" />
             </MenuButton>
             <Transition
@@ -298,7 +310,7 @@ function ReservationManagementTable() {
                       )}
                       onClick={() => filterByStatus("Confirmed")}
                     >
-                    Lọc trạng thái Confirmed
+                    Lọc trạng thái {status["Confirmed"]}
                     </a>
                   )}
                 </MenuItem>
@@ -312,7 +324,7 @@ function ReservationManagementTable() {
                       )}
                       onClick={() => filterByStatus("Cancelled")}
                     >
-                         Lọc trạng thái Cancelled
+                         Lọc trạng thái {status["Cancelled"]}
                     </a>
                   )}
                 </MenuItem>
@@ -326,7 +338,7 @@ function ReservationManagementTable() {
                       )}
                       onClick={() => filterByStatus("Booked")}
                     >
-                          Lọc trạng thái  Booked
+                          Lọc trạng thái {status["Booked"]}
                     </a>
                   )}
                 </MenuItem>
@@ -340,7 +352,7 @@ function ReservationManagementTable() {
                       )}
                       onClick={() => filterByStatus("Completed")}
                     >
-                          Lọc trạng thái  Completed
+                          Lọc trạng thái {status["Completed"]}
                     </a>
                   )}
                 </MenuItem>
@@ -376,8 +388,8 @@ function ReservationManagementTable() {
               <TableCell align="left">Giờ</TableCell>
               <TableCell align="left">Số khách</TableCell>
               <TableCell align="left">Số điện thoại</TableCell>
-              <TableCell align="left">Tên nhà hàng</TableCell>
-              <TableCell align="left">Số Bàn</TableCell>
+              {/* <TableCell align="left">Tên nhà hàng</TableCell> */}
+              <TableCell align="left">Tên bàn</TableCell>
               <TableCell align="left">Trạng thái</TableCell>
               <TableCell align="left">Hành động</TableCell>
               <TableCell align="left">Món ăn</TableCell>
@@ -393,7 +405,7 @@ function ReservationManagementTable() {
                 <TableCell align="left">{reservation.reservationTime}</TableCell>
                 <TableCell align="left">{reservation.numGuests}</TableCell>
                 <TableCell align="left">{reservation.user.phone}</TableCell>
-                <TableCell align="left">{reservation.table.restaurants?.name}</TableCell>
+                {/* <TableCell align="left">{reservation.table.restaurants?.name}</TableCell> */}
                 <TableCell align="left">{reservation.table.tableNumber}</TableCell>
                 <TableCell align="left">
                   <span
@@ -408,7 +420,7 @@ function ReservationManagementTable() {
                             : "bg-yellow-500"
                       }`}
                   >
-                    {reservation.status}
+                    {status[reservation.status]}
                   </span>
                 </TableCell>
 
@@ -440,7 +452,7 @@ function ReservationManagementTable() {
                 </TableCell>
                 <TableCell align="left">
                   <Button onClick={() => fetchFoodItems(reservation.reservationId)}>
-                    View Order
+                    Xem chi tiết
                   </Button>
                 </TableCell>
               </TableRow>
@@ -449,7 +461,7 @@ function ReservationManagementTable() {
         </Table>
       </TableContainer>
       <Dialog open={openDialog} onClose={handleDialogClose}>
-        <DialogTitle className="text-xl font-semibold">Food Items</DialogTitle>
+        <DialogTitle className="text-xl font-semibold">Món ăn</DialogTitle>
         <DialogContent>
           {foodItems.length > 0 ? (
             <div className="max-w-full overflow-x-auto">
@@ -457,7 +469,7 @@ function ReservationManagementTable() {
 
             </div>
           ) : (
-            <p className="text-gray-500">No food items found for this reservation.</p>
+            <p className="text-gray-500">Chưa có món ăn nào</p>
           )}
         </DialogContent>
 
@@ -470,7 +482,7 @@ function ReservationManagementTable() {
     onClick={handleDialogClose}
     startIcon={<FiX className="text-lg" />} // Biểu tượng Close
   >
-    Close
+    Hủy
   </Button>
 
   {/* Edit Button - chỉ hiển thị nếu trạng thái là "Confirmed" */}

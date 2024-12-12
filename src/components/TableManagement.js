@@ -63,10 +63,15 @@ export default function TableManagement() {
           Authorization: `Bearer ${token}`
         }
       });
-
+      if (response.status.data?.status === 200){
+        setTables(tables.map((table) => (table.id === editTable.id ? response.data : table)));
+        toast.success("Cập nhật bàn thành công");
+      } else {
+        toast.error(response.data.message);
+      }
+      console.log(response)
       // Cập nhật chỉ bàn đã chỉnh sửa trong trạng thái
-      setTables(tables.map((table) => (table.id === editTable.id ? response.data : table)));
-      toast.success("Cập nhật bàn thành công");
+      
     } catch (error) {
       console.error("Lỗi khi chỉnh sửa bàn:", error);
       const errorMessage = error.response?.data?.message || "Lỗi khi chỉnh sửa bàn";
@@ -92,13 +97,19 @@ export default function TableManagement() {
           Authorization: `Bearer ${token}`
         }
       });
-      setTables([...tables, response.data]);
-      setNewTable({
-        tableNumber: "",
-        capacity: "",
-        status: "available",
-      });
-      toast.success("Thêm bàn mới thành công");
+      if (response.status.data?.status === 200){
+        setTables([...tables, response.data]);
+        setNewTable({
+          tableNumber: "",
+          capacity: "",
+          status: "available",
+        });
+        toast.success("Thêm bàn mới thành công");
+      } else {
+        toast.error(response.data.message);
+        
+      }
+      
     } catch (error) {
       console.error("Lỗi khi thêm bàn:", error);
       toast.error("Lỗi khi thêm bàn");
