@@ -129,6 +129,7 @@ const ReservationForm = ({ loggedInUser }) => {
             type="text"
             id="name"
             name="name"
+            disabled
             value={formData.name}
             onChange={handleChange}
             className={`mt-1 block w-full border ${
