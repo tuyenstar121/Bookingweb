@@ -89,7 +89,6 @@ const Menu = () => {
 
   const handleAddToCart = (item) => {
     const existingItem = cart.find(cartItem => cartItem.foodItemId === item.foodItemId);
-
     if (existingItem) {
       const updatedCart = cart.map(cartItem =>
         cartItem.foodItemId === item.foodItemId ? { ...cartItem, quantity: cartItem.quantity + 1 } : cartItem

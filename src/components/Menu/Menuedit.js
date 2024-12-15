@@ -131,9 +131,9 @@ const Menuedit = ({ reservationId ,promotionToday }) => { // Fix to receive rese
       );
   
       if (response.status === 200) {
-        alert("Order updated successfully!");
+        alert("Đặt món thành công!");
       } else {
-        alert("Failed to update order.");
+        alert("Đặt món thất bại!");
       }
     } catch (error) {
       console.error("Error syncing order with cart:", error);
