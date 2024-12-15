@@ -39,31 +39,30 @@ const LoginForm = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
+
     try {
       const response = await Axios.post('http://localhost:8080/auth/login', {
         username: email,
         password: password,
       });
-  
+
       const { token, userId, role } = response.data; // Assuming server returns token, userId, and role
-  
-      // Store token and userId in cookies or localStorage
+
+      // Lưu token và userId vào cookies
       Cookies.set('token', token, { expires: 7 });
       Cookies.set('userId', userId, { expires: 7 });
 
       toast.success("Đăng nhập thành công");
-      
-     
+
+      // Điều hướng người dùng theo vai trò
       if (role === 'Admin') {
-        navigate('admin/Dashboard'); // Redirect to admin page
+        navigate('admin/Dashboard');
       }
-      else if(role==='Staff')
-      {
+      else if (role === 'Staff') {
         navigate('/NV');
       }
-         else {
-        navigate('/Booking'); // Redirect to booking page
+      else {
+        navigate('/Booking');
       }
     } catch (error) {
       if (error.response) {
@@ -77,15 +76,16 @@ const LoginForm = () => {
       }
     }
   };
+
   return (
     <div className="background">
       <ToastContainer />
       <section className="home">
         <div className="content">
-          <a href="#" className="logo">MyRestaurant</a>
-          <h2>Welcome!</h2>
-          <h3>To Our Myrestaurants</h3>
-          <pre>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Beatae, asperiores</pre>
+          {/* <a href="#" className="logo">Nhà Hàng</a> */}
+          <h2>Chào Mừng!</h2>
+          <h3>Đến Với Nhà Hàng Của Chúng Tôi</h3>
+          {/* <pre>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Beatae, asperiores</pre> */}
           <div className="icon">
             <i className="fa-brands fa-instagram"></i>
             <i className="fa-brands fa-facebook"></i>
@@ -95,7 +95,7 @@ const LoginForm = () => {
         </div>
 
         <div className="login">
-          <h2>Sign In</h2>
+          <h2>Đăng Nhập</h2>
           <div className="input">
             <i className="fa-solid fa-envelope"></i>
             <TextField
@@ -113,29 +113,29 @@ const LoginForm = () => {
             <TextField
               type={showPassword ? "text" : "password"}
               className="input1"
-              placeholder="Password"
+              placeholder="Mật Khẩu"
               value={password}
               onChange={handlePasswordChange}
               required
               aria-label="Password"
             />
-            <IconButton onClick={toggleShowPassword} aria-label="Toggle password visibility">
+            <IconButton onClick={toggleShowPassword} aria-label="Hiển thị mật khẩu">
               {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
             </IconButton>
           </div>
           <div className="check">
             <FormControlLabel
               control={<Checkbox checked={rememberMe} onChange={handleRememberMeChange} />}
-              label="Remember me"
+              label="Ghi nhớ tài khoản"
             />
-            <a href="forgetpass">Forgot Password?</a>
+            <a href="forgetpass">Quên mật khẩu?</a>
           </div>
           <div className="button">
-            <Button variant="contained" className="btn" onClick={handleSubmit} aria-label="Sign In">Sign In</Button>
+            <Button variant="contained" className="btn" onClick={handleSubmit} aria-label="Đăng Nhập">Đăng Nhập</Button>
           </div>
           <div className="sign-up">
-            <p>Don't have an account?</p>
-            <a href="register">Sign up</a>
+            <p>Chưa có tài khoản?</p>
+            <a href="register">Đăng ký</a>
           </div>
         </div>
       </section>
