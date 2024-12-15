@@ -87,7 +87,10 @@ const Header = () => {
       <Divider />
       <ul className="mobile-navigation">
         <li>
-          <NavLink activeClassName="active" to={"/"}>
+          <NavLink
+            to="/"
+            className={({ isActive }) => (isActive ? "active" : "")}
+          >
             Trang chủ
           </NavLink>
         </li>
