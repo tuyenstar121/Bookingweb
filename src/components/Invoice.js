@@ -5,8 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
-
-const Invoice = ({ reservation, items = [] }) => {
+const Invoice = ({ reservation, items = [], promotionToday }) => {
   const [invoiceExists, setInvoiceExists] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("Tiền Mặt");
 
@@ -14,14 +13,28 @@ const Invoice = ({ reservation, items = [] }) => {
     checkInvoice();
   }, []);
 
+  // Function to get discount percentage
+  const getDiscountPercentage = (itemId) => {
+    const promotion = promotionToday?.find((promo) => promo.foodItemId === itemId);
+    console.log("h"+itemId);
+    return promotion ? promotion.discountPercentage : 0;
+  };
+
+  // Calculate discounted price
+  const calculateDiscountedPrice = (item) => {
+    const discount = getDiscountPercentage(item.foodItem.foodItemId);
+    const price = item.foodItem.price * item.quantity;
+    return discount > 0 ? price * (1 - discount / 100) : price;
+  };
+
+  // Calculate total amount
+  const totalAmount = items.reduce((total, item) => total + calculateDiscountedPrice(item), 0);
+
   const checkInvoice = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:8080/api/order-food-mapping/invoice-exists",
-        {
-          params: { reservationId: reservation.reservationId },
-        }
-      );
+      const response = await axios.get("http://localhost:8080/api/order-food-mapping/invoice-exists", {
+        params: { reservationId: reservation.reservationId },
+      });
       setInvoiceExists(response.data);
     } catch (error) {
       toast.error("Lỗi khi kiểm tra hóa đơn!");
@@ -57,35 +70,45 @@ const Invoice = ({ reservation, items = [] }) => {
       toast.error("Đã xảy ra lỗi khi tạo hóa đơn.");
     }
   };
-
+  const removeAccents = (str) => {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  };
   const printInvoice = () => {
     const doc = new jsPDF();
     doc.setFont("helvetica", "normal");
     doc.setFontSize(20);
-    doc.text("HOA DON", doc.internal.pageSize.width / 2, 30, { align: "center" });
-
+    doc.text(removeAccents("HOA ĐON"), doc.internal.pageSize.width / 2, 30, { align: "center" });
+  
     doc.setFontSize(12);
-    doc.text(`KHACH HANG: ${reservation.user.username}`, 20, 50);
+    doc.text(`KHACH HANG: ${removeAccents(reservation.user.username)}`, 20, 50);
     doc.text(
       `THOI GIAN: ${new Date(reservation.reservationDate).toLocaleDateString()} ${reservation.reservationTime}`,
       20,
       60
     );
-
+  
     autoTable(doc, {
       startY: 70,
-      head: [["Món", "Giá", "Tổng"]],
+      head: [
+        [
+          removeAccents("Món"),
+          removeAccents("Giá"),
+          removeAccents("Giảm giá (%)"),
+          removeAccents("Thành tiền"),
+        ],
+      ],
       body: items.map((item) => [
-        `${item.quantity}x ${item.foodItem.name}`,
+        removeAccents(`${item.quantity}x ${item.foodItem.name}`),
         `${item.foodItem.price.toLocaleString()} VND`,
-        `${(item.foodItem.price * item.quantity).toLocaleString()} VND`,
+        `${getDiscountPercentage(item.foodItem.foodItemId)}%`,
+        `${calculateDiscountedPrice(item).toLocaleString()} VND`,
       ]),
       theme: "grid",
       styles: { halign: "center" },
       headStyles: { fillColor: [0, 128, 0] },
       margin: { top: 10, left: 20, right: 20 },
     });
-
+  
     doc.setFont("helvetica", "bold");
     doc.setFontSize(14);
     doc.text(
@@ -93,18 +116,14 @@ const Invoice = ({ reservation, items = [] }) => {
       20,
       doc.lastAutoTable.finalY + 10
     );
-
+  
     doc.save("hoa_don.pdf");
   };
+  
 
   if (!reservation || !items.length) {
     return <div>Không có dữ liệu hóa đơn!</div>;
   }
-
-  const totalAmount = items.reduce(
-    (total, item) => total + item.foodItem.price * item.quantity,
-    0
-  );
 
   return (
     <div className="max-w-lg mx-auto p-6 bg-white rounded-xl shadow-lg">
@@ -118,8 +137,7 @@ const Invoice = ({ reservation, items = [] }) => {
         </p>
         <p>
           <strong>Thời gian:</strong>{" "}
-          {new Date(reservation.reservationDate).toLocaleDateString()}{" "}
-          {reservation.reservationTime}
+          {new Date(reservation.reservationDate).toLocaleDateString()} {reservation.reservationTime}
         </p>
       </div>
 
@@ -140,7 +158,8 @@ const Invoice = ({ reservation, items = [] }) => {
           <tr>
             <th className="py-2 px-4 border">MÓN</th>
             <th className="py-2 px-4 border">GIÁ</th>
-            <th className="py-2 px-4 border">TỔNG</th>
+            <th className="py-2 px-4 border">GIẢM GIÁ (%)</th>
+            <th className="py-2 px-4 border">THÀNH TIỀN</th>
           </tr>
         </thead>
         <tbody>
@@ -149,12 +168,9 @@ const Invoice = ({ reservation, items = [] }) => {
               <td className="py-2 px-4">
                 {item.quantity}x {item.foodItem.name}
               </td>
-              <td className="py-2 px-4">
-                {item.foodItem.price.toLocaleString()} VND
-              </td>
-              <td className="py-2 px-4">
-                {(item.foodItem.price * item.quantity).toLocaleString()} VND
-              </td>
+              <td className="py-2 px-4">{item.foodItem.price.toLocaleString()} VND</td>
+              <td className="py-2 px-4">{getDiscountPercentage(item.foodItem.foodItemId)}%</td>
+              <td className="py-2 px-4">{calculateDiscountedPrice(item).toLocaleString()} VND</td>
             </tr>
           ))}
         </tbody>

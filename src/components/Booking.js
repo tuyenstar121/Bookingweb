@@ -114,7 +114,7 @@ const ReservationForm = ({ loggedInUser }) => {
 
     const token = Cookies.get('token');
     try {
-      const response = await axios.post(' ', requestData, {
+      const response = await axios.post('http://localhost:8080/api/reservations/book ', requestData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const reservationId = response.data;
