@@ -1,157 +1,283 @@
-import React from 'react';
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const Payment = () => {
-  // Sample data for the chart
-  const transactionData = [
-    { date: '01 Jul', amount: 100 },
-    { date: '02 Jul', amount: 120 },
-    { date: '03 Jul', amount: 90 },
-    { date: '04 Jul', amount: 110 },
-    { date: '05 Jul', amount: 85 },
-    { date: '06 Jul', amount: 70 },
-    { date: '07 Jul', amount: 95 },
-  ];
+  // Dữ liệu mẫu cho biểu đồ
+  const [payments, setPayments] = useState([]);
+  const [restaurants, setRestaurants] = useState([]);
+  const [transactionData, setTransactionData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [thisWeekRevenue, setThisWeekRevenue] = useState(0);
+  const [lastWeekRevenue, setLastWeekRevenue] = useState(0);
+  const [percentageChange, setPercentageChange] = useState(0); // Trang hiện tại
+  const rowsPerPage = 6; // Số hàng mỗi trang
+  const [completedCount, setCompletedCount] = useState(0);
+  const [currentRevenue, setCurrentRevenue] = useState(0);
+  const [revenueDifference, setRevenueDifference] = useState(0);
+  // Lấy dữ liệu thanh toán từ API
+  useEffect(() => {
+    const fetchPayments = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/payments'); // Thay thế với URL API của bạn
+        setPayments(response.data);
+        calculateCompletedCount(response.data);
+      } catch (error) {
+        console.error('Lỗi khi lấy dữ liệu thanh toán:', error);
+      }
+    };
 
-  const receivableData = [
-    { date: '01 Jul', amount: 40 },
-    { date: '02 Jul', amount: 50 },
-    { date: '03 Jul', amount: 45 },
-    { date: '04 Jul', amount: 55 },
-    { date: '05 Jul', amount: 60 },
-    { date: '06 Jul', amount: 70 },
-    { date: '07 Jul', amount: 80 },
-  ];
+    fetchPayments();
+  }, []);
 
-  const payableData = [
-    { date: '01 Jul', amount: 60 },
-    { date: '02 Jul', amount: 50 },
-    { date: '03 Jul', amount: 55 },
-    { date: '04 Jul', amount: 45 },
-    { date: '05 Jul', amount: 40 },
-    { date: '06 Jul', amount: 35 },
-    { date: '07 Jul', amount: 30 },
-  ];
+  useEffect(() => {
+    const fetchPayments = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/payments/last-7-days'); // Thay thế với URL API của bạn
+        setTransactionData(response.data);
+      } catch (error) {
+        console.error('Lỗi khi lấy dữ liệu thanh toán:', error);
+      }
+    };
+
+    fetchPayments();
+  }, []);
+  const calculateCompletedCount = (paymentsData) => {
+
+    const count = paymentsData.filter(
+      (payment) => payment.paymentStatus === "Thanh Cong"
+    ).length; // Count the number of "completed" payments
+    setCompletedCount(count);
+  };
+  useEffect(() => {
+    const fetchRevenue = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/api/payments/monthly-revenue"); // Replace with your actual API endpoint
+        const { currentMonthRevenue, lastMonthRevenue } = response.data;
+
+        setCurrentRevenue(currentMonthRevenue);
+        const difference = currentMonthRevenue - lastMonthRevenue;
+        setRevenueDifference(difference);
+      } catch (error) {
+        console.error("Error fetching revenue data:", error);
+      }
+    };
+
+    fetchRevenue();
+  }, []);
+  useEffect(() => {
+    const fetchWeeklyRevenues = async () => {
+      try {
+        // Gọi API để lấy doanh thu tuần này và tuần trước
+        const response = await axios.get("http://localhost:8080/api/payments/weekly");
+
+        const { totalThisWeek, totalLastWeek } = response.data;
+
+        setThisWeekRevenue(totalThisWeek);
+        setLastWeekRevenue(totalLastWeek);
+
+        // Tính phần trăm thay đổi
+        if (totalLastWeek > 0) {
+          const change = ((totalThisWeek - totalLastWeek) / totalLastWeek) * 100;
+          setPercentageChange(change.toFixed(2));
+        } else {
+          setPercentageChange(totalThisWeek > 0 ? 100 : 0);
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy doanh thu tuần:", error);
+      }
+    };
+
+    fetchWeeklyRevenues();
+  }, []);
+
+
+  // Dữ liệu hóa đơn chưa thanh toán
+
+  const formatCurrency = (amount) =>
+    new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
+    }).format(amount);
+  const indexOfLastRow = currentPage * rowsPerPage;
+  const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+  const currentRows = payments.slice(indexOfFirstRow, indexOfLastRow);
+
+  // Tổng số trang
+  const totalPages = Math.ceil(payments.length / rowsPerPage);
+
+  // Chuyển trang
+  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <div className="p-8 min-h-screen">
-      {/* Header */}
+      {/* Tiêu đề */}
       <div className="mb-6 text-gray-500">
-        <span className="font-light">Home</span> <span className="font-bold">- Payment</span>
+        <span className="font-light">Trang chủ</span> <span className="font-bold">- Thanh toán</span>
       </div>
-      
-      {/* Main Grid */}
+
+      {/* Lưới chính */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Wallet Overview */}
+        {/* Tổng quan ví */}
         <div className="bg-gray-100  p-6 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold mb-4">Your Wallet</h3>
-          <h2 className="text-4xl font-bold text-blue-500">$45000.00</h2>
-          <p className="text-sm text-green-500 mt-2">This Month + $309</p>
+          <h3 className="text-lg font-semibold mb-4">Doanh thu tháng này</h3>
+          <div className="p-4 bg-black shadow-md rounded-md">
+            <h2 className="text-4xl font-bold text-blue-500">
+              {formatCurrency(currentRevenue)}
+            </h2>
+            <p
+              className={`text-sm mt-2 ${revenueDifference >= 0 ? "text-green-500" : "text-red-500"
+                }`}
+            >
+              Tháng này {revenueDifference >= 0 ? "+" : "-"}{" "}
+              {formatCurrency(Math.abs(revenueDifference))}
+            </p>
+          </div>
           <div className="mt-6">
-            <p className="text-sm font-semibold">$850 Expenses</p>
+            <p className="text-sm font-semibold">$850 Chi tiêu</p>
             <div className="h-1 w-full bg-purple-200 rounded mt-1">
               <div className="h-full w-1/2 bg-purple-500 rounded"></div>
             </div>
-            <p className="text-sm font-semibold mt-2">125 Transactions</p>
+            <p className="text-sm font-semibold mt-2">125 Giao dịch</p>
             <div className="h-1 w-full bg-green-200 rounded mt-1">
               <div className="h-full w-3/4 bg-green-500 rounded"></div>
             </div>
           </div>
         </div>
 
-        {/* Last Week Transaction Graph */}
-        <div className="bg-gray-100  p-6 rounded-lg shadow-md col-span-2">
-          <h3 className="text-lg font-semibold mb-4">Last Week Transaction</h3>
-          {/* Graph for Last Week Transactions */}
+        {/* Biểu đồ giao dịch tuần trước */}
+        <div className="  p-6 rounded-lg shadow-md col-span-2">
+          <h3 className="text-lg font-semibold mb-4">Giao dịch 7 ngày gần nhất</h3>
+          {/* Biểu đồ cho giao dịch tuần trước */}
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={transactionData}>
-              <Line type="monotone" dataKey="amount" stroke="#8884d8" strokeWidth={2} />
+              <Line
+                type="monotone"
+                dataKey="totalRevenue"
+                stroke="#8884d8"
+                strokeWidth={2}
+                name="Doanh thu (VND)"
+              />
               <CartesianGrid stroke="#ccc" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
+              <XAxis dataKey="paymentDate" />
+              <YAxis
+                tickFormatter={(value) =>
+                  new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                    minimumFractionDigits: 0,
+                  }).format(value/1000)
+                }
+                // Định dạng theo tiền Việt Nam
+              />
+              <Tooltip
+                formatter={(value) =>
+                  new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                    minimumFractionDigits: 0,
+                  }).format(value)
+                }
+              />
+
             </LineChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Stats: Receivable, Payable, Wallet, Invoices */}
+      {/* Thống kê: Phải thu, Phải trả, Ví, Hóa đơn */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
-        {/* Receivable */}
+        {/* Phải thu */}
+
+        {/* Phải trả */}
+
+        {/* Ví */}
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h4 className="text-sm font-semibold mb-2">Receivable</h4>
-          {/* Graph for Receivable */}
-          <ResponsiveContainer width="100%" height={100}>
-            <LineChart data={receivableData}>
-              <Line type="monotone" dataKey="amount" stroke="#e91e63" strokeWidth={2} />
-              <CartesianGrid stroke="#ccc" />
-              <XAxis dataKey="date" hide />
-              <YAxis hide />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-        {/* Payable */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h4 className="text-sm font-semibold mb-2">Payable</h4>
-          {/* Graph for Payable */}
-          <ResponsiveContainer width="100%" height={100}>
-            <LineChart data={payableData}>
-              <Line type="monotone" dataKey="amount" stroke="#ff9800" strokeWidth={2} />
-              <CartesianGrid stroke="#ccc" />
-              <XAxis dataKey="date" hide />
-              <YAxis hide />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-        {/* Wallet */}
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h4 className="text-sm font-semibold mb-2">Wallet</h4>
+          <h4 className="text-sm font-semibold mb-2">Doanh thu tuần này</h4>
           <div className="flex items-center justify-between">
-            <span className="text-lg font-bold text-green-500">$5850</span>
-            <p className="text-xs text-green-400">+25%</p>
+            <span className="text-lg font-bold text-green-500">
+              {thisWeekRevenue.toLocaleString()} VND
+            </span>
+            <p className={`text-xs ${percentageChange >= 0 ? "text-green-400" : "text-red-400"}`}>
+              {percentageChange >= 0 ? `+${percentageChange}%` : `${percentageChange}%`}
+            </p>
           </div>
         </div>
-        {/* Total Invoices */}
+        {/* Tổng hóa đơn */}
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h4 className="text-sm font-semibold mb-2">Total Invoices</h4>
+          <h4 className="text-sm font-semibold mb-2">Tổng hóa đơn</h4>
           <div className="flex items-center justify-between">
-            <span className="text-lg font-bold text-purple-500">425</span>
-            <p className="text-xs text-gray-400">Invoice Done</p>
+            <span className="text-lg font-bold text-purple-500">{completedCount} </span>
+            <p className="text-xs text-gray-400">Hóa đơn đã hoàn tất</p>
           </div>
         </div>
       </div>
 
-      {/* Previous Transactions Table */}
+      {/* Bảng giao dịch trước đó */}
       <div className="bg-white mt-8 p-6 rounded-lg shadow-md">
-        <h4 className="text-lg font-semibold mb-4">Previous Transactions</h4>
+        <h4 className="text-lg font-semibold mb-4">Giao dịch trước đó</h4>
         <table className="w-full text-left table-auto">
           <thead>
             <tr className="text-gray-500">
-              <th className="p-2">Brand</th>
-              <th className="p-2">Date</th>
-              <th className="p-2">Vendor</th>
-              <th className="p-2">Purchase Date</th>
-              <th className="p-2">Cost</th>
-              <th className="p-2">Details</th>
+              <th className="p-2">Nhà hàng</th>
+              <th className="p-2">Ngày</th>
+              <th className="p-2">Phương thức thanh toán</th>
+              <th className="p-2">Trạng thái</th>
+              <th className="p-2">Số tiền</th>
+              <th className="p-2">Chi tiết</th>
             </tr>
           </thead>
           <tbody>
-            <tr className="border-t">
-              <td className="p-2 flex items-center">
-                <img src="https://via.placeholder.com/30" alt="Pizza Hut" className="w-8 h-8 rounded-full mr-2" />
-                Pizza Hut
-              </td>
-              <td className="p-2">20 Jun 2018</td>
-              <td className="p-2">Pizza Hut</td>
-              <td className="p-2">Tandoori Paneer Pizza - L</td>
-              <td className="p-2">$485.00</td>
-              <td className="p-2">
-                <button className="text-blue-500">Details</button>
-              </td>
-            </tr>
-            {/* Add more rows as needed */}
+            {currentRows.map((payment) => (
+              <tr key={payment.paymentId} className="border-t">
+                <td className="p-2 flex items-center">
+                  <img
+                    src="https://via.placeholder.com/30"
+                    alt="Payment"
+                    className="w-8 h-8 rounded-full mr-2"
+                  />
+                  {payment.paymentMethod}
+                </td>
+                <td className="p-2">
+                  {new Date(payment.paymentDate).toLocaleDateString("en-GB")}
+                </td>
+                <td className="p-2">{payment.paymentMethod}</td>
+                <td className="p-2">{payment.paymentStatus}</td>
+                <td className="p-2">{payment.amount.toLocaleString()} VND</td>
+                <td className="p-2">
+                  <button className="text-blue-500">Chi tiết</button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
+
+        {/* Phân trang */}
+        <div className="flex justify-end mt-4">
+          <button
+            className={`px-3 py-1 mx-1 rounded ${currentPage === 1 ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white"}`}
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Trước
+          </button>
+          {[...Array(totalPages).keys()].map((page) => (
+            <button
+              key={page + 1}
+              className={`px-3 py-1 mx-1 rounded ${currentPage === page + 1 ? "bg-blue-500 text-white" : "bg-gray-200 hover:bg-gray-300"}`}
+              onClick={() => handlePageChange(page + 1)}
+            >
+              {page + 1}
+            </button>
+          ))}
+          <button
+            className={`px-3 py-1 mx-1 rounded ${currentPage === totalPages ? "bg-gray-300 cursor-not-allowed" : "bg-blue-500 text-white"}`}
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Tiếp
+          </button>
+        </div>
       </div>
     </div>
   );
