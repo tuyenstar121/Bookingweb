@@ -1,39 +1,36 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useCallback, useEffect, useState } from 'react';
 import Carousel from 'react-bootstrap/Carousel';
 
 function SliderPromotion() {
+  const [promotions, setPromotions] = useState()
+  const fetchPromotions = useCallback(async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/api/promotions/by-date?date=' + new Date().toISOString().split('T')[0]);
+      setPromotions(response.data);
+    } catch (error) {
+      console.error("Lỗi khi lấy dữ liệu chương trình khuyến mãi:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchPromotions();
+  }, [fetchPromotions]);
+  console.log(promotions)
   return (
     <Carousel interval={3000} style={{ height: 'auto' }}>
-      <Carousel.Item>
-        <div className="relative">
-          <img
-            style={{ height: 300 }}
-            className="d-block w-full"
-            src="https://blog.dktcdn.net/files/khuyen-mai-nha-hang.jpg"
-            alt="First slide"
-          />
-        </div>
-      </Carousel.Item>
-      <Carousel.Item>
-        <div className="relative">
-          <img
-            style={{ height: 300 }}
-            className="d-block w-full"
-            src="https://vill.vn/wp-content/uploads/2023/11/3-WEB-BANNER-MUC-KHUYEN-MAI-1024x410.png"
-            alt="Second slide"
-          />
-        </div>
-      </Carousel.Item>
-      <Carousel.Item>
-        <div className="relative">
-          <img
-            style={{ height: 300 }}
-            className="d-block w-full"
-            src="https://inan2h.vn/wp-content/uploads/2022/12/dai-dien-9.jpg"
-            alt="Third slide"
-          />
-        </div>
-      </Carousel.Item>
+      {promotions?.map((item) => {
+        return <Carousel.Item>
+          <div className="relative">
+            <img
+              style={{ height: 300 }}
+              className="d-block w-full"
+              src={item.image}
+              alt="First slide"
+            />
+          </div>
+        </Carousel.Item>
+      })}
     </Carousel>
   );
 }
