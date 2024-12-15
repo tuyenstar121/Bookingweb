@@ -5,6 +5,8 @@ import Categories from "../Categories";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingCart, faTimes } from '@fortawesome/free-solid-svg-icons';
 import Cart from './cart'
+import Cookies from 'js-cookie';
+import { jwtDecode } from 'jwt-decode';
 const Menu = () => {
   const [menuItems, setMenuItems] = useState([]);
   const [allItems, setAllItems] = useState([]);
@@ -21,6 +23,12 @@ const Menu = () => {
   });
 
   const [isCartOpen, setIsCartOpen] = useState(false);
+
+  const token = Cookies.get('token');
+
+  let decodedToken = jwtDecode(token);
+
+  const userRole = decodedToken.role;
 
   useEffect(() => {
     const fetchMenuItems = async () => {
@@ -130,10 +138,11 @@ const Menu = () => {
   };
 
   const totalAmount = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  const isStaff = userRole === 'Staff'
 
   return (
     <div>
-      <section className="menu section">
+      <section className={`${!isStaff ? 'menu section' : ''}`}>
         {error && <p className="error-message">{error}</p>}
         <div className="underline"></div>
 
@@ -157,10 +166,10 @@ const Menu = () => {
           activeCategory={activeCategory}
           filterItems={filterItems}
         />
-      <MenuItems items={menuItems} onAddToCart={handleAddToCart} promotionToday={promotionToday} />
+        <MenuItems items={menuItems} onAddToCart={handleAddToCart} promotionToday={promotionToday} isStaff={isStaff} />
       </section>
 
- 
+
       <button className="shopping-cart-button fixed bottom-4 right-4 bg-blue-500 text-white rounded-full p-4 shadow-lg" onClick={handleCartClick}>
         <FontAwesomeIcon icon={faShoppingCart} size="2x" />
         {cart.length > 0 && <span className="badge">{cart.length}</span>}
@@ -168,7 +177,7 @@ const Menu = () => {
       {
         isCartOpen && <Cart cart={cart} setCart={setCart} isCartOpen={isCartOpen} setIsCartOpen={setIsCartOpen} promotionToday={promotionToday} />
       }
-    </div>
+    </div >
   );
 };
 
