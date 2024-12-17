@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import MenuTable from "../components/Menu/MenuTable";
+import MenuTable from "../components/Menu/Foodmenu";
 import {
   Table,
   TableBody,

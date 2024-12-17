@@ -390,16 +390,3 @@ h1 {
   gap: 10px;
 }
 
-
-
-
-.slide {
-  display: block;
-  height: 700px;
-  overflow: hidden;
-
-  box-sizing: border-box;
-  margin-bottom: 20px;
-
-}
-
