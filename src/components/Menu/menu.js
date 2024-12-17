@@ -7,7 +7,7 @@ import { faShoppingCart, faTimes } from '@fortawesome/free-solid-svg-icons';
 import Cart from './cart'
 import Cookies from 'js-cookie';
 import { jwtDecode } from 'jwt-decode';
-const Menu = () => {
+const Menu = ({cart, setCart}) => {
   const [menuItems, setMenuItems] = useState([]);
   const [allItems, setAllItems] = useState([]);
   const [categories, setCategories] = useState(["all"]);
@@ -16,11 +16,11 @@ const Menu = () => {
   const [, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [promotionToday, setPromotionToday] = useState([]);
-  const [cart, setCart] = useState(() => {
-    // Lấy dữ liệu từ localStorage, nếu không có thì trả về một mảng rỗng
-    const storedCart = localStorage.getItem("cart");
-    return storedCart ? JSON.parse(storedCart) : [];
-  });
+  // const [cart, setCart] = useState(() => {
+  //   // Lấy dữ liệu từ localStorage, nếu không có thì trả về một mảng rỗng
+  //   const storedCart = localStorage.getItem("cart");
+  //   return storedCart ? JSON.parse(storedCart) : [];
+  // });
 
   const [isCartOpen, setIsCartOpen] = useState(false);
 
@@ -73,9 +73,9 @@ const Menu = () => {
     }
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-  }, [cart]);
+  // useEffect(() => {
+  //   localStorage.setItem("cart", JSON.stringify(cart));
+  // }, [cart]);
 
   const filterItems = (category) => {
     setActiveCategory(category);
@@ -136,7 +136,7 @@ const Menu = () => {
     setIsCartOpen(!isCartOpen);
   };
 
-  const totalAmount = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  // const totalAmount = cart.reduce((total, item) => total + item.price * item.quantity, 0);
   const isStaff = userRole === 'Staff'
 
   return (
@@ -171,7 +171,7 @@ const Menu = () => {
 
       <button className="shopping-cart-button fixed bottom-4 right-4 bg-blue-500 text-white rounded-full p-4 shadow-lg" onClick={handleCartClick}>
         <FontAwesomeIcon icon={faShoppingCart} size="2x" />
-        {cart.length > 0 && <span className="badge">{cart.length}</span>}
+        {cart?.length > 0 && <span className="badge">{cart?.length}</span>}
       </button>
       {
         isCartOpen && <Cart cart={cart} setCart={setCart} isCartOpen={isCartOpen} setIsCartOpen={setIsCartOpen} promotionToday={promotionToday} />

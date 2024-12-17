@@ -38,7 +38,6 @@ function ReservationManagementTable() {
   const [foodItems, setFoodItems] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const { onOpen } = useDisclosure();
   const [selectedDate, setSelectedDate] = useState("");
   const [currentReservation, setCurrentReservation] = useState(null);
   
@@ -48,7 +47,8 @@ function ReservationManagementTable() {
     Booked : "Chờ xác nhận",
     Confirmed: "Đã tiếp nhận",
     Completed: "Hoàn thành",
-    Cancelled: "Đã hủy"
+    Cancelled: "Đã hủy",
+    Using: "Đang sử dụng",
   }
 
   // useEffect(()=>{
@@ -170,9 +170,6 @@ function ReservationManagementTable() {
     }
   };
 
-  const sortByDate = () => {
-    setSortBy("date");
-  };
   const resetTable = () => {
     setSelectedRestaurant("");
     setSortBy(null);
@@ -209,7 +206,22 @@ function ReservationManagementTable() {
   const filterByStatus = (status) => {
     setFilterStatus(status);
   };
-  const handleEditFood = () => {
+  const handleUsingReservation = async(reservationId)=>{
+    try {
+      const token = Cookies.get("token");
+      await axios.put(
+        `http://localhost:8080/api/reservations/using/${reservationId}`,
+        null,
+        {
+          headers: { Authorization: `Bearer ${token}`}
+        }
+      );
+    } catch (error) {
+      console.error("Lỗi fetchSetStatusTableOccupied:", error);
+    }
+  }
+
+  const handleEditFood = async() => {
     if (foodItems.length > 0) {
       const cartItems = foodItems.map((item) => ({
         foodItemId: item.foodItem.foodItemId,
@@ -223,9 +235,10 @@ function ReservationManagementTable() {
     } else {
       localStorage.removeItem("cart");
     }
-    
+    await handleUsingReservation(currentReservation)
     localStorage.setItem("reservationId", currentReservation); // Lưu Reservation ID để sử dụng sau nếu cần
-      navigate("/nv"); // Chuyển hướng sang trang chỉnh sửa
+    
+    navigate("/nv"); // Chuyển hướng sang trang chỉnh sửa
   };
 
   // const filteredReservations = reservations.filter((reservation) => {
@@ -294,20 +307,6 @@ function ReservationManagementTable() {
                         active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
                         'block px-4 py-2 text-sm'
                       )}
-                      onClick={() => sortByDate()}
-                    >
-                      Sắp xếp theo ngày
-                    </a>
-                  )}
-                </MenuItem>
-                <MenuItem>
-                  {({ active }) => (
-                    <a
-                      href="#"
-                      className={classNames(
-                        active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
-                        'block px-4 py-2 text-sm'
-                      )}
                       onClick={() => filterByStatus("Confirmed")}
                     >
                     Lọc trạng thái {status["Confirmed"]}
@@ -353,6 +352,20 @@ function ReservationManagementTable() {
                       onClick={() => filterByStatus("Completed")}
                     >
                           Lọc trạng thái {status["Completed"]}
+                    </a>
+                  )}
+                </MenuItem>
+                <MenuItem>
+                  {({ active }) => (
+                    <a
+                      href="#"
+                      className={classNames(
+                        active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                        'block px-4 py-2 text-sm'
+                      )}
+                      onClick={() => filterByStatus("Using")}
+                    >
+                          Lọc trạng thái {status["Using"]}
                     </a>
                   )}
                 </MenuItem>
@@ -417,7 +430,7 @@ function ReservationManagementTable() {
                           ? "bg-red-500"
                           : reservation.status === "Completed"
                             ? "bg-gray-500"
-                            : "bg-yellow-500"
+                            : "bg-yellow-500" // Using
                       }`}
                   >
                     {status[reservation.status]}

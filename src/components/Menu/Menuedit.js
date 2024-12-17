@@ -2,12 +2,11 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie"; // Ensure js-cookie is imported
 
-const Menuedit = ({ reservationId ,promotionToday }) => { // Fix to receive reservationId as a prop
+const Menuedit = ({ reservationId ,promotionToday, tableId, fetchFoodOnTable }) => { // Fix to receive reservationId as a prop
   const [foodItems, setFoodItems] = useState(() => {
     const savedCart = localStorage.getItem("cart");
     return savedCart ? JSON.parse(savedCart) : [];
   });
-
   const [orderItems, setOrderItems] = useState([]); // State to hold current order data
 
   useEffect(() => {
@@ -48,7 +47,7 @@ const Menuedit = ({ reservationId ,promotionToday }) => { // Fix to receive rese
     }
   };
   const incrementQuantity = (id) => {
-    const updatedCart = foodItems.map((item) =>
+    const updatedCart = foodItems?.map((item) =>
       item.foodItemId === id ? { ...item, quantity: item.quantity + 1 } : item
     );
     setFoodItems(updatedCart); // Update cart state
@@ -56,7 +55,7 @@ const Menuedit = ({ reservationId ,promotionToday }) => { // Fix to receive rese
   };
 
   const decrementQuantity = (id) => {
-    const updatedCart = foodItems.map((item) =>
+    const updatedCart = foodItems?.map((item) =>
       item.foodItemId === id && item.quantity > 1
         ? { ...item, quantity: item.quantity - 1 }
         : item
@@ -72,8 +71,10 @@ const Menuedit = ({ reservationId ,promotionToday }) => { // Fix to receive rese
   };
 
   const syncOrderWithCart = async () => {
+
     try {
-      const updatedItems = foodItems.map((item) => ({
+      const userId = Cookies.get("userId");
+      const updatedItems = foodItems?.map((item) => ({
         foodItemId: item.foodItemId,
         quantity: item.quantity,
         price: item.price,
@@ -91,7 +92,7 @@ const Menuedit = ({ reservationId ,promotionToday }) => { // Fix to receive rese
   
       // Cập nhật các mục đã tồn tại và gán mappingId
       const updatedItemsList = updatedItems
-        .map((cartItem) => {
+        ?.map((cartItem) => {
           const matchingOrderItem = orderItems.find(
             (orderItem) => orderItem.foodItem.foodItemId === cartItem.foodItemId
           );
@@ -115,10 +116,6 @@ const Menuedit = ({ reservationId ,promotionToday }) => { // Fix to receive rese
               (cartItem) => cartItem.foodItemId === orderItem.foodItem.foodItemId
             )
         )
-    
-      console.log("Thêm: ", JSON.stringify(addedItems));
-      console.log("Cập nhật: ", JSON.stringify(updatedItemsList));
-      console.log("Xóa: ", removedItems.map((item) => item.mappingid));
      
       // Gửi thay đổi lên backend
       const response = await axios.post(
@@ -127,13 +124,16 @@ const Menuedit = ({ reservationId ,promotionToday }) => { // Fix to receive rese
           toCreate: addedItems,
           toUpdate: updatedItemsList,
           toDelete: removedItems.map((item) => item.mappingid), // Gửi mappingId để xóa
-        }
+          userId: userId,
+          tableId: tableId,
+        },
       );
   
       if (response.status === 200) {
-        alert("Đặt món thành công!");
+        await fetchFoodOnTable(tableId)
+        alert("Lưu thành công!");
       } else {
-        alert("Đặt món thất bại!");
+        alert("Lưu thất bại!");
       }
     } catch (error) {
       console.error("Error syncing order with cart:", error);
@@ -143,7 +143,7 @@ const Menuedit = ({ reservationId ,promotionToday }) => { // Fix to receive rese
   
   
 
-  const totalAmount = foodItems.reduce((total, item) => {
+  const totalAmount = foodItems?.reduce((total, item) => {
     const promotion = promotionToday.find(
       (promo) => promo.foodItemId === item.foodItemId
     );
@@ -168,14 +168,14 @@ const Menuedit = ({ reservationId ,promotionToday }) => { // Fix to receive rese
       </tr>
     </thead>
     <tbody>
-      {foodItems.length === 0 ? (
+      {foodItems?.length === 0 ? (
         <tr>
           <td colSpan="7" className="text-center p-4">
             Không có món ăn trong giỏ hàng.
           </td>
         </tr>
       ) : (
-        foodItems.map((item) => {
+        foodItems?.map((item) => {
           const promotion = promotionToday.find(
             (promo) => promo.foodItemId === item.foodItemId
           );
@@ -214,27 +214,27 @@ const Menuedit = ({ reservationId ,promotionToday }) => { // Fix to receive rese
                 {promotion ? (
                   <>
                     <span className="line-through text-red-500">
-                      {item.price.toLocaleString()} đ
+                      {item?.price?.toLocaleString()} đ
                     </span>
                     <br />
                     <span className="text-green-500">
-                      {discountedPrice.toLocaleString()} đ
+                      {discountedPrice?.toLocaleString()} đ
                     </span>
                   </>
                 ) : (
-                  <span>{item.price.toLocaleString()} đ</span>
+                  <span>{item?.price?.toLocaleString()} đ</span>
                 )}
               </td>
               <td className="border border-gray-300 p-2">
-                {item.note || "Không có ghi chú"}
+                {item?.note || "Không có ghi chú"}
               </td>
               <td className="border border-gray-300 p-2">
-                {(item.quantity * discountedPrice).toLocaleString()} đ
+                {(item?.quantity * discountedPrice)?.toLocaleString()} đ
               </td>
               <td className="border border-gray-300 p-2">
                 <button
                   className="text-black hover:text-red-600"
-                  onClick={() => removeFromCart(item.foodItemId)}
+                  onClick={() => removeFromCart(item?.foodItemId)}
                 >
                   🗑️
                 </button>
@@ -250,7 +250,7 @@ const Menuedit = ({ reservationId ,promotionToday }) => { // Fix to receive rese
               Tổng cộng:
             </td>
             <td className="font-bold text-red-500 p-2">
-              {totalAmount === 0 ? "0 đ" : totalAmount.toLocaleString()} đ
+              {totalAmount === 0 ? "0 " : totalAmount?.toLocaleString()} đ
             </td>
             <td></td>
           </tr>

@@ -22,11 +22,12 @@ const CombinedLayout = () => {
     return JSON.parse(localStorage.getItem("cart")) || [];
   }); // Đồng bộ với localStorage
   const [tables, setTables] = useState([]);
+  const [mergeTables, setMergeTables] = useState([]);
   const [selectedTable, setSelectedTable] = useState(null);
   const [showMenuTable, setShowMenuTable] = useState(true);
   const [selectedRestaurant, setSelectedRestaurant] = useState("");
   const [showInvoice, setShowInvoice] = useState(false);
-  const reservationId = localStorage.getItem("reservationId");
+  const [reservationId, setReservationId] = useState()
   const [reservationDetails, setReservationDetails] = useState(null);
   const [foodItems, setFoodItems] = useState([]);
   const [loading, setLoading] = useState(false); // Trạng thái tải
@@ -40,8 +41,23 @@ const CombinedLayout = () => {
   const restaurantId=1;
   // Đồng bộ hóa giỏ hàng với localStorage
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
+    if (cart === null) localStorage.removeItem("cart")
+    else localStorage.setItem("cart", JSON.stringify(cart) );
   }, [cart]);
+
+  useEffect(()=>{
+    if (foodItems?.length > 0){
+      const cartTemp = foodItems?.map(item=>{
+        let result = item.foodItem;
+        result["quantity"] = item.quantity;
+        return result
+      })
+      console.log(cartTemp)
+      setCart(cartTemp)
+    } else {
+      setCart([])
+    }
+  },[foodItems,tables])
 
   // Lấy danh sách bàn theo nhà hàng
   const fetchTablesByRestaurant = useCallback(async (restaurantId) => {
@@ -62,6 +78,7 @@ const CombinedLayout = () => {
   }, []);
 
   useEffect(() => {
+    setReservationId(localStorage.getItem("reservationId"))
     fetchPromotionToday();
     fetchTablesByRestaurant(1);
   }, []);
@@ -104,19 +121,44 @@ const CombinedLayout = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setFoodItems(response.data);
-      console.log(response.data);
 
     } catch (error) {
       console.error("There was an error fetching the food items!", error);
 
     }
   };
+
+  const fetchFoodOnTable = async (tableId)=>{
+    const token = Cookies.get('token');
+    try {
+      const response = await axios.get(`http://localhost:8080/api/reservations/by-status-using/${tableId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setReservationId(response.data.reservationId)
+      setReservationDetails(response.data);
+      setSelectedTable({ id: tableId, number: response.data?.table?.tableNumber });
+      if (response.data.reservationId){
+        await fetchFoodItems(response.data.reservationId);
+        localStorage.setItem("reservationId", response.data.reservationId);
+      } else{
+        setFoodItems(null)
+        setCart([])
+        localStorage.removeItem("reservationId");
+        localStorage.removeItem("cart");
+      } 
+      console.log(response.data);
+
+    } catch (error) {
+      console.error("There was an error fetching the food items!", error);
+
+    }
+  }
   useEffect(() => {
     if (reservationId) {
       fetchReservationDetails(reservationId);
       fetchFoodItems(reservationId)
     }
-  }, [reservationId, fetchReservationDetails]);
+  }, [reservationId]);
   const handleBackToTableSelection = () => {
     setShowMenuTable(false);
     setSelectedTable(null);
@@ -126,6 +168,7 @@ const CombinedLayout = () => {
 
   const toggleSwitchingTable = () => {
     setSwitchingTable(!switchingTable);
+    handleBackToTableSelection()
     if (!switchingTable) toast.info("Chọn bàn mới để chuyển đến.");
   };
   const executeSwitchTable = async () => {
@@ -162,7 +205,7 @@ const CombinedLayout = () => {
   const handleSwitchTable = async () => {
     setShowConfirmDialog(true);
   };
-  const handleTableClick = (table) => {
+  const handleTableClick = async(table) => {
     if (switchingTable) {
       if (table.status === "available") {
         
@@ -174,34 +217,15 @@ const CombinedLayout = () => {
         toast.warn("Bàn này đã có khách. Vui lòng chọn bàn trống!");
       }
     } else {
-      if (table.status === "available") {
-       
+        await fetchFoodOnTable(table.tableId)
         setSelectedTable({ id: table.tableId, number: table.tableNumber });
-     
         setShowMenuTable(true);
-      } else {
-        toast.warn("Bàn này đã có khách!");
-      }
     }
   };
  
   const handlePaymentClick = () => setShowInvoice(true);
   const handleCloseInvoice = () => setShowInvoice(false);
 
-  // const fetchSetStatusTableAvailable = async(tableId)=>{
-  //   try {
-  //     const token = Cookies.get("token");
-  //     await axios.put(
-  //       `http://localhost:8080/tables/set-status-available/${tableId}`,
-  //       null,
-  //       {
-  //         headers: { Authorization: `Bearer ${token}` }
-  //       }
-  //     );
-  //   } catch (error) {
-  //     console.error("Lỗi fetchSetStatusTableAvailable:", error);
-  //   }
-  // }
   const fetchSetStatusTableOccupied = async(tableId)=>{
     try {
       const token = Cookies.get("token");
@@ -220,9 +244,8 @@ const CombinedLayout = () => {
   const handleMergeTable = async (newTable) => {
     try {
       const token = Cookies.get("token");
-      console.log(reservationId);
       const response = await axios.post(
-        `http://localhost:8080/api/reservations/change-table/${reservationId}`,
+        `http://localhost:8080/api/reservations/merge-table/${reservationId}`,
         null,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -236,17 +259,17 @@ const CombinedLayout = () => {
           id: newTable.tableId,
           number: newTable.tableNumber,
         });
-        fetchSetStatusTableOccupied(newTable?.tableId)
-        fetchSetStatusTableOccupied(reservationDetails?.table?.tableId)
         fetchTablesByRestaurant(selectedRestaurant);
+        fetchFoodOnTable(newTable.tableNumber)
         setIsShowMergeTable(false)
-        toast.success("Gộp bàn thành công!");
+        setMergeTables([...mergeTables, {"mainTable":newTable.tableNumber,"subTable":selectedTable.number}])
+        alert("Gộp bàn thành công!");
       } else {
-        toast.error("Không thể gộp bàn!");
+        alert("Không thể gộp bàn!");
       }
     } catch (error) {
       console.error("Error switching tables:", error);
-      toast.error("Đã xảy ra lỗi khi gộp bàn!");
+      alert("Đã xảy ra lỗi khi gộp bàn!");
     }
   }
 
@@ -255,7 +278,7 @@ const CombinedLayout = () => {
     <div className="flex flex-col md:flex-row h-screen">
       {/* Left-Side: Menu */}
       <div className="w-full md:w-2/3 p-4 bg-gray-50 overflow-auto">
-        <Menu />
+        <Menu cart={cart} setCart={setCart}/>
       </div>
 
       {/* Right-Side: Cart and Table Management */}
@@ -279,15 +302,29 @@ const CombinedLayout = () => {
           <div>
             <h2 className="text-xl font-bold">Chọn bàn</h2>
             <div className="grid grid-cols-4 gap-4 mt-4">
-              {tables.map((table) => (
+              {tables?.map((table) => {
+
+                const mergedEntry = mergeTables.find(
+                  (entry) =>
+                    entry.mainTable === table.tableNumber || entry.subtable === table.tableNumber
+                );
+                // Nếu là mainTable, xuất ra subTable + mainTable
+                const displayTableNumber =
+                  mergedEntry?.mainTable === table.tableNumber
+                    ? `${mergedEntry.subtable} + ${mergedEntry.mainTable}`
+                    : table.tableNumber;
+
+                // Nếu là subTable thì vô hiệu hóa onClick và ẩn giao diện
+                const isSubTable = mergedEntry?.subtable === table.tableNumber;
+
+                return(
                 <div
-                  key={table.id}
-                  className={`w-full h-24 border rounded-lg shadow-md flex flex-col ${table.status === "available" ? "cursor-pointer" : "cursor-not-allowed"
-                    }`}
-                  onClick={() => handleTableClick(table)}
+                  key={table.tableId}
+                  className={`w-full h-24 border rounded-lg shadow-md flex flex-col cursor-pointer`}
+                  onClick={() => !isSubTable && handleTableClick(table)}
                 >
                   <div className="flex-1 flex items-center justify-center bg-white rounded-t-lg">
-                    <span className="text-lg font-bold">{table.tableNumber}</span>
+                    <span className="text-lg font-bold">{displayTableNumber}</span>
                   </div>
                   <div
                     className={`flex-1.1 flex items-center justify-center rounded-b-lg ${table.status === "available" ? "bg-green-500" : "bg-gray-400"
@@ -298,7 +335,7 @@ const CombinedLayout = () => {
                     </span>
                   </div>
                 </div>
-              ))}
+              )})}
             </div>
           </div>
         ) : (
@@ -306,7 +343,7 @@ const CombinedLayout = () => {
             <h2 className="text-xl font-bold mb-4">
               Bàn: {selectedTable?.number}
             </h2>
-            <MenuEdit reservationId={reservationId} promotionToday={promotionToday} />
+            <MenuEdit reservationId={reservationId} promotionToday={promotionToday} tableId={selectedTable?.id} fetchFoodOnTable={fetchFoodOnTable}/>
             <button
               className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
               onClick={handleBackToTableSelection}
