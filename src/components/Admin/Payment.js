@@ -1,7 +1,8 @@
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
+import MenuTable from "../Menu/Foodmenu";
+import { Modal } from '@mui/material'; // Sử dụng Material UI 
 const Payment = () => {
   // Dữ liệu mẫu cho biểu đồ
   const [payments, setPayments] = useState([]);
@@ -15,13 +16,18 @@ const Payment = () => {
   const [completedCount, setCompletedCount] = useState(0);
   const [currentRevenue, setCurrentRevenue] = useState(0);
   const [revenueDifference, setRevenueDifference] = useState(0);
+  const [menuItems, setMenuItems] = useState([]);
+  const [totalInvoices, setTotalInvoices] = useState(0);
+  const [pendingInvoices, setPendingInvoices] = useState(0);
+  const [openPopup, setOpenPopup] = useState(false); // State để mở/đóng Modal
   // Lấy dữ liệu thanh toán từ API
   useEffect(() => {
     const fetchPayments = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/payments'); // Thay thế với URL API của bạn
+        const response = await axios.get('http://localhost:8080/api/payments/all'); // Thay thế với URL API của bạn
         setPayments(response.data);
         calculateCompletedCount(response.data);
+        calculateInvoiceCounts(response.data);
       } catch (error) {
         console.error('Lỗi khi lấy dữ liệu thanh toán:', error);
       }
@@ -31,7 +37,7 @@ const Payment = () => {
   }, []);
 
   useEffect(() => {
-    const fetchPayments = async () => {
+    const fetchPayments1 = async () => {
       try {
         const response = await axios.get('http://localhost:8080/api/payments/last-7-days'); // Thay thế với URL API của bạn
         setTransactionData(response.data);
@@ -40,7 +46,7 @@ const Payment = () => {
       }
     };
 
-    fetchPayments();
+    fetchPayments1();
   }, []);
   const calculateCompletedCount = (paymentsData) => {
 
@@ -49,6 +55,20 @@ const Payment = () => {
     ).length; // Count the number of "completed" payments
     setCompletedCount(count);
   };
+  const calculateInvoiceCounts = (paymentsData) => {
+    // Tổng số lượng hóa đơn
+    const totalInvoices = paymentsData.length;
+  
+    // Số lượng hóa đơn chờ thanh toán
+    const pendingInvoices = paymentsData.filter(
+      (payment) => payment.paymentStatus === "Cho Xu Ly"
+    ).length;
+  
+    // Cập nhật state
+    setTotalInvoices(totalInvoices);       // Tổng số lượng hóa đơn
+    setPendingInvoices(pendingInvoices);   // Số lượng hóa đơn chờ thanh toán
+  };
+  
   useEffect(() => {
     const fetchRevenue = async () => {
       try {
@@ -91,7 +111,17 @@ const Payment = () => {
     fetchWeeklyRevenues();
   }, []);
 
-
+  const fetchMenuItems = async (reservationId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/payments/food-items/${reservationId}`
+      ); // Thay thế với URL API của bạn
+      setMenuItems(response.data); 
+      setOpenPopup(true); /// Lưu danh sách món ăn vào state
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách món ăn:", error);
+    }
+  };
   // Dữ liệu hóa đơn chưa thanh toán
 
   const formatCurrency = (amount) =>
@@ -134,11 +164,11 @@ const Payment = () => {
             </p>
           </div>
           <div className="mt-6">
-            <p className="text-sm font-semibold">$850 Chi tiêu</p>
+            <p className="text-sm font-semibold">{pendingInvoices} đang chờ thanh toán</p>
             <div className="h-1 w-full bg-purple-200 rounded mt-1">
               <div className="h-full w-1/2 bg-purple-500 rounded"></div>
             </div>
-            <p className="text-sm font-semibold mt-2">125 Giao dịch</p>
+            <p className="text-sm font-semibold mt-2">{totalInvoices} Tổng số hóa đơn</p>
             <div className="h-1 w-full bg-green-200 rounded mt-1">
               <div className="h-full w-3/4 bg-green-500 rounded"></div>
             </div>
@@ -219,7 +249,7 @@ const Payment = () => {
         <table className="w-full text-left table-auto">
           <thead>
             <tr className="text-gray-500">
-              <th className="p-2">Nhà hàng</th>
+              <th className="p-2">Mã đơn đặt bànbàn</th>
               <th className="p-2">Ngày</th>
               <th className="p-2">Phương thức thanh toán</th>
               <th className="p-2">Trạng thái</th>
@@ -231,12 +261,8 @@ const Payment = () => {
             {currentRows.map((payment) => (
               <tr key={payment.paymentId} className="border-t">
                 <td className="p-2 flex items-center">
-                  <img
-                    src="https://via.placeholder.com/30"
-                    alt="Payment"
-                    className="w-8 h-8 rounded-full mr-2"
-                  />
-                  {payment.paymentMethod}
+                  
+                  {payment.reservationId}
                 </td>
                 <td className="p-2">
                   {new Date(payment.paymentDate).toLocaleDateString("en-GB")}
@@ -245,13 +271,25 @@ const Payment = () => {
                 <td className="p-2">{payment.paymentStatus}</td>
                 <td className="p-2">{payment.amount.toLocaleString()} VND</td>
                 <td className="p-2">
-                  <button className="text-blue-500">Chi tiết</button>
+                  <button  onClick={() => fetchMenuItems(payment.paymentId)}
+                    className="text-blue-500">Chi tiết</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-
+        <Modal open={openPopup} onClose={() => setOpenPopup(false)}>
+        <div className="bg-white p-6 rounded-lg w-3/4 mx-auto mt-20 shadow-lg">
+          <h2 className="text-xl font-semibold mb-4">Danh sách món ăn</h2>
+          <MenuTable foodItems={menuItems} />
+          <button
+            onClick={() => setOpenPopup(false)}
+            className="bg-blue-500 text-white px-4 py-2 rounded mt-4"
+          >
+            Đóng
+          </button>
+        </div>
+      </Modal>
         {/* Phân trang */}
         <div className="flex justify-end mt-4">
           <button

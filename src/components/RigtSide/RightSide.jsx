@@ -9,7 +9,7 @@ const RightSide = () => {
   return (
     <div className="RightSide">
        <div>
-        <h3>Thanh Toánán</h3>
+       
         <Payment />
       </div>
 
