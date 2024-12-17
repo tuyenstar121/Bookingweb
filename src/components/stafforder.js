@@ -348,7 +348,7 @@ const CombinedLayout = () => {
       <Dialog open={showInvoice} onClose={handleCloseInvoice} maxWidth="md" fullWidth>
         <DialogTitle>Hóa Đơn</DialogTitle>
         <DialogContent>
-          <Invoice reservation={reservationDetails} items={foodItems} promotionToday={promotionToday}/>
+          <Invoice handleCloseInvoice={handleCloseInvoice} reservation={reservationDetails} items={foodItems} promotionToday={promotionToday}/>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseInvoice} color="primary">
