@@ -15,7 +15,7 @@ const ResetPasswordForm = () => {
   const [username, setUsername] = useState('');
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
-  const [countdown, setCountdown] = useState(300); // 5 minutes in seconds
+  const [countdown, setCountdown] = useState(300); // 5 phút
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
@@ -76,9 +76,9 @@ const ResetPasswordForm = () => {
       <ToastContainer />
       <section className="home">
         <div className="content">
-          <a href="#" className="logo">MyRestaurant</a>
-          <h2>Welcome!</h2>
-          <h3>To Our Myrestaurants</h3>
+          <a href="#" className="logo">Nhà Hàng Của Tôi</a>
+          <h2>Chào Mừng!</h2>
+          <h3>Đến Với Nhà Hàng Của Chúng Tôi</h3>
           <pre>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Beatae, asperiores</pre>
           <div className="icon">
             <i className="fa-brands fa-instagram"></i>
@@ -89,14 +89,14 @@ const ResetPasswordForm = () => {
         </div>
 
         <div className="login">
-          <h2>Reset Password</h2>
+          <h2>Đặt Lại Mật Khẩu</h2>
           <div className="flex flex-col space-y-4">
             <div className="flex items-center space-x-2">
               <i className="fa-solid fa-user"></i>
               <TextField
                 type="text"
                 className="flex-1 bg-white rounded"
-                placeholder="Username"
+                placeholder="Tên người dùng"
                 onChange={handleUsernameChange}
                 required
               />
@@ -106,7 +106,7 @@ const ResetPasswordForm = () => {
               <TextField
                 type="text"
                 className="flex-1 bg-white rounded"
-                placeholder="OTP"
+                placeholder="Mã OTP"
                 value={otp}
                 onChange={handleOtpChange}
                 required
@@ -117,7 +117,7 @@ const ResetPasswordForm = () => {
               <TextField
                 type={showPassword ? "text" : "password"}
                 className="flex-1 bg-white rounded"
-                placeholder="New Password"
+                placeholder="Mật khẩu mới"
                 value={newPassword}
                 onChange={handleNewPasswordChange}
                 required
@@ -125,7 +125,7 @@ const ResetPasswordForm = () => {
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
-                        aria-label="toggle password visibility"
+                        aria-label="Hiển thị mật khẩu"
                         onClick={handleClickShowPassword}
                       >
                         {showPassword ? <Visibility /> : <VisibilityOff />}
@@ -136,16 +136,16 @@ const ResetPasswordForm = () => {
               />
             </div>
             <div className="flex justify-center mt-4">
-              <Button variant="contained" className="bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded" onClick={handleSubmit}>Submit</Button>
+              <Button variant="contained" className="bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded" onClick={handleSubmit}>Gửi</Button>
             </div>
             <div className="text-center mt-2 text-red-500">
-              Time remaining: {formattedTime()}
+              Thời gian còn lại: {formattedTime()}
             </div>
           </div>
 
           <div className="sign-up">
-            <p>Remember your password?</p>
-            <a href="login">Sign in</a>
+            <p>Bạn nhớ mật khẩu?</p>
+            <a href="login">Đăng nhập</a>
           </div>
         </div>
       </section>

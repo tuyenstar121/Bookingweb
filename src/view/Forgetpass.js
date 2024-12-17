@@ -1,23 +1,16 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
-import IconButton from '@mui/material/IconButton';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Axios from 'axios';
 import '../style/global.css';
 import '../style/login.css';
-import { ToastContainer, toast } from 'react-toastify'; // Import toast from 'react-toastify'
+import { ToastContainer, toast } from 'react-toastify'; // Import toast từ 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
-import Cookies from 'js-cookie';
 
 const ForgotPasswordForm = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
-  const [error, setError] = useState('');
 
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
@@ -33,7 +26,7 @@ const ForgotPasswordForm = () => {
 
       toast.success("Một email đã được gửi đến bạn để đặt lại mật khẩu");
 
-      navigate('/resetpass'); // Điều hướng về trang chủ sau khi yêu cầu đặt lại mật khẩu thành công
+      navigate('/resetpass'); // Điều hướng đến trang đặt lại mật khẩu sau khi gửi yêu cầu thành công
     } catch (error) {
       if (error.response) {
         if (error.response.status === 404) {
@@ -52,10 +45,10 @@ const ForgotPasswordForm = () => {
       <ToastContainer />
       <section className="home">
         <div className="content">
-          <a href="#" className="logo">MyRestaurant</a>
-          <h2>Welcome!</h2>
-          <h3>To Our Myrestaurants</h3>
-          <pre>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Beatae, asperiores</pre>
+          {/* <a href="#" className="logo">Nhà Hàng Của Tôi</a> */}
+          <h2>Chào Mừng!</h2>
+          <h3>Đến Với Nhà Hàng Của Chúng Tôi</h3>
+          {/* <pre>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Beatae, asperiores</pre> */}
           <div className="icon">
             <i className="fa-brands fa-instagram"></i>
             <i className="fa-brands fa-facebook"></i>
@@ -65,28 +58,27 @@ const ForgotPasswordForm = () => {
         </div>
 
         <div className="login">
-          <h2>Forgot Password</h2>
+          <h2>Quên Mật Khẩu</h2>
           <div className="input">
             <i className="fa-solid fa-envelope"></i>
             <TextField
               type="text"
               className="input1"
-              placeholder="username"
+              placeholder="Nhập email của bạn"
               value={email}
               onChange={handleEmailChange}
               required
             />
           </div>
           <div className="button">
-            <Button variant="contained" className="btn" onClick={handleSubmit}>Submit</Button>
+            <Button variant="contained" className="btn mt-2" onClick={handleSubmit}>Gửi</Button>
           </div>
           <div className="sign-up">
-            <p>Remember your password?</p>
-            <a href="login">Sign in</a>
+            <p>Bạn nhớ mật khẩu?</p>
+            <a href="login">Đăng nhập</a>
           </div>
         </div>
       </section>
-      <ToastContainer />
     </div>
   );
 };
