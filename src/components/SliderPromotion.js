@@ -18,12 +18,12 @@ function SliderPromotion() {
   }, [fetchPromotions]);
   console.log(promotions)
   return (
-    <Carousel interval={3000} style={{ height: 'auto' }}>
+    <Carousel interval={3000} style={{ height: '' }}>
       {promotions?.map((item) => {
         return <Carousel.Item>
           <div className="relative">
             <img
-              style={{ height: 300 }}
+              style={{ height: 450 }}
               className="d-block w-full"
               src={item.image}
               alt="First slide"

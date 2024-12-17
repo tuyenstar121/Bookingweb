@@ -4,7 +4,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
-
+import Cookies from "js-cookie";
 const Invoice = ({handleCloseInvoice, reservation, items = [], promotionToday }) => {
   const [invoiceExists, setInvoiceExists] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("Tiền Mặt");
@@ -120,13 +120,37 @@ const Invoice = ({handleCloseInvoice, reservation, items = [], promotionToday })
     doc.save("hoa_don.pdf");
   };
 
-  const handlePayment = ()=>{
-    
-    handleCloseInvoice()
-    toast.success("Thanh toán thành công!")
-  }
+  const handlePayment = async () => {
+      const token = Cookies.get("token");
+    if (!invoiceExists) {
+      toast.info("Hóa đơn chưa được tạo");
+      return;
+    }
+    try {
+      // Gọi API để cập nhật trạng thái thanh toán với header Authorization
+      const response = await axios.put(
+        `http://localhost:8080/api/payments/updatestatus/${reservation.reservationId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
   
-
+      // Xử lý khi gọi API thành công
+      if (response.status === 200) {
+        handleCloseInvoice();
+        toast.success("Thanh toán thành công!");
+      } else {
+        toast.error("Cập nhật trạng thái thất bại, vui lòng thử lại!");
+      }
+    } catch (error) {
+      console.error("Lỗi trong quá trình thanh toán:", error);
+      toast.error("Đã xảy ra lỗi! Vui lòng thử lại sau.");
+    }
+  
+  };
   if (!reservation || !items.length) {
     return <div>Không có dữ liệu hóa đơn!</div>;
   }

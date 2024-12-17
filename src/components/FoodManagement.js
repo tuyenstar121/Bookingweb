@@ -159,7 +159,7 @@ export default function FoodManagement() {
 
   const handleAddSubmit = async () => {
     const { name, img, price, description, categoryId } = newFoodItem;
-
+    console.log(JSON.stringify(categoryId));
     // Kiểm tra các trường hợp còn thiếu thông tin
     if (!name || !img || !price || !description || !categoryId) {
       alert("Vui lòng điền đầy đủ thông tin.");

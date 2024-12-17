@@ -7,6 +7,7 @@ function Slideshow() {
       <Carousel.Item>
         <div className="relative">
           <img
+     style={{ height: 600}}
             className="d-block w-full"
             src="https://images.pexels.com/photos/769289/pexels-photo-769289.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
             alt="First slide"
@@ -22,6 +23,7 @@ function Slideshow() {
       <Carousel.Item>
         <div className="relative">
           <img
+                 style={{ height: 600}}
             className="d-block w-full"
             src="https://nhahangdimai.com/wp-content/uploads/2020/03/Banner__.jpg"
             alt="Second slide"
@@ -37,6 +39,7 @@ function Slideshow() {
       <Carousel.Item>
         <div className="relative">
           <img
+                 style={{ height: 600}}
             className="d-block w-full"
             src="https://images.pexels.com/photos/260922/pexels-photo-260922.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
             alt="Third slide"
