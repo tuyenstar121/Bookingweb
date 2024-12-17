@@ -210,7 +210,6 @@ function ReservationManagementTable() {
     setFilterStatus(status);
   };
   const handleEditFood = () => {
-    console.log(foodItems);
     if (foodItems.length > 0) {
       const cartItems = foodItems.map((item) => ({
         foodItemId: item.foodItem.foodItemId,
@@ -224,6 +223,7 @@ function ReservationManagementTable() {
     } else {
       localStorage.removeItem("cart");
     }
+    
     localStorage.setItem("reservationId", currentReservation); // Lưu Reservation ID để sử dụng sau nếu cần
       navigate("/nv"); // Chuyển hướng sang trang chỉnh sửa
   };
@@ -493,7 +493,7 @@ function ReservationManagementTable() {
       onClick={handleEditFood} // Đã gói trong hàm
       startIcon={<FiEdit className="text-lg" />} // Biểu tượng Edit
     >
-      Edit
+      Chuyển vào bàn
     </Button>
   )}
 </DialogActions>

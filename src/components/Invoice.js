@@ -5,7 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
-const Invoice = ({ reservation, items = [], promotionToday }) => {
+const Invoice = ({handleCloseInvoice, reservation, items = [], promotionToday }) => {
   const [invoiceExists, setInvoiceExists] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("Tiền Mặt");
 
@@ -119,6 +119,12 @@ const Invoice = ({ reservation, items = [], promotionToday }) => {
   
     doc.save("hoa_don.pdf");
   };
+
+  const handlePayment = ()=>{
+    
+    handleCloseInvoice()
+    toast.success("Thanh toán thành công!")
+  }
   
 
   if (!reservation || !items.length) {
@@ -181,7 +187,7 @@ const Invoice = ({ reservation, items = [], promotionToday }) => {
         <p className="text-red-500">{totalAmount.toLocaleString()} VND</p>
       </div>
 
-      <div className="text-center">
+      <div className="flex justify-between text-center">
         {!invoiceExists ? (
           <button
             className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
@@ -197,6 +203,12 @@ const Invoice = ({ reservation, items = [], promotionToday }) => {
             In hóa đơn
           </button>
         )}
+        <button
+          className="bg-green-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+          onClick={handlePayment}
+        >
+          Thanh toán
+        </button>
       </div>
     </div>
   );
