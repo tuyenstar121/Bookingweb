@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie"; // Ensure js-cookie is imported
 
-const Menuedit = ({ reservationId ,promotionToday, tableId, fetchFoodOnTable }) => { // Fix to receive reservationId as a prop
+const Menuedit = ({ reservationId ,promotionToday, tableId, fetchFoodOnTable,fetchTablesByRestaurant }) => { // Fix to receive reservationId as a prop
   const [foodItems, setFoodItems] = useState(() => {
     const savedCart = localStorage.getItem("cart");
     return savedCart ? JSON.parse(savedCart) : [];
@@ -131,6 +131,7 @@ const Menuedit = ({ reservationId ,promotionToday, tableId, fetchFoodOnTable }) 
   
       if (response.status === 200) {
         await fetchFoodOnTable(tableId)
+        await fetchTablesByRestaurant(1)
         alert("Lưu thành công!");
       } else {
         alert("Lưu thất bại!");

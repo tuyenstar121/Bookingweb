@@ -226,21 +226,6 @@ const CombinedLayout = () => {
   const handlePaymentClick = () => setShowInvoice(true);
   const handleCloseInvoice = () => setShowInvoice(false);
 
-  const fetchSetStatusTableOccupied = async(tableId)=>{
-    try {
-      const token = Cookies.get("token");
-      await axios.put(
-        `http://localhost:8080/tables/set-status-occupied/${tableId}`,
-        null,
-        {
-          headers: { Authorization: `Bearer ${token}`}
-        }
-      );
-    } catch (error) {
-      console.error("Lỗi fetchSetStatusTableOccupied:", error);
-    }
-  }
-
   const handleMergeTable = async (newTable) => {
     try {
       const token = Cookies.get("token");
@@ -254,15 +239,22 @@ const CombinedLayout = () => {
       );
       if (response.status === 200) {
         const updatedReservation = response.data;
-        console.log(updatedReservation)
+        console.log(selectedTable)
         setSelectedTable({
           id: newTable.tableId,
           number: newTable.tableNumber,
         });
-        fetchTablesByRestaurant(selectedRestaurant);
-        fetchFoodOnTable(newTable.tableNumber)
+        await fetchTablesByRestaurant(1);
+        await fetchFoodOnTable(newTable.tableNumber)
         setIsShowMergeTable(false)
-        setMergeTables([...mergeTables, {"mainTable":newTable.tableNumber,"subTable":selectedTable.number}])
+        setMergeTables(
+          [...mergeTables, 
+            {
+              "mainTable":newTable.tableNumber,
+              "mainTableId":newTable.tableId,
+              "subTable":selectedTable.number,
+              "subTableId":selectedTable.id
+            }])
         alert("Gộp bàn thành công!");
       } else {
         alert("Không thể gộp bàn!");
@@ -306,21 +298,21 @@ const CombinedLayout = () => {
 
                 const mergedEntry = mergeTables.find(
                   (entry) =>
-                    entry.mainTable === table.tableNumber || entry.subtable === table.tableNumber
+                    entry.mainTable === table.tableNumber || entry.subTable === table.tableNumber
                 );
                 // Nếu là mainTable, xuất ra subTable + mainTable
                 const displayTableNumber =
                   mergedEntry?.mainTable === table.tableNumber
-                    ? `${mergedEntry.subtable} + ${mergedEntry.mainTable}`
+                    ? `${mergedEntry.subTable} + ${mergedEntry.mainTable}`
                     : table.tableNumber;
 
                 // Nếu là subTable thì vô hiệu hóa onClick và ẩn giao diện
-                const isSubTable = mergedEntry?.subtable === table.tableNumber;
+                const isSubTable = mergedEntry?.subTable === table.tableNumber;
 
                 return(
                 <div
                   key={table.tableId}
-                  className={`w-full h-24 border rounded-lg shadow-md flex flex-col cursor-pointer`}
+                  className={`w-full h-24 border rounded-lg shadow-md flex flex-col ${isSubTable?'cursor-not-allowed':"cursor-pointer"}`}
                   onClick={() => !isSubTable && handleTableClick(table)}
                 >
                   <div className="flex-1 flex items-center justify-center bg-white rounded-t-lg">
@@ -343,7 +335,7 @@ const CombinedLayout = () => {
             <h2 className="text-xl font-bold mb-4">
               Bàn: {selectedTable?.number}
             </h2>
-            <MenuEdit reservationId={reservationId} promotionToday={promotionToday} tableId={selectedTable?.id} fetchFoodOnTable={fetchFoodOnTable}/>
+            <MenuEdit reservationId={reservationId} promotionToday={promotionToday} tableId={selectedTable?.id} fetchFoodOnTable={fetchFoodOnTable} fetchTablesByRestaurant={fetchTablesByRestaurant}/>
             <button
               className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
               onClick={handleBackToTableSelection}
@@ -385,7 +377,15 @@ const CombinedLayout = () => {
       <Dialog open={showInvoice} onClose={handleCloseInvoice} maxWidth="md" fullWidth>
         <DialogTitle>Hóa Đơn</DialogTitle>
         <DialogContent>
-          <Invoice handleCloseInvoice={handleCloseInvoice} reservation={reservationDetails} items={foodItems} promotionToday={promotionToday}/>
+          <Invoice 
+            handleCloseInvoice={handleCloseInvoice} 
+            reservation={reservationDetails} 
+            items={foodItems} 
+            promotionToday={promotionToday}
+            mergeTables={mergeTables}
+            setMergeTables={setMergeTables}
+            fetchFoodOnTable={fetchFoodOnTable}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseInvoice} color="primary">

@@ -5,7 +5,14 @@ import "react-toastify/dist/ReactToastify.css";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import Cookies from "js-cookie";
-const Invoice = ({handleCloseInvoice, reservation, items = [], promotionToday }) => {
+const Invoice = ({handleCloseInvoice,
+   reservation,
+    items = [], 
+    promotionToday, 
+    mergeTables, 
+    setMergeTables,
+    fetchFoodOnTable
+   }) => {
   const [invoiceExists, setInvoiceExists] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("Tiền Mặt");
 
@@ -20,6 +27,18 @@ const Invoice = ({handleCloseInvoice, reservation, items = [], promotionToday })
     return promotion ? promotion.discountPercentage : 0;
   };
 
+  const fetchSetAvailableStatus = async (tableId) => {
+    const token = Cookies.get('token');
+    try {
+      await axios.put(`http://localhost:8080/tables/set-available-status/${tableId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+    } catch (error) {
+      console.error("Lỗi fetchSetAvailableStatus!", error);
+    }
+  };
+
   // Calculate discounted price
   const calculateDiscountedPrice = (item) => {
     const discount = getDiscountPercentage(item.foodItem.foodItemId);
@@ -28,7 +47,7 @@ const Invoice = ({handleCloseInvoice, reservation, items = [], promotionToday })
   };
 
   // Calculate total amount
-  const totalAmount = items.reduce((total, item) => total + calculateDiscountedPrice(item), 0);
+  const totalAmount = items?.reduce((total, item) => total + calculateDiscountedPrice(item), 0);
 
   const checkInvoice = async () => {
     try {
@@ -140,8 +159,21 @@ const Invoice = ({handleCloseInvoice, reservation, items = [], promotionToday })
   
       // Xử lý khi gọi API thành công
       if (response.status === 200) {
+        const matchingEntries = mergeTables?.filter(
+          (entry) => entry.mainTableId === reservation.table.tableId || entry.subTableId === reservation.table.tableId
+        );
+        matchingEntries?.forEach((entry) => {
+          fetchSetAvailableStatus(entry.mainTableId);
+          fetchSetAvailableStatus(entry.subTableId);
+        });
+        const updatedMergeTables = mergeTables?.filter(
+          (entry) => entry.mainTableId !== reservation.table.tableId && entry.subTableId !== reservation.table.tableId
+        );
+        fetchSetAvailableStatus(reservation.table.tableId);
+        fetchFoodOnTable(reservation.table.tableId)
+        setMergeTables(updatedMergeTables);
         handleCloseInvoice();
-        toast.success("Thanh toán thành công!");
+        alert("Thanh toán thành công!");
       } else {
         toast.error("Cập nhật trạng thái thất bại, vui lòng thử lại!");
       }
