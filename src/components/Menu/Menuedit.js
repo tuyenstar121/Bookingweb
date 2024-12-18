@@ -55,11 +55,16 @@ const Menuedit = ({ reservationId ,promotionToday, tableId, fetchFoodOnTable,fet
   };
 
   const decrementQuantity = (id) => {
-    const updatedCart = foodItems?.map((item) =>
-      item.foodItemId === id && item.quantity > 1
-        ? { ...item, quantity: item.quantity - 1 }
-        : item
-    );
+    
+    const updatedCart = foodItems?.map((item) => {
+      if (item.foodItemId === id && item.quantity > 1)
+        return { ...item, quantity: item.quantity - 1 }
+      else {
+        alert("Số lượng không được nhỏ hơn 1")
+        return item;
+      }  
+    
+    })
     setFoodItems(updatedCart); // Update cart state
     localStorage.setItem("cart", JSON.stringify(updatedCart)); // Update localStorage
   };
@@ -73,6 +78,9 @@ const Menuedit = ({ reservationId ,promotionToday, tableId, fetchFoodOnTable,fet
   const syncOrderWithCart = async () => {
 
     try {
+      if(!foodItems.length > 0){
+        return alert('Không thể bỏ trống món')
+      }
       const userId = Cookies.get("userId");
       const updatedItems = foodItems?.map((item) => ({
         foodItemId: item.foodItemId,

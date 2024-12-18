@@ -214,7 +214,7 @@ const CombinedLayout = () => {
         setNewTableId(table.tableId);
         handleSwitchTable(table.tableId); // Gọi API đổi bàn
       } else {
-        toast.warn("Bàn này đã có khách. Vui lòng chọn bàn trống!");
+        alert("Bàn này đã có khách. Vui lòng chọn bàn trống!");
       }
     } else {
         await fetchFoodOnTable(table.tableId)
